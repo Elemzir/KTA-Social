@@ -194,7 +194,7 @@ export default {
       const r = await oracleFetch(env, `/rate?currency=${encodeURIComponent(currency)}`).catch(() => null);
       if (!r?.ok) return Response.json({ error: "unavailable" }, { status: 503, headers: corsHeaders });
       const rateData = await r.json() as Record<string,unknown>;
-      env.KV.put(cKey, JSON.stringify(rateData), { expirationTtl: 60 }).catch(() => {});
+      env.KV.put(cKey, JSON.stringify(rateData), { expirationTtl: 300 }).catch(() => {});
       return Response.json(rateData, { headers: { "Cache-Control": CC_PRICE, ...corsHeaders } });
     }
 
@@ -384,7 +384,7 @@ async function handleIngest(request: Request, env: Env): Promise<Response> {
     const now            = Date.now();
 
     const alertCount  = Math.floor(now / 3_600_000) % 100;
-    const QUOTE_TTL   = 3 * 60_000;
+    const QUOTE_TTL   = 10 * 60_000;
 
     type QuoteCache = { standard: string; full: string; preview: string; ts: number };
     const [quoteCache] = await Promise.all([
@@ -409,7 +409,7 @@ async function handleIngest(request: Request, env: Env): Promise<Response> {
         generateInsight(env.AI_KEY, env.AI_ENDPOINT, env.AI_MODEL, priceChange, change24h, change7d, alertCount, "full", volume24h, liquidityUsd),
         generateInsight(env.AI_KEY, env.AI_ENDPOINT, env.AI_MODEL, priceChange, change24h, change7d, alertCount, "preview", volume24h, liquidityUsd),
       ]);
-      env.KV.put("social:quote_cache", JSON.stringify({ standard: quoteStandard, full: quoteFull, preview: quotePreview, ts: now }), { expirationTtl: 300 }).catch(() => {});
+      env.KV.put("social:quote_cache", JSON.stringify({ standard: quoteStandard, full: quoteFull, preview: quotePreview, ts: now }), { expirationTtl: 660 }).catch(() => {});
     }
 
     await broadcastToSubscribers(env, price, priceChange, change24h, change7d, volume24h, liquidityUsd, alertTriggered, changeLevel, whale, quotePreview, quoteStandard, quoteFull, now);
@@ -487,16 +487,10 @@ async function broadcastToSubscribers(
   const fxPrices = new Map<string, number>();
   await Promise.all(uniqueCurrencies.map(async (cur) => {
     try {
-      const cKey = `social:fx:${cur}`;
-      const cachedFx = await env.KV.get<{ price: number }>(cKey, "json");
-      if (cachedFx?.price) { fxPrices.set(cur, cachedFx.price); return; }
       const r = await oracleFetch(env, `/rate?currency=${cur}`);
       if (r.ok) {
         const d = await r.json() as { price?: number };
-        if (d.price) {
-          fxPrices.set(cur, d.price);
-          env.KV.put(cKey, JSON.stringify({ price: d.price }), { expirationTtl: 60 }).catch(() => {});
-        }
+        if (d.price) fxPrices.set(cur, d.price);
       }
     } catch {}
   }));
