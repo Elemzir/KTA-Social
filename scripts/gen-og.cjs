@@ -1,6 +1,17 @@
-const { createCanvas } = require('@napi-rs/canvas');
-const { writeFileSync } = require('fs');
+const { createCanvas, GlobalFonts } = require('@napi-rs/canvas');
+const { writeFileSync, existsSync } = require('fs');
 const { join } = require('path');
+
+const winFonts = 'C:\\Windows\\Fonts';
+[
+  ['arialbd.ttf',  'MyFont'],
+  ['arial.ttf',    'MyFont'],
+  ['ariali.ttf',   'MyFont'],
+  ['arialbi.ttf',  'MyFont'],
+].forEach(([file, family]) => {
+  const p = join(winFonts, file);
+  if (existsSync(p)) GlobalFonts.registerFromPath(p, family);
+});
 
 const W = 1200, H = 630;
 const canvas = createCanvas(W, H);
@@ -56,7 +67,7 @@ ctx.fill();
 
 ctx.textAlign = 'center';
 ctx.textBaseline = 'alphabetic';
-const font = '"Segoe UI", Arial, sans-serif';
+const font = 'MyFont';
 ctx.font = `800 86px ${font}`;
 
 const ktaW = ctx.measureText('KTA ').width;
