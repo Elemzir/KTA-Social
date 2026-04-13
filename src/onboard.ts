@@ -785,6 +785,9 @@ export function renderOnboard(appUrl: string, oracleWallet: string, trialLimit: 
 .prod-pill h4{font-size:0.86rem;font-weight:700;margin-bottom:2px}
 .prod-pill p{font-size:0.75rem;color:var(--muted2)}
 @media(max-width:640px){.donate-reward-grid{grid-template-columns:1fr!important}}
+.scell{padding:22px 28px;text-align:center}.sval{font-size:2.2rem;font-weight:800;letter-spacing:-0.04em;line-height:1}.svs{display:flex;align-items:center;justify-content:center;padding:0 20px;color:var(--muted);font-size:0.82rem;font-weight:700}
+@media(max-width:520px){.scell{padding:16px 12px}.sval{font-size:1.7rem}.svs{padding:0 10px;font-size:0.72rem}}
+@media(max-width:380px){.scell{padding:12px 8px}.sval{font-size:1.35rem}.svs{padding:0 6px}}
 </style>
 </head>
 <body>
@@ -816,15 +819,15 @@ ${priceChart(appUrl)}
 
 <div class="wrap" style="margin-bottom:0;padding-bottom:0">
   <div style="display:grid;grid-template-columns:1fr auto 1fr;background:var(--surface);border:1px solid #111;border-radius:14px;overflow:hidden;margin-bottom:20px">
-    <div style="padding:22px 28px;text-align:center;border-right:1px solid #0d0d0d">
+    <div class="scell" style="border-right:1px solid #0d0d0d">
       <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted2);margin-bottom:10px">SWIFT wire — $50,000</div>
-      <div style="font-size:2.2rem;font-weight:800;letter-spacing:-0.04em;color:#ff5555;line-height:1">~$1,050</div>
+      <div class="sval" style="color:#ff5555">~$1,050</div>
       <div style="font-size:0.77rem;color:var(--muted2);margin-top:6px">3–5 business days</div>
     </div>
-    <div style="display:flex;align-items:center;justify-content:center;padding:0 20px;color:var(--muted);font-size:0.82rem;font-weight:700">vs</div>
-    <div style="padding:22px 28px;text-align:center;border-left:1px solid #0d0d0d">
+    <div class="svs">vs</div>
+    <div class="scell" style="border-left:1px solid #0d0d0d">
       <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted2);margin-bottom:10px">Keeta Network — $50,000</div>
-      <div style="font-size:2.2rem;font-weight:800;letter-spacing:-0.04em;color:var(--accent);line-height:1">$75</div>
+      <div class="sval" style="color:var(--accent)">$75</div>
       <div style="font-size:0.77rem;color:var(--accent);margin-top:6px">0.4 seconds</div>
     </div>
   </div>
@@ -1131,7 +1134,7 @@ ${INTG_STRIP}
       </details>
     </div>
     <div style="margin-top:20px;text-align:center;font-size:0.8rem;color:var(--muted2)">
-      More help → <a href="https://github.com/Elemzir/KTA-Social/blob/main/TROUBLESHOOT.md" target="_blank" rel="noopener" style="color:var(--gold)">TROUBLESHOOT.md</a> &nbsp;·&nbsp; <a href="https://x.com/elemzir" target="_blank" rel="noopener" style="color:var(--gold)">@elemzir on X</a>
+      More help → <a href="https://github.com/Elemzir/KTA-Social" target="_blank" rel="noopener" style="color:var(--gold)">TROUBLESHOOT.md</a> &nbsp;·&nbsp; <a href="https://x.com/elemzir" target="_blank" rel="noopener" style="color:var(--gold)">@elemzir on X</a>
     </div>
   </div>
 </section>

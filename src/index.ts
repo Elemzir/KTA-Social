@@ -1224,8 +1224,10 @@ async function handleSupportStatus(searchParams: URLSearchParams, env: Env): Pro
     return new Response(page, { headers: { "Content-Type": "text/html;charset=utf-8" } });
   }
 
-  const raw      = await env.KV.get(ticketId);
-  const replyRaw = await env.KV.get(`${ticketId}:reply`);
+  const [raw, replyRaw] = await Promise.all([
+    env.KV.get(ticketId),
+    env.KV.get(`${ticketId}:reply`),
+  ]);
 
   if (!raw) {
     const page = h + `<h1>Support Status</h1><p class="sub">Ticket not found — check the ID and try again</p><form method="get" action="/support/status"><input name="ticket" value="${ticketId.replace(/"/g,'')}" required autocomplete="off"><button type="submit">Try Again</button></form><p class="footer">KTA Oracle Agent · Powered by Keeta Network</p></div></body></html>`;
