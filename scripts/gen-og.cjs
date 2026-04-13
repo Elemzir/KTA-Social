@@ -83,7 +83,7 @@ function pill(x, y, w, h, bgColor, strokeColor, label, labelColor) {
   ctx.strokeStyle = strokeColor;
   ctx.lineWidth = 1;
   ctx.stroke();
-  ctx.font = `700 11px ${font}`;
+  ctx.font = `700 14px ${font}`;
   ctx.fillStyle = labelColor;
   ctx.textAlign = 'center';
   ctx.fillText(label, x + w/2, y + h/2 + 4);
@@ -100,5 +100,5 @@ ctx.textAlign = 'center';
 ctx.fillText('kta-oracle.top', W/2, 548);
 
 const buf = canvas.toBuffer('image/png');
-writeFileSync(join(__dirname, '..', 'public', 'og.png'), buf);
-console.log('og.png generated:', W + 'x' + H, Math.round(buf.length/1024) + 'KB');
+writeFileSync(join(__dirname, '..', 'public', 'og2.png'), buf);
+console.log('og2.png generated:', W + 'x' + H, Math.round(buf.length/1024) + 'KB');
