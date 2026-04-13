@@ -87,7 +87,7 @@ svg{display:inline-block;vertical-align:middle;flex-shrink:0}
 .hero h1 em{font-style:normal;color:var(--gold)}
 .hero-sub{font-size:1.02rem;color:var(--muted2);max-width:520px;margin:0 auto 44px;line-height:1.7}
 .btn-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.btn-primary{display:inline-flex;align-items:center;gap:9px;background:var(--gold);color:#000;font-weight:700;font-size:0.9rem;padding:14px 28px;border-radius:10px;transition:background .15s,transform .12s,box-shadow .15s;white-space:nowrap;box-shadow:0 4px 20px rgba(196,163,90,0.25)}
+.btn-primary{display:inline-flex;align-items:center;gap:9px;background:var(--gold);color:#000;font-weight:700;font-size:0.9rem;padding:14px 28px;border-radius:10px;transition:background .15s,transform .12s,box-shadow .15s;white-space:nowrap;box-shadow:0 4px 20px rgba(196,163,90,0.25);touch-action:manipulation}
 .btn-primary:hover{background:var(--gold-light);color:#000;transform:translateY(-2px);box-shadow:0 8px 28px rgba(196,163,90,0.35)}
 .btn-ghost{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--gold-border);color:var(--gold);font-size:0.88rem;padding:13px 24px;border-radius:10px;transition:all .2s}
 .btn-ghost:hover{border-color:var(--gold);color:#fff;background:var(--gold-dim)}
@@ -115,7 +115,7 @@ svg{display:inline-block;vertical-align:middle;flex-shrink:0}
 .inp:focus{border-color:var(--gold-border)}
 .inp::placeholder{color:var(--muted)}
 .inp-row{display:flex;gap:8px;margin-bottom:4px}
-.btn-sm{background:var(--gold);color:#000;border:none;padding:10px 18px;border-radius:8px;font-weight:700;font-size:0.83rem;cursor:pointer;white-space:nowrap;transition:background .15s;flex-shrink:0}
+.btn-sm{background:var(--gold);color:#000;border:none;padding:10px 18px;border-radius:8px;font-weight:700;font-size:0.83rem;cursor:pointer;white-space:nowrap;transition:background .15s;flex-shrink:0;touch-action:manipulation}
 .btn-sm:hover{background:var(--gold-light)}
 .btn-sm:disabled{opacity:.4;cursor:not-allowed}
 .result-box{margin-top:14px;display:none}
@@ -137,7 +137,7 @@ svg{display:inline-block;vertical-align:middle;flex-shrink:0}
 .field select:focus{border-color:var(--gold-border)}
 .field select option{background:#111}
 .pf{display:none}.pf.show{display:block}
-.btn-full{width:100%;background:var(--gold);color:#000;border:none;padding:13px;border-radius:9px;font-weight:700;font-size:0.9rem;cursor:pointer;transition:background .15s,box-shadow .15s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(196,163,90,0.2);min-height:48px}
+.btn-full{width:100%;background:var(--gold);color:#000;border:none;padding:13px;border-radius:9px;font-weight:700;font-size:0.9rem;cursor:pointer;transition:background .15s,box-shadow .15s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(196,163,90,0.2);min-height:48px;touch-action:manipulation}
 .btn-full:hover{background:var(--gold-light);box-shadow:0 6px 24px rgba(196,163,90,0.35)}
 .btn-full:disabled{opacity:.4;cursor:not-allowed}
 .form-result{margin-top:12px;font-size:0.83rem;min-height:16px}
@@ -175,7 +175,7 @@ td{padding:10px 14px;border-bottom:1px solid #0a0a0a;vertical-align:top}
 .info-strip{background:var(--surface2);border:1px solid #111;border-radius:10px;padding:14px 18px;font-size:0.82rem;color:var(--muted2);line-height:1.7;margin-bottom:20px}
 .info-strip strong{color:#fff}
 
-.agent-fab{position:fixed;bottom:28px;right:28px;z-index:999;width:56px;height:56px;border-radius:50%;background:var(--gold);color:#000;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(196,163,90,0.4);transition:transform .15s,box-shadow .15s;font-family:inherit}
+.agent-fab{position:fixed;bottom:28px;right:28px;z-index:999;width:56px;height:56px;border-radius:50%;background:var(--gold);color:#000;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(196,163,90,0.4);transition:transform .15s,box-shadow .15s;font-family:inherit;touch-action:manipulation}
 .agent-fab:hover{transform:scale(1.08);box-shadow:0 10px 32px rgba(196,163,90,0.55)}
 .agent-fab .notif{position:absolute;top:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid #000;animation:pulse 2s infinite}
 .ap-contact-btn{background:none;border:none;color:var(--muted2);cursor:pointer;padding:5px 7px;border-radius:7px;transition:color .15s,background .15s;display:flex;align-items:center;gap:5px;font-size:0.71rem;font-weight:600;font-family:inherit;white-space:nowrap}
@@ -224,7 +224,7 @@ td{padding:10px 14px;border-bottom:1px solid #0a0a0a;vertical-align:top}
 .hbg.is-open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .hbg.is-open span:nth-child(2){opacity:0}
 .hbg.is-open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.mob-nav{display:none;position:fixed;top:60px;left:0;right:0;bottom:0;background:rgba(0,0,0,0.97);padding:16px 20px 40px;z-index:998;flex-direction:column;gap:0;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);overflow-y:auto}
+.mob-nav{display:none;position:fixed;top:60px;left:0;right:0;bottom:0;background:rgba(0,0,0,0.97);padding:16px 20px calc(40px + env(safe-area-inset-bottom));z-index:998;flex-direction:column;gap:0;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);overflow-y:auto}
 .mob-nav.is-open{display:flex}
 .mob-nav a{display:block;padding:14px 16px;color:var(--muted2);font-size:0.95rem;font-weight:500;border-radius:10px;transition:color .15s,background .15s;border-bottom:1px solid #0d0d0d}
 .mob-nav a.mob-active{color:var(--gold);background:var(--gold-dim)}
@@ -267,6 +267,8 @@ td{padding:10px 14px;border-bottom:1px solid #0a0a0a;vertical-align:top}
   .chart-strip{height:90px}
   .info-strip{font-size:0.78rem;padding:12px 14px}
   .field select,.inp{font-size:1rem}
+  .ap-inp{font-size:1rem}
+  .ct-field input,.ct-field textarea{font-size:1rem}
 }
 @media(max-width:480px){
   .nav-guide-pill{display:none}
@@ -771,7 +773,7 @@ export function renderOnboard(appUrl: string, oracleWallet: string, trialLimit: 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>KTA Oracle — Live KTA Intelligence</title>
 <meta name="description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter.">
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/"><meta property="og:title" content="KTA Oracle — Live KTA Intelligence"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.svg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.svg">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/"><meta property="og:title" content="KTA Oracle — Live KTA Intelligence"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}
 .two-product{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:640px;margin:0 auto 40px}
@@ -1303,7 +1305,7 @@ export function renderCheckout(appUrl: string, oracleWallet: string, stripeLink 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Pricing — KTA Oracle</title>
 <meta name="description" content="Choose your KTA Oracle tier. One payment activates Oracle API access and Social lifetime alerts.">
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/checkout"><meta property="og:title" content="Pricing — KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.svg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.svg">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/checkout"><meta property="og:title" content="Pricing — KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}
 .tier-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:52px}
@@ -1758,7 +1760,7 @@ export function renderDonate(appUrl: string, oracleWallet: string, lifetimeKta: 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Support KTA Oracle — Keep it alive</title>
 <meta name="description" content="KTA Oracle is an independent project. Your support keeps the live data, AI insights, and whale tracking running for the whole community.">
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/donate"><meta property="og:title" content="Support KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.svg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.svg">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/donate"><meta property="og:title" content="Support KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}
 .donate-hero{text-align:center;padding:88px 28px 60px;max-width:640px;margin:0 auto}
@@ -2007,7 +2009,7 @@ export function renderLegal(appUrl: string): string {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Legal — KTA Oracle</title>
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/legal"><meta property="og:title" content="Legal — KTA Oracle"><meta property="og:image" content="${appUrl}/og.svg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.svg">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/legal"><meta property="og:title" content="Legal — KTA Oracle"><meta property="og:image" content="${appUrl}/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}.legal{max-width:640px;margin:0 auto;padding:72px 28px 100px}.legal h1{font-size:1.8rem;font-weight:800;margin-bottom:8px;letter-spacing:-0.03em}.legal h2{font-size:1.05rem;font-weight:700;margin:32px 0 10px;color:var(--gold)}.legal p,.legal li{font-size:0.87rem;color:var(--muted2);line-height:1.8;margin-bottom:10px}.legal ul{padding-left:18px}.legal strong{color:#fff}</style>
 </head>
@@ -2041,7 +2043,7 @@ export function renderPrivacy(appUrl: string): string {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Privacy Policy — KTA Oracle</title>
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/privacy"><meta property="og:title" content="Privacy Policy — KTA Oracle"><meta property="og:image" content="${appUrl}/og.svg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.svg">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/privacy"><meta property="og:title" content="Privacy Policy — KTA Oracle"><meta property="og:image" content="${appUrl}/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}.legal{max-width:640px;margin:0 auto;padding:72px 28px 100px}.legal h1{font-size:1.8rem;font-weight:800;margin-bottom:8px;letter-spacing:-0.03em}.legal h2{font-size:1.05rem;font-weight:700;margin:32px 0 10px;color:var(--gold)}.legal p,.legal li{font-size:0.87rem;color:var(--muted2);line-height:1.8;margin-bottom:10px}.legal ul{padding-left:18px}.legal strong{color:#fff}</style>
 </head>
