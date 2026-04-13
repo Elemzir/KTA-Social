@@ -1134,7 +1134,7 @@ ${INTG_STRIP}
       </details>
     </div>
     <div style="margin-top:20px;text-align:center;font-size:0.8rem;color:var(--muted2)">
-      More help → <a href="https://github.com/Elemzir/KTA-Social" target="_blank" rel="noopener" style="color:var(--gold)">TROUBLESHOOT.md</a> &nbsp;·&nbsp; <a href="https://x.com/elemzir" target="_blank" rel="noopener" style="color:var(--gold)">@elemzir on X</a>
+      More help → <a href="https://github.com/Elemzir/KTA-Social/blob/master/TROUBLESHOOT.md" target="_blank" rel="noopener" style="color:var(--gold)">TROUBLESHOOT.md</a> &nbsp;·&nbsp; <a href="https://x.com/elemzir" target="_blank" rel="noopener" style="color:var(--gold)">@elemzir on X</a>
     </div>
   </div>
 </section>
