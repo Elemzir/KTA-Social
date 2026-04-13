@@ -793,7 +793,7 @@ ${priceBar(appUrl)}
 ${priceChart(appUrl)}
 
 <section class="hero">
-  <div class="hero-eyebrow"><span class="live-dot"></span>100% Native · Keeta Network · 0.4s settlement</div>
+  <div class="hero-eyebrow">100% Open Source</div>
   <h1>KTA intelligence,<br><em>everywhere you work.</em></h1>
   <p class="hero-sub">Price alerts, whale tracking, and AI insights — pushed to Discord, Telegram, Slack, and X. Priced natively from Keeta's FX anchor. Free trial included. Lifetime alerts from ${lifetimeKta} KTA.</p>
 
@@ -1806,7 +1806,6 @@ export function renderDonate(appUrl: string, oracleWallet: string, lifetimeKta: 
 </head>
 <body>
 ${header("donate")}
-${priceBar(appUrl)}
 
 <div class="donate-hero">
   <div class="hero-eyebrow">${icon('<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',13)} Community support</div>

@@ -223,47 +223,47 @@ export default {
       }, { headers: corsHeaders });
 
     if (method === "POST" && pathname === "/agent")
-      return handleAgent(request, env, corsHeaders);
+      return await handleAgent(request, env, corsHeaders);
 
     if (method === "POST" && pathname === "/activate-oracle")
-      return handleActivateOracle(request, env, corsHeaders);
+      return await handleActivateOracle(request, env, corsHeaders);
 
     if (method === "POST" && pathname === "/webhook/stripe")
-      return handleStripeWebhook(request, env);
+      return await handleStripeWebhook(request, env);
 
     if (method === "POST" && pathname === "/ingest")
-      return handleIngest(request, env);
+      return await handleIngest(request, env);
 
     if (method === "POST" && pathname === "/register")
-      return handleRegister(request, env);
+      return await handleRegister(request, env);
 
     if (method === "POST" && pathname === "/upgrade")
-      return handleUpgrade(request, env);
+      return await handleUpgrade(request, env);
 
     if (method === "POST" && pathname === "/oracle-activate") {
       const secret = request.headers.get("X-Internal-Secret");
       if (!secret || secret !== env.INTERNAL_SECRET)
         return Response.json({ error: "Unauthorized" }, { status: 401 });
-      return handleOracleActivate(request, env);
+      return await handleOracleActivate(request, env);
     }
 
     if (method === "GET" && pathname === "/status")
-      return handleStatus(searchParams, env);
+      return await handleStatus(searchParams, env);
 
     if (method === "POST" && pathname === "/dev/register")
-      return handleDevRegister(request, env);
+      return await handleDevRegister(request, env);
 
     if (method === "POST" && pathname === "/dev/support/reply")
-      return handleDevSupportReply(request, env);
+      return await handleDevSupportReply(request, env);
 
     if (method === "POST" && pathname === "/discord/interactions")
-      return handleDiscordInteractions(request, env);
+      return await handleDiscordInteractions(request, env);
 
     if (method === "GET" && pathname === "/support/status")
-      return handleSupportStatus(searchParams, env);
+      return await handleSupportStatus(searchParams, env);
 
     if (method === "POST" && pathname === "/support")
-      return handleSupport(request, env, corsHeaders);
+      return await handleSupport(request, env, corsHeaders);
 
     if (method === "OPTIONS")
       return new Response(null, { headers: { ...corsHeaders, "Access-Control-Allow-Methods": "GET,POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type,X-Internal-Secret" } });
