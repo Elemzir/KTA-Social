@@ -1,0 +1,22 @@
+name = "kta"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./public"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "029dc16460dc4ec2bc6e04ddd740821f"
+preview_id = "029dc16460dc4ec2bc6e04ddd740821f"
+
+[vars]
+APP_URL       = "https://kta-oracle.top"
+ORACLE_WALLET = "keeta_aab4y4nd5ug4nnzjtp5fslfsrdv7pnxfbeexafwolqs4mgxrb2ppontfqb64tzi"
+TRIAL_LIMIT   = "100"
+LIFETIME_KTA  = "50"
+
+[[services]]
+binding = "ORACLE_SERVICE"
+service = "kta-oracle"

@@ -1,0 +1,242 @@
+# KTA Oracle
+
+> Real-time KTA/USD price intelligence engine and social alert broadcaster built on Keeta Network. Live price data, whale transaction detection, and AI market insights delivered to Discord, Telegram, Slack, and X/Twitter. All payments and tier activation are fully on-chain. No email, no password, no KYC — a Keeta wallet address is the only identity.
+
+Public URL: https://kta.netrate.workers.dev
+Contact: @elemzir on X/Twitter
+
+---
+
+## Architecture
+
+Two Cloudflare Workers operate in tandem:
+- **KTA Social** (public-facing): https://kta.netrate.workers.dev — all UI pages, subscriber management, alert delivery, proxy layer for all SDK calls. This is the ONLY URL external callers should use.
+- **KTA Oracle** (internal): kta-oracle.netrate.workers.dev — price engine, on-chain data, Keeta SDK operations. Never called directly by browsers or external agents — Social proxies via service binding.
+
+All 19 tools are accessible through the Social worker URL. Tier gating is enforced at the subscription level — the endpoints are open but the alerts and features activate based on accumulated KTA sent.
+
+---
+
+## What KTA Oracle Does
+
+KTA Oracle tracks the KTA/USD price on Keeta Network in real time (5-minute cycles), detects large on-chain whale transactions, generates AI market insights, and broadcasts alerts to subscriber platforms. Subscribers register their wallet address and platform webhooks once; the Oracle handles everything else automatically.
+
+KTA settles globally in 0.4 seconds. Price movements directly affect live payment conversion costs, which is why real-time intelligence matters.
+
+---
+
+## Subscription Tiers
+
+All payments go to the oracle wallet. KTA sent from the same wallet accumulates — multiple smaller sends stack toward the highest tier automatically. There is no need to send the full amount at once.
+
+| KTA sent | Tier     | Oracle API calls | Social alerts    | Whale alerts | Duration  |
+|----------|----------|------------------|------------------|--------------|-----------|
+| 0.1      | Free     | 20 / day         | 100 trial total  | 1 ever       | 5 days    |
+| 10       | Starter  | 60 total         | Trial only       | 3 / month    | 30 days   |
+| 50       | Social   | 150 / month      | **Lifetime**     | Unlimited    | 30 days   |
+| 300      | Pro      | 300 / month      | **Lifetime**     | Unlimited    | 30 days   |
+| 600      | Business | Unlimited        | **Lifetime**     | Unlimited    | 30 days   |
+
+---
+
+## Tier Progression — When and Why Users Upgrade
+
+Each tier has a natural ceiling. Understanding these moments is the key to guiding users correctly.
+
+### Free → Starter (10 KTA total)
+Ceiling: Free tier lasts 5 days. The whale feed on /onboard is locked. Free users receive only 1 whale alert ever. API quota is 20 calls/day.
+Upgrade value: Starter extends access to 30 days, unlocks the live whale feed immediately, raises whale alerts to 3/month, and triples API quota to 60 total calls. Already sent 0.1 KTA? Only 9.9 more — sends accumulate.
+
+### Starter → Social (50 KTA total)
+Ceiling: Starter alerts expire after 30 days. Alert delivery still counts against the 100-trial lifetime cap. Users who rely on Discord/Telegram/Slack alerts and don't want them to stop need Social.
+Upgrade value: Social is the tier where social platform alerts become permanent — they never expire, not even when Oracle access lapses. One on-chain send buys lifetime delivery on all registered platforms. This is the most important upgrade step for users who want long-term alert access.
+
+### Social → Pro (300 KTA total)
+Ceiling: Users who need compliance tools, wallet scoring, transaction history, or full on-chain analytics hit the Social ceiling. Built for operators, teams, and builders.
+Upgrade value: Pro adds the complete on-chain analytics suite — compliance tools, wallet scoring, transaction history, full analytics. Everything in Social is included plus the tools that turn data into decisions.
+
+### Pro → Business (600 KTA total)
+Ceiling: Teams or institutions running KTA in automated workflows, AI agents, or high-volume integrations need Business.
+Upgrade value: Business removes all limits — all 19 SDK tools, unlimited API calls, priority processing queue. Designed for institutions, builders, and AI agent operators.
+
+### Accumulation — the key mechanic
+Every KTA send from the same wallet stacks toward the highest tier. A user who sent 0.1 KTA is already on the ladder. Any subsequent send upgrades them automatically on the next activation. When helping users, always check their current accumulated total at GET /status?wallet= before advising how much more they need.
+
+---
+
+## Activation Flow
+
+1. Send KTA from your wallet to the oracle wallet (shown on /onboard and /checkout)
+2. Go to /onboard → Activate section → enter your sending wallet → click Activate
+   OR: POST /activate-oracle with body { "wallet": "keeta_your_wallet" }
+3. Oracle scans full on-chain history, assigns tier, activates features — under 2 seconds
+4. Verify: GET /status?wallet=keeta_your_wallet
+
+IMPORTANT: Registration and activation are separate steps. Registering at /onboard stores platform preferences. It does NOT start alerts. Activation reads the on-chain payment and enables features. A wallet that registered but did not activate receives nothing.
+
+---
+
+## API Endpoints
+
+### Public (no auth)
+
+GET  /price                — Live KTA/USD price with 1h, 24h, 7d change percentages
+GET  /price/live           — Same as /price
+GET  /price/history        — Ring buffer of recent price points for charting
+GET  /rate?currency=XXX    — KTA rate in any of 160+ fiat currencies (ISO 4217)
+GET  /whale/alerts         — Recent large on-chain KTA transactions
+GET  /status?wallet=       — Tier, expiry, socialLifetime flag for a wallet
+GET  /stream?wallet=       — SSE stream (EventSource) for real-time price + tier updates
+GET  /payment-links        — Returns configured checkout URLs (Coinbase Commerce)
+GET  /tools                — Full 19-tool Oracle SDK browser (HTML)
+GET  /onboard              — Registration, status checker, whale feed (HTML)
+GET  /checkout             — Pricing page: tier cards, payment methods, activate (HTML). Also reachable via /donate.
+GET  /health               — { status: "ok" }
+
+### Authenticated (POST, user-triggered)
+
+POST /register             — Subscribe wallet to alerts ({ wallet, platform, webhook, currency, frequency })
+POST /activate-oracle      — Trigger on-chain tier scan ({ wallet })
+POST /upgrade              — Activate Social lifetime alerts post-payment
+POST /support              — Contact form (rate-limited 5/day per IP)
+POST /agent                — Chat with the KTA Oracle AI Agent ({ message })
+
+### Pro tier endpoints (300 KTA)
+
+GET  /wallet/history?wallet=   — On-chain tx history for any wallet: { txs:[{from,amount,token,ts}], count, ts }
+GET  /wallet/score?wallet=     — Activity score 0–100 with grade A–F: { score, grade, breakdown:{activity,volume,age,frequency}, ts }
+POST /compliance/screen        — body:{ wallet } → { risk_level:"low"|"medium"|"high", flags:[], summary, ts }
+GET  /analytics/network        — { head_block, oracle_kta_balance, network:"main", ts }
+GET  /network/health           — { status:"ok"|"degraded", latency_ms, head_block, network:"main", ts }
+
+### Business tier endpoints (600 KTA)
+
+GET  /identity/resolve?q=      — Resolve username or wallet via Keeta Username anchor: { result, query, ts }
+                                 Pass a username (e.g. alice@keeta) or keeta_ address
+POST /kyc/verify               — body:{ wallet? } → { supported_countries:[], wallet, ts } — KYC anchor
+POST /certificate/manage       — body:{ wallet } → { certificates:[], ts } — on-chain DER certificates
+POST /container/seal           — body:{ data } or { plaintext } → { container, ts } — EncryptedContainer
+POST /batch/build              — body:{ seed, operations:[{method,args[],account?}] } → { hashes:[], ts }
+POST /permissions/manage       — body:{ wallet } → { acls:[], ts } — listACLsByPrincipal for wallet
+
+---
+
+## Alert Frequency Options
+
+Time-based: every 5 min, 15 min, 1 hour, 4 hours, 12-hour digest, daily digest.
+Price-change triggered: ±5%, ±10%, ±15%, ±20%, ±25%.
+
+The Oracle overrides the user's frequency setting for large moves:
+- Under 5% move: no alert sent (prevents noise)
+- 5–9% (minor): respects user's frequency setting
+- 10–14% (normal): fires within 4 hours maximum
+- 15–19% (notable): fires within 1 hour maximum
+- 20–24% (major): fires within 30 minutes maximum
+- 25%+ (extreme): fires within 5 minutes — even on a daily digest setting
+
+---
+
+## Whale Alert Classifications
+
+Whale detection scans Keeta chain history on a periodic basis (not every price cycle).
+Classifications: Whale, Institutional, Mega Whale.
+Free: 1 alert ever. Starter: 3/month. Social, Pro, Business: unlimited.
+The live whale feed on /onboard is locked for Free tier — visible and auto-refreshing for Starter and above.
+
+---
+
+## AI Market Insights
+
+Every price alert includes an AI-generated market insight calibrated to the price movement, 24h performance, 7d trend, and Keeta payment settlement context. Insight depth by tier:
+- Free: no AI insight
+- Starter: preview-level insight
+- Social, Pro, Business: full institutional-grade insight on every alert
+
+---
+
+## Platforms Supported
+
+Discord (webhook URL), Telegram (bot token + chat ID), Slack (webhook URL), X/Twitter (4 API keys). A wallet can register on multiple platforms simultaneously.
+
+---
+
+## How to Buy KTA
+
+| Exchange       | Method                              |
+|----------------|-------------------------------------|
+| Keeta Wallet   | Visa Direct — 0.4s native settlement |
+| Coinbase       | Card, Apple Pay, Google Pay         |
+| Kraken         | Card or bank transfer from $10      |
+| Phantom        | In-wallet swap, no KYC              |
+
+---
+
+## Common Problems and Fixes
+
+Not getting alerts: confirm activation was triggered (not just registration). Check /status?wallet= — if tier is "unregistered", activation was never called. Free tier expires after 5 days — re-activate to renew.
+
+Alerts stopped: check /status?wallet= for oracleExpired. If socialLifetime is true, social alerts continue forever regardless. If socialLifetime is false and Oracle expired, send more KTA and re-activate.
+
+Trial ran out (100 alerts): send 50 KTA total and re-activate to upgrade to Social with lifetime alerts.
+
+Sent KTA but still unregistered: sending is step 1, activation is step 2. The oracle does not auto-detect payments. Must call /activate-oracle manually.
+
+Wrong tier showing: just activate again — it re-scans the full on-chain history and will pick up any new sends.
+
+Small moves not alerting: by design — moves under 5% produce no alerts to prevent noise.
+
+---
+
+## 19 SDK Tools — Full Catalog (Correct Tier Order)
+
+### Free Tier (0.1 KTA) — 5 tools
+
+1. **Live Price Feed** — `GET /price` — Real-time KTA/USD price with 1h, 24h, 7d change + volume/liquidity
+2. **Multi-currency FX Rate** — `GET /rate?currency=EUR` — KTA rate in 160+ fiat currencies via Keeta Anchor FX
+3. **Social Alert Delivery** — `POST /register` — Subscribe wallet to Discord, Telegram, Slack, or X/Twitter alerts
+4. **Subscription Status** — `GET /status?wallet=keeta_xxx` — Check tier, expiry, lifetime flag, alert count
+5. **Live SSE Stream** (Connect AI) — `GET /stream?wallet=keeta_xxx` — EventSource stream for AI agent integration
+
+### Starter Tier (10 KTA) — +3 tools (8 total)
+
+6. **Whale Movement Alerts** — `GET /whale/alerts` — Recent large on-chain KTA transactions with classification
+7. **AI Market Insights** — Embedded in alerts — Institutional-grade analysis on every price event
+8. **Portfolio Value Calculator** — `GET /rate?currency=EUR` — Real-time KTA portfolio valuation via FX
+
+### Pro Tier (300 KTA) — +5 tools (13 total)
+
+9. **Compliance Screening** — `POST /compliance/screen` — body:{wallet} → {risk_level, flags[], summary}
+10. **Transaction History** — `GET /wallet/history?wallet=` → {txs:[{from,amount,token,ts}], count, ts}
+11. **Wallet Scoring** — `GET /wallet/score?wallet=` → {score:0-100, grade:A-F, breakdown:{activity,volume,age,frequency}}
+12. **On-chain Analytics** — `GET /analytics/network` → {head_block, oracle_kta_balance, network, ts}
+13. **Network Health Monitor** — `GET /network/health` → {status, latency_ms, head_block, network, ts}
+
+### Business Tier (600 KTA) — +6 tools (19 total)
+
+14. **KYC Verification** — `POST /kyc/verify` — body:{wallet?} → {supported_countries[], wallet, ts} — Keeta KYC anchor
+15. **Certificate Operations** — `POST /certificate/manage` — body:{wallet} → {certificates[], ts} — on-chain DER certs
+16. **Identity Resolution** — `GET /identity/resolve?q=alice@keeta` → {result, query, ts} — Username anchor
+17. **Encrypted Container Operations** — `POST /container/seal` — body:{data} → {container, ts} — EncryptedContainer
+18. **Batch Transaction Builder** — `POST /batch/build` — body:{seed, operations:[{method,args[],account?}]} → {hashes[], ts}
+19. **Permission Management** — `POST /permissions/manage` — body:{wallet} → {acls[], ts} — listACLsByPrincipal
+
+---
+
+## Connect AI (SSE Integration Guide)
+
+Tool #5 (Live SSE Stream) powers AI agent integrations. Use `GET /stream?wallet=keeta_xxx` with EventSource.
+The stream sends one `event:price` snapshot per connection, then `retry:15000` — client auto-reconnects every 15 seconds.
+Unregistered wallets receive `event:error`. Business tier recommended for high-frequency agent pipelines.
+
+Connection string pattern for AI agents:
+```
+const source = new EventSource('https://kta.netrate.workers.dev/stream?wallet=keeta_your_wallet');
+source.addEventListener('price', e => { const data = JSON.parse(e.data); /* price, change_pct, tier, ts */ });
+```
+
+---
+
+## Source Repositories
+
+KTA Social (this worker): https://github.com/Elemzir/KTA-Social
+KTA Oracle (price engine): https://github.com/Elemzir/KTA-Oracle
