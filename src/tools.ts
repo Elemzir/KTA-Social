@@ -11,11 +11,11 @@ html{overflow-x:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:hidden}
 a{color:var(--gold);text-decoration:none;transition:color .15s}
 a:hover{color:#fff}
-svg{display:inline-block;vertical-align:middle;flex-shrink:0}
+svg{display:inline-block;vertical-align:middle;flex-shrink:0;fill:var(--gold)}
 .hdr{position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(196,163,90,0.12);background:rgba(0,0,0,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .hdr-inner{max-width:1100px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
 .logo{display:flex;align-items:center;gap:10px;font-size:1rem;font-weight:800;letter-spacing:-0.02em;color:#fff}
-.logo-mark{width:28px;height:28px;background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--gold)}
+.logo-mark{width:28px;height:28px;background:var(--gold);border:1px solid var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#000}
 .logo em{font-style:normal;color:var(--gold)}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;flex-shrink:0}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
@@ -416,7 +416,7 @@ export function renderTools(appUrl: string): string {
   <div class="hdr-inner">
     <div style="display:flex;align-items:center;gap:8px">
       <a href="/onboard" class="logo">
-        <div class="logo-mark">${si('<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>', 14)}</div>
+        <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="#000"/></svg></div>
         KTA <em>Oracle</em>
       </a>
       <div style="width:1px;height:16px;background:#1e1e1e;margin:0 2px;flex-shrink:0"></div>

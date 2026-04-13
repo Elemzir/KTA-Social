@@ -94,7 +94,7 @@ export function renderGuide(appUrl: string): string {
   <div class="hdr-inner">
     <div style="display:flex;align-items:center;gap:8px">
       <a href="/onboard" class="logo">
-        <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4A35A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg></div>
+        <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/></svg></div>
         KTA <em>Oracle</em>
       </a>
       <div style="width:1px;height:16px;background:#1e1e1e;margin:0 2px;flex-shrink:0"></div>
