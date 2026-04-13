@@ -9,7 +9,7 @@ export function renderGuide(appUrl: string): string {
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Guide — KTA Oracle</title>
 <meta name="description" content="Complete guide to KTA Oracle — for individuals, businesses, and AI agents. Every tool explained, AI connector setup, and integration patterns.">
-<meta property="og:type" content="website"><meta property="og:url" content="${base}/guide"><meta property="og:title" content="Guide — KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${base}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${base}/og.png">
+<meta property="og:type" content="website"><meta property="og:url" content="${base}/guide"><meta property="og:title" content="Guide — KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${base}/og.png?v=2"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${base}/og.png?v=2">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}
 .guide-hero{text-align:center;padding:88px 28px 60px;max-width:700px;margin:0 auto}

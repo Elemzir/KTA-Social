@@ -205,7 +205,8 @@ export default {
     if (method === "GET" && pathname === "/oracle") {
       const r = await oracleFetch(env, "/").catch(() => null);
       if (!r?.ok) return Response.json({ error: "unavailable" }, { status: 503, headers: corsHeaders });
-      return new Response(r.body, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": CC_HTML, ...corsHeaders } });
+      const html = (await r.text()).replaceAll("kta.netrate.workers.dev", new URL(request.url).host);
+      return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": CC_HTML, ...corsHeaders } });
     }
 
     if (method === "GET" && pathname === "/subscription") {

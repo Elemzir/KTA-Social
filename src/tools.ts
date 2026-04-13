@@ -407,7 +407,7 @@ export function renderTools(appUrl: string): string {
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Tools — KTA Oracle</title>
 <meta name="description" content="All ${totalTools} KTA Oracle tools. From live price feeds to certificate management — each tool mapped to the tier that unlocks it.">
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/tools"><meta property="og:title" content="Tools — KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/tools"><meta property="og:title" content="Tools — KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png?v=2"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png?v=2">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${TOOLS_CSS}</style>
 </head>
