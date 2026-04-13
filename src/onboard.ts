@@ -250,8 +250,8 @@ td{padding:10px 14px;border-bottom:1px solid #0a0a0a;vertical-align:top}
   .api-grid{grid-template-columns:1fr}
   .hbg{display:flex}
   .nav a{display:none!important}
-  .agent-panel{width:calc(100vw - 24px);right:12px;bottom:76px;max-height:70vh}
-  .agent-fab{bottom:14px;right:12px;width:48px;height:48px}
+  .agent-panel{width:calc(100vw - 24px);right:12px;bottom:calc(76px + env(safe-area-inset-bottom));max-height:70vh}
+  .agent-fab{bottom:calc(14px + env(safe-area-inset-bottom));right:12px;width:48px;height:48px}
   .btn-row{flex-direction:column;align-items:stretch;gap:10px}
   .btn-row .btn-primary,.btn-row .btn-ghost,.btn-row .btn-accent{width:100%;justify-content:center}
   .btn-primary{padding:14px 20px;min-height:48px}
@@ -266,7 +266,7 @@ td{padding:10px 14px;border-bottom:1px solid #0a0a0a;vertical-align:top}
   .btn-sm{min-height:44px}
   .chart-strip{height:90px}
   .info-strip{font-size:0.78rem;padding:12px 14px}
-  .field select,.inp{font-size:0.9rem}
+  .field select,.inp{font-size:1rem}
 }
 @media(max-width:480px){
   .nav-guide-pill{display:none}
@@ -768,9 +768,10 @@ export function renderOnboard(appUrl: string, oracleWallet: string, trialLimit: 
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>KTA Oracle — Live KTA Intelligence</title>
 <meta name="description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter.">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/"><meta property="og:title" content="KTA Oracle — Live KTA Intelligence"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.svg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.svg">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}
 .two-product{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:640px;margin:0 auto 40px}
@@ -1299,9 +1300,10 @@ export function renderCheckout(appUrl: string, oracleWallet: string, stripeLink 
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Pricing — KTA Oracle</title>
 <meta name="description" content="Choose your KTA Oracle tier. One payment activates Oracle API access and Social lifetime alerts.">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/checkout"><meta property="og:title" content="Pricing — KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.svg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.svg">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}
 .tier-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:52px}
@@ -1753,9 +1755,10 @@ export function renderDonate(appUrl: string, oracleWallet: string, lifetimeKta: 
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Support KTA Oracle — Keep it alive</title>
 <meta name="description" content="KTA Oracle is an independent project. Your support keeps the live data, AI insights, and whale tracking running for the whole community.">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/donate"><meta property="og:title" content="Support KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.svg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.svg">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}
 .donate-hero{text-align:center;padding:88px 28px 60px;max-width:640px;margin:0 auto}
@@ -1997,13 +2000,14 @@ async function donateActivate(){
 </html>`;
 }
 
-export function renderLegal(): string {
+export function renderLegal(appUrl: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Legal — KTA Oracle</title>
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/legal"><meta property="og:title" content="Legal — KTA Oracle"><meta property="og:image" content="${appUrl}/og.svg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.svg">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}.legal{max-width:640px;margin:0 auto;padding:72px 28px 100px}.legal h1{font-size:1.8rem;font-weight:800;margin-bottom:8px;letter-spacing:-0.03em}.legal h2{font-size:1.05rem;font-weight:700;margin:32px 0 10px;color:var(--gold)}.legal p,.legal li{font-size:0.87rem;color:var(--muted2);line-height:1.8;margin-bottom:10px}.legal ul{padding-left:18px}.legal strong{color:#fff}</style>
 </head>
@@ -2030,13 +2034,14 @@ ${footer()}
 </html>`;
 }
 
-export function renderPrivacy(): string {
+export function renderPrivacy(appUrl: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Privacy Policy — KTA Oracle</title>
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/privacy"><meta property="og:title" content="Privacy Policy — KTA Oracle"><meta property="og:image" content="${appUrl}/og.svg"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.svg">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}.legal{max-width:640px;margin:0 auto;padding:72px 28px 100px}.legal h1{font-size:1.8rem;font-weight:800;margin-bottom:8px;letter-spacing:-0.03em}.legal h2{font-size:1.05rem;font-weight:700;margin:32px 0 10px;color:var(--gold)}.legal p,.legal li{font-size:0.87rem;color:var(--muted2);line-height:1.8;margin-bottom:10px}.legal ul{padding-left:18px}.legal strong{color:#fff}</style>
 </head>

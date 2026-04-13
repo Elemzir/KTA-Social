@@ -97,6 +97,10 @@ export default {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="24" height="24" rx="4" fill="#C4A35A"/><polygon points="13 2 3 14 12 14 11 22 21 10 12 10" fill="#000"/></svg>`;
       return new Response(svg, { headers: { "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=86400" } });
     }
+    if (pathname === "/og.svg") {
+      const og = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630"><defs><radialGradient id="bg" cx="50%" cy="45%" r="65%"><stop offset="0%" stop-color="#0e0e0e"/><stop offset="100%" stop-color="#040404"/></radialGradient><radialGradient id="gl" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="#C4A35A" stop-opacity="0.07"/><stop offset="100%" stop-color="#C4A35A" stop-opacity="0"/></radialGradient></defs><rect width="1200" height="630" fill="url(#bg)"/><rect width="1200" height="630" fill="url(#gl)"/><rect x="0.5" y="0.5" width="1199" height="629" fill="none" stroke="rgba(196,163,90,0.14)" stroke-width="1"/><rect x="560" y="0" width="80" height="3" rx="1.5" fill="#C4A35A" opacity="0.75"/><rect x="576" y="148" width="48" height="48" rx="11" fill="rgba(196,163,90,0.1)" stroke="rgba(196,163,90,0.3)" stroke-width="1"/><polygon points="604,155 594,170 602,170 600,193 610,175 602,175" fill="#C4A35A"/><text x="600" y="295" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,sans-serif" font-size="88" font-weight="800" letter-spacing="-4" fill="white">KTA <tspan fill="#C4A35A">Oracle</tspan></text><text x="600" y="350" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="25" fill="rgba(255,255,255,0.42)" letter-spacing="-0.3">Real-time KTA intelligence for the Keeta Network</text><rect x="282" y="404" width="148" height="34" rx="17" fill="rgba(196,163,90,0.08)" stroke="rgba(196,163,90,0.22)" stroke-width="1"/><text x="356" y="426" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" font-weight="700" fill="rgba(196,163,90,0.9)" letter-spacing="1.2">LIVE PRICE</text><rect x="450" y="404" width="160" height="34" rx="17" fill="rgba(0,212,170,0.06)" stroke="rgba(0,212,170,0.2)" stroke-width="1"/><text x="530" y="426" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" font-weight="700" fill="rgba(0,212,170,0.85)" letter-spacing="1.2">WHALE ALERTS</text><rect x="630" y="404" width="148" height="34" rx="17" fill="rgba(196,163,90,0.08)" stroke="rgba(196,163,90,0.22)" stroke-width="1"/><text x="704" y="426" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" font-weight="700" fill="rgba(196,163,90,0.9)" letter-spacing="1.2">AI INSIGHTS</text><rect x="798" y="404" width="120" height="34" rx="17" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><text x="858" y="426" text-anchor="middle" font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" font-weight="600" fill="rgba(255,255,255,0.3)" letter-spacing="0.8">SDK / MCP</text><text x="600" y="548" text-anchor="middle" font-family="ui-monospace,'SF Mono',monospace" font-size="17" fill="rgba(196,163,90,0.38)" letter-spacing="1.5">kta-oracle.top</text></svg>`;
+      return new Response(og, { headers: { "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=86400" } });
+    }
     if (/\.[a-zA-Z0-9]{1,6}$/.test(pathname))
       return new Response(null, { status: 404 });
 
@@ -125,10 +129,10 @@ export default {
         { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": CC_HTML, ...corsHeaders } });
 
     if (method === "GET" && pathname === "/legal")
-      return new Response(renderLegal(), { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": CC_HTML } });
+      return new Response(renderLegal(env.APP_URL), { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": CC_HTML } });
 
     if (method === "GET" && pathname === "/privacy")
-      return new Response(renderPrivacy(), { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": CC_HTML } });
+      return new Response(renderPrivacy(env.APP_URL), { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": CC_HTML } });
 
     if (method === "GET" && pathname === "/health")
       return Response.json({ status: "ok", service: "kta", ts: Date.now() }, { headers: corsHeaders });
@@ -374,6 +378,7 @@ async function handleIngest(request: Request, env: Env): Promise<Response> {
   if (event.type === "price_update") {
     const price          = event.price          as number;
     const priceChange    = event.priceChange     as number;
+    const change1h       = (event.change1h as number | null) ?? null;
     const change24h      = event.change24h       as number;
     const change7d       = event.change7d        as number | null;
     const volume24h      = (event.volume24h      as number | null) ?? null;
@@ -384,13 +389,13 @@ async function handleIngest(request: Request, env: Env): Promise<Response> {
     const now            = Date.now();
 
     const alertCount  = Math.floor(now / 3_600_000) % 100;
-    const QUOTE_TTL   = 10 * 60_000;
+    const QUOTE_TTL   = 16 * 60_000;
 
     type QuoteCache = { standard: string; full: string; preview: string; ts: number };
     const [quoteCache] = await Promise.all([
       env.KV.get<QuoteCache>("social:quote_cache", "json"),
       env.KV.put("social:price_cache", JSON.stringify({
-        price, change_pct: priceChange, change_24h: change24h, change_7d: change7d ?? null, ts: now,
+        price, change_pct: change1h ?? priceChange, change_24h: change24h, change_7d: change7d ?? null, ts: now,
       }), { expirationTtl: 600 }),
     ]);
 
@@ -409,7 +414,7 @@ async function handleIngest(request: Request, env: Env): Promise<Response> {
         generateInsight(env.AI_KEY, env.AI_ENDPOINT, env.AI_MODEL, priceChange, change24h, change7d, alertCount, "full", volume24h, liquidityUsd),
         generateInsight(env.AI_KEY, env.AI_ENDPOINT, env.AI_MODEL, priceChange, change24h, change7d, alertCount, "preview", volume24h, liquidityUsd),
       ]);
-      env.KV.put("social:quote_cache", JSON.stringify({ standard: quoteStandard, full: quoteFull, preview: quotePreview, ts: now }), { expirationTtl: 660 }).catch(() => {});
+      env.KV.put("social:quote_cache", JSON.stringify({ standard: quoteStandard, full: quoteFull, preview: quotePreview, ts: now }), { expirationTtl: 1200 }).catch(() => {});
     }
 
     await broadcastToSubscribers(env, price, priceChange, change24h, change7d, volume24h, liquidityUsd, alertTriggered, changeLevel, whale, quotePreview, quoteStandard, quoteFull, now);
