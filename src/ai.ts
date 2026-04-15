@@ -67,7 +67,7 @@ WHALE ALERTS: Large on-chain KTA transactions are detected and broadcast separat
 
 WHALE FEED (on /onboard page): A live whale activity feed is available on the /onboard page. It shows recent large movements with amount, classification, and timestamp. The feed is locked behind a blur overlay for Free tier users — entering your wallet in the status checker above the feed and having Starter or higher tier will unlock it. The feed auto-refreshes every 5 minutes once unlocked.
 
-PLATFORMS SUPPORTED: Discord (webhook), Telegram (bot token + chat ID), Slack (webhook), X/Twitter (4 API keys required). Each platform requires a separate registration. A wallet can be registered on multiple platforms.
+PLATFORMS SUPPORTED: Discord (webhook), Telegram (bot token + chat ID), Slack (webhook), X/Twitter (4 API keys required). One platform per wallet — each wallet has one active platform at a time. To change platform or update credentials: re-register at /onboard with the same wallet and new platform/credentials. All other settings (tier, alertCount, paid status) are preserved on re-registration.
 
 PAYMENT METHODS TO BUY KTA:
 - Keeta Wallet (wallet.keeta.com) — Visa Direct, 0.4s native settlement
