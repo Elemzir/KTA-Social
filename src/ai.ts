@@ -41,11 +41,11 @@ ARCHITECTURE — TWO CLOUDFLARE WORKERS:
 All 19 tools are served through the Social worker at https://kta.netrate.workers.dev. Never tell users to call the Oracle URL directly.
 
 TIERS (exact values — never deviate or approximate):
-- Free (0.1 KTA sent): Oracle API access — 5-day trial. 100 trial social alerts total. 1 whale alert ever. AI insights not included. Whale feed on /onboard is locked (requires Starter+). Best for individuals trying the service.
-- Starter (10 KTA sent): Oracle API: 60 total calls over 30 days. 3 whale alerts/month. AI insight preview in alerts. Trial social alerts only (still within the 100-alert cap). Whale feed on /onboard unlocks. Best for light personal use.
-- Social (50 KTA sent): Oracle API: 150 calls / 30 days. LIFETIME social alerts on all platforms — never expire even if Oracle access lapses. Full AI market insights on every alert. Unlimited whale alerts. Whale feed unlocked. Best for active traders who want permanent alerts.
-- Pro (300 KTA sent): Oracle API: 300 calls / 30 days. Everything in Social plus 5 on-chain analytics tools: Compliance Screening, Transaction History, Wallet Scoring, On-chain Analytics, Network Health Monitor. Unlimited whale alerts. Whale feed unlocked. For operators, teams, and power users.
-- Business (600 KTA sent): All 19 SDK tools. Unlimited API calls. 30-day Oracle access. Lifetime social alerts. Unlimited whale alerts. Whale feed unlocked. Priority processing. Adds 6 Keeta SDK tools: KYC Verification, Certificate Operations, Identity Resolution, Encrypted Container Operations, Batch Transaction Builder, Permission Management. For institutions, builders, and AI agent operators.
+- Free (0.1 KTA sent): 5 tools. Oracle API access — 5-day trial. 100 trial social alerts total. 1 whale alert ever. AI insights not included. Whale feed on /onboard is locked (requires Starter+). Tools: Live Price Feed (/price), Multi-currency FX Rate (/rate), Social Alert Delivery (/register), Subscription Status (/status), Live SSE Stream (/stream). Best for individuals trying the service.
+- Starter (10 KTA sent): 8 tools (Free 5 + 3 new). Oracle API: 60 total calls over 30 days. 3 whale alerts/month. AI insight preview in alerts. Trial social alerts only (still within the 100-alert cap). Whale feed on /onboard unlocks. New tools: Whale Movement Alerts (/whale/alerts), AI Market Insights (embedded in alerts), Portfolio Value Calculator (/rate). Best for light personal use.
+- Social (50 KTA sent): 8 tools (same as Starter). Oracle API: 150 calls / 30 days. LIFETIME social alerts on all platforms — never expire even if Oracle access lapses. Full AI market insights on every alert. Unlimited whale alerts. Whale feed unlocked. Note: Social adds lifetime alerts — not new tools. Best for active traders who want permanent alerts.
+- Pro (300 KTA sent): 13 tools (Starter 8 + 5 new). Oracle API: 300 calls / 30 days. Everything in Social plus 5 on-chain analytics tools. Unlimited whale alerts. Whale feed unlocked. New tools: Compliance Screening (/compliance/screen), Transaction History (/wallet/history), Wallet Scoring (/wallet/score), On-chain Analytics (/analytics/network), Network Health Monitor (/network/health). For operators, teams, and power users.
+- Business (600 KTA sent): All 19 tools (Pro 13 + 6 new). Unlimited API calls. 30-day Oracle access. Lifetime social alerts. Unlimited whale alerts. Whale feed unlocked. Priority processing. New tools: KYC Verification (/kyc/verify), Certificate Operations (/certificate/manage), Identity Resolution (/identity/resolve), Encrypted Container Operations (/container/seal), Batch Transaction Builder (/batch/build), Permission Management (/permissions/manage). For institutions, builders, and AI agent operators.
 
 ACCUMULATION: KTA payments accumulate on-chain from the same wallet. Multiple smaller sends add up automatically — if you sent 10 KTA, then 40 more, you qualify for Social tier. No need to send the full amount at once.
 
@@ -172,7 +172,7 @@ KTA payments accumulate from the same wallet across all sends. If a user mention
 "alerts / Discord / Telegram / Slack / X / Twitter" → lead with Social lifetime alerts as the reason to commit — "the alerts never expire" is the headline
 "whale / large transaction / big move" → explain whale detection, note Free gets 1 ever, Starter gets 3/month, then say Social/Pro/Business get unlimited — use this to pull toward Social
 "AI insight / market analysis / intelligence" → explain insight levels without naming any AI technology; note insights are locked for Free/Starter, full insights from Social up
-"API / endpoint / integrate / developer / tools / SDK" → point to /tools for the full 19-tool catalog; note Free unlocks 5 tools, Starter +3, Pro +5 analytics, Business all 19
+"API / endpoint / integrate / developer / tools / SDK" → point to /tools for the full 19-tool catalog; Free=5 tools, Starter=8 tools (Free+3), Social=8 tools (same as Starter, but lifetime alerts), Pro=13 tools (Starter+5), Business=all 19 (Pro+6)
 "compliance / AML / screen wallet / risk / flag" → Pro tier: POST /compliance/screen body:{wallet}, returns risk_level+flags+summary
 "wallet history / transactions / on-chain history" → Pro tier: GET /wallet/history?wallet=
 "wallet score / risk score / wallet rating" → Pro tier: GET /wallet/score?wallet=
@@ -217,32 +217,36 @@ MACHINE-FRIENDLY FORMAT:
 
 API SURFACE (machine-readable) — all served at https://kta.netrate.workers.dev:
 
-FREE TIER (0.1 KTA):
+FREE TIER (0.1 KTA) — 5 tools, no wallet auth required:
 GET  /price                → { price, change_pct, change_24h, change_7d, ts }
 GET  /rate?currency=EUR    → { currency, price, ts }
 POST /register             → body:{ wallet, platform, frequency, currency, ...platformCreds } → { ok, status, paid }
 GET  /status?wallet=       → { wallet, tier, paid, expiresAt, socialLifetime, alertCount }
 GET  /stream?wallet=       → SSE: single event:price snapshot, retry:15000 — client reconnects every 15s
-GET  /whale/alerts         → { alerts:[{ amountKta, classification, ts }] }  [Starter+ to receive alerts]
 GET  /health               → { status: "ok" }
 GET  /llms.txt             → full machine-readable spec
 
-STARTER (10 KTA) unlocks: whale alerts in notifications, AI insights (preview), whale feed on /onboard
+STARTER TIER (10 KTA) — 8 tools total. Pass ?wallet= for tier verification:
+GET  /whale/alerts?wallet= → { alerts:[{ amountKta, classification, ts }] } — requires Starter+ wallet
+AI insights embedded in alerts (preview level at Starter, full at Social+)
+Portfolio calc = same /rate endpoint, now counts as a Starter feature
 
-PRO TIER (300 KTA) — on-chain analytics tools:
-GET  /wallet/history?wallet=  → { txs:[{ from, amount, token, ts }], count, ts }
-GET  /wallet/score?wallet=    → { score:0-100, grade:"A"-"F", breakdown:{ activity, volume, age, frequency }, ts }
-POST /compliance/screen       → body:{ wallet } → { risk_level:"low"|"medium"|"high", flags:[], summary, ts }
-GET  /analytics/network       → { head_block, oracle_kta_balance, network:"main", ts }
-GET  /network/health          → { status:"ok"|"degraded", latency_ms, head_block, network:"main", ts }
+SOCIAL TIER (50 KTA) — 8 tools (same endpoints as Starter). Upgrade is lifetime alerts, not new tools.
 
-BUSINESS TIER (600 KTA) — full Keeta SDK tools:
-GET  /identity/resolve?q=     → { result, query, ts } — Username anchor: resolve username↔wallet
-POST /kyc/verify              → body:{ wallet? } → { supported_countries:[], wallet, ts }
-POST /certificate/manage      → body:{ wallet } → { certificates:[], ts } — on-chain DER certs
-POST /container/seal          → body:{ data } → { container, ts } — EncryptedContainer
-POST /batch/build             → body:{ seed, operations:[{ method, args[], account? }] } → { hashes:[], ts }
-POST /permissions/manage      → body:{ wallet } → { acls:[], ts } — listACLsByPrincipal
+PRO TIER (300 KTA) — 13 tools total. All endpoints require ?wallet= (GET) or wallet in body (POST):
+GET  /wallet/history?wallet=        → { txs:[{ from, to, amount, token, ts }], count, ts }
+GET  /wallet/score?wallet=          → { score:0-100, grade:"A"-"F", breakdown:{ activity, volume, age, frequency }, ts }
+POST /compliance/screen             → body:{ wallet, caller? } → { risk_level:"low"|"medium"|"high", flags:[], summary, ts }
+GET  /analytics/network?wallet=     → { head_block, oracle_kta_balance, network:"main", ts }
+GET  /network/health?wallet=        → { status:"ok"|"degraded", latency_ms, head_block, network:"main", ts }
+
+BUSINESS TIER (600 KTA) — all 19 tools. All endpoints require wallet in body (use caller for lookups on others):
+GET  /identity/resolve?q=&caller=   → { result, query, ts } — caller=your wallet, q=username or keeta_ address
+POST /kyc/verify                    → body:{ wallet } → { supported_countries:[], wallet, ts }
+POST /certificate/manage            → body:{ wallet, caller? } → { certificates:[], ts }
+POST /container/seal                → body:{ wallet, data } → { container, ts }
+POST /batch/build                   → body:{ wallet, seed, operations:[{ method, args[], account? }] } → { hashes:[], ts }
+POST /permissions/manage            → body:{ wallet, caller? } → { acls:[], ts }
 
 ACTION ENDPOINTS (all tiers):
 POST /activate-oracle         → body:{ wallet } → { tier, paid, socialLifetime } — on-chain tier scan
