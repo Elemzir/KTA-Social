@@ -1829,7 +1829,7 @@ ${header("donate")}
           <div class="reward-perk">${icon('<polyline points="20 6 9 17 4 12"/>',14)}<span>Lifetime social alerts</span> — Discord, Telegram, Slack &amp; X</div>
           <div class="reward-perk">${icon('<polyline points="20 6 9 17 4 12"/>',14)}<span>30-day Social tier</span> on Oracle API</div>
           <div class="reward-perk">${icon('<polyline points="20 6 9 17 4 12"/>',14)}<span>Unlimited whale alerts</span> every month</div>
-          <div class="reward-perk">${icon('<polyline points="20 6 9 17 4 12"/>',14)}>Amounts accumulate — multiple smaller sends add up</div>
+          <div class="reward-perk">${icon('<polyline points="20 6 9 17 4 12"/>',14)}<span>Amounts accumulate</span> — multiple smaller sends add up</div>
         </div>
       </div>
       <div style="background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.2);border-radius:12px;padding:18px;min-width:180px;text-align:center;flex-shrink:0">
