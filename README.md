@@ -71,6 +71,8 @@ The subscriber-facing layer of KTA Oracle. Receives live price and whale events 
 
 ## Alert Platforms
 
+One platform per wallet. To switch platform or update credentials, re-register at `/onboard` with the same wallet — all tier data, alert count, and paid status are preserved.
+
 | Platform | Format |
 |----------|--------|
 | Discord | Rich embed — AI insight, price direction, whale alert, live dot |

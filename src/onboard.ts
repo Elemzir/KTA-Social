@@ -855,7 +855,7 @@ ${priceChart(appUrl)}
     <div class="feat-card">
       <div class="feat-icon">${ICONS.broadcast}</div>
       <h3>Four platforms</h3>
-      <p>Discord rich embed, Telegram, Slack, and X/Twitter. One registration, all platforms supported simultaneously.</p>
+      <p>Discord rich embed, Telegram, Slack, and X/Twitter. One platform per wallet — re-register at any time to switch platform or update credentials.</p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">${ICONS.key}</div>
