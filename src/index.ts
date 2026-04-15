@@ -145,6 +145,77 @@ Every GET /status?wallet= response includes:
   tools.locked     — how many tools are still locked
   tools._unlock    — { name, kta_total, kta_more, tools_unlocked[], checkout }
 Use tools._unlock to autonomously discover your next upgrade step.
+
+## Limitations per tier
+tier:free      social_alerts:100(lifetime cap)  whale_alerts:1(ever)     oracle_access:5days   api_calls:20/day
+tier:starter   social_alerts:100(shared cap)    whale_alerts:3/month     oracle_access:30days  api_calls:60/total
+tier:social    social_alerts:unlimited(lifetime) whale_alerts:unlimited  oracle_access:30days  api_calls:150/month
+tier:pro       social_alerts:unlimited(lifetime) whale_alerts:unlimited  oracle_access:30days  api_calls:300/month
+tier:business  social_alerts:unlimited(lifetime) whale_alerts:unlimited  oracle_access:30days  api_calls:unlimited
+
+Price moves under 5% produce no alerts — by design, prevents noise.
+After Oracle access expires (5 days for Free, 30 days for paid), social alerts continue if socialLifetime=true (50+ KTA sent).
+To renew Oracle access: send more KTA from same wallet → POST /activate-oracle again.
+
+## Check activation status
+GET /status?wallet=keeta_yourwallet
+
+Response shape:
+{
+  found: true,
+  wallet: "keeta_...",
+  tier: "free"|"starter"|"social"|"pro"|"business",
+  paid: false,
+  socialLifetime: false,
+  alertCount: 0,
+  alertsRemaining: 100,
+  expiresAt: "2026-04-20T00:00:00.000Z" | null,
+  oracleExpired: false,
+  status: "Trial active — 0 used · 100 remaining",
+  tools: {
+    available: 5,
+    locked: 14,
+    _unlock: {
+      name: "starter",
+      kta_total: 10,
+      kta_more: 9.9,
+      tools_unlocked: ["/whale/alerts", "AI insights (embedded)", "portfolio calc (/rate)"],
+      checkout: "https://kta-oracle.top/checkout"
+    }
+  },
+  oracle: { tier: "free", amount: 0.1, expiresAt: "...", socialLifetime: false } | null
+}
+
+Key fields to check:
+  tier            — current Oracle tier
+  oracleExpired   — true = Oracle API access lapsed (social alerts may still fire if socialLifetime=true)
+  socialLifetime  — true = social alerts never expire regardless of Oracle status
+  alertsRemaining — "unlimited" for paid, number for trial (cap is 100)
+  tools._unlock   — null means Business tier (no further unlocks)
+
+## Usage examples
+
+Check price (no auth):
+  GET /price
+  → { price: 0.082, change_pct: 2.14, change_24h: -1.3, change_7d: 5.6, ts: 1714000000000 }
+
+Check whale alerts (Starter+, pass your wallet):
+  GET /whale/alerts?wallet=keeta_yourwallet
+  → { alerts: [{ amountKta: 12500, classification: "institutional", ts: 1714000000000 }] }
+  403 if tier < starter: { error: "Requires starter tier", required: "starter", current: "free" }
+
+Check wallet history (Pro+):
+  GET /wallet/history?wallet=keeta_yourwallet
+  → { txs: [{ from: "keeta_...", to: "keeta_...", amount: "10.000000", token: "keeta_an...", ts: 0 }], count: 4, ts: 1714000000000 }
+
+Screen a wallet (Pro+):
+  POST /compliance/screen
+  body: { "wallet": "keeta_target", "caller": "keeta_yourwallet" }
+  → { risk_level: "low"|"medium"|"high", flags: [], summary: "...", ts: 1714000000000 }
+
+Resolve identity (Business+):
+  GET /identity/resolve?q=username&caller=keeta_yourwallet
+  → { result: { ... }, query: "username", ts: 1714000000000 }
 `;
 
 const WHALE_LIMIT_FREE    = 1;
