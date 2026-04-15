@@ -949,6 +949,20 @@ async function handleRegister(request: Request, env: Env): Promise<Response> {
   const existingIdx = existing.findIndex(s => s.wallet === wallet);
   const previous    = existingIdx !== -1 ? existing[existingIdx] : null;
 
+  const webhookUsed = platform === "discord" && body.discordWebhook
+    ? existing.find(s => s.discordWebhook === body.discordWebhook && s.wallet !== wallet)
+    : platform === "slack" && body.slackWebhook
+    ? existing.find(s => s.slackWebhook === body.slackWebhook && s.wallet !== wallet)
+    : null;
+  if (webhookUsed)
+    return Response.json({ error: "This webhook is already registered to another wallet. One platform credential per wallet." }, { status: 409 });
+
+  const telegramUsed = platform === "telegram" && body.telegramChatId
+    ? existing.find(s => s.telegramChatId === body.telegramChatId && s.wallet !== wallet)
+    : null;
+  if (telegramUsed)
+    return Response.json({ error: "This Telegram chat is already registered to another wallet. One platform credential per wallet." }, { status: 409 });
+
   const sub: SocialSubscriber = {
     wallet, platform, frequency, currency,
     alertCount:   previous?.alertCount  ?? 0,
