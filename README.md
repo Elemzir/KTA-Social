@@ -1,14 +1,27 @@
-# KTA Social
+# KTA Social — Alert Broadcaster & User Portal
 
-**Open Source · Decentralized Oracle · 100% native Keeta Network SDK.** KTA price alert broadcaster and user-facing portal, built on Cloudflare.
+> **Discord · Telegram · Slack · X/Twitter · AI insights on every alert · Lifetime alerts from 50 KTA**
 
-Receives live price and whale events from KTA Oracle every 5 minutes, generates AI-powered market insights, and delivers alerts to Discord, Telegram, Slack, and X/Twitter. All on-chain data — wallet verification, tier activation, whale detection — is sourced natively through `@keetanetwork/keetanet-client` and `@keetanetwork/anchor`. No third-party price feeds. No external indexers. No bridging.
+The subscriber-facing layer of KTA Oracle. Receives live price and whale events from KTA Oracle every 5 minutes, generates AI-powered market insights, and delivers alerts to 4 social platforms. Manages subscription state, checkout, onboarding, and proxies the full 19-tool Keeta SDK to registered wallets.
 
-Provides the full onboarding, checkout, tools, and guide UI — all served from a single Cloudflare Worker.
+**One Cloudflare Worker. One URL. No infrastructure to manage.**
 
-Public URL: `https://kta-oracle.top`
+→ **[kta-oracle.top](https://kta-oracle.top)** · [Tools catalog](https://kta-oracle.top/tools) · [Machine-readable spec](https://kta.netrate.workers.dev/llms.txt) · [Companion: KTA-Oracle](https://github.com/Elemzir/KTA-Oracle)
 
-Source: [github.com/Elemzir/KTA-Social](https://github.com/Elemzir/KTA-Social) · Companion: [github.com/Elemzir/KTA-Oracle](https://github.com/Elemzir/KTA-Oracle)
+---
+
+## At a glance
+
+| | |
+|---|---|
+| Alert platforms | Discord · Telegram · Slack · X/Twitter |
+| AI insights | On every alert — payment-network focused, never generic |
+| Lifetime alerts | 50 KTA total — alerts never expire even if Oracle lapses |
+| Tools proxied | All 19 Keeta SDK tools via Cloudflare service binding |
+| Edge latency | **<5ms** reads — no public HTTP hop to Oracle |
+| Activation | On-chain scan in ~1–2s — wallet address is identity |
+| Tiers | 5 — stacking from 0.1 KTA to 600 KTA |
+| Source | 100% open source — MIT licensed |
 
 ---
 
