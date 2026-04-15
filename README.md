@@ -35,7 +35,8 @@ Source: [github.com/Elemzir/KTA-Social](https://github.com/Elemzir/KTA-Social) �
 |--------|------|-------------|
 | `GET` | `/price` | Live KTA/USD price — proxied from Oracle |
 | `GET` | `/rate?currency=` | KTA rate in 160+ fiat currencies with real-time FX conversion |
-| `GET` | `/whale/alerts` | Recent whale movements — proxied from Oracle |
+| `GET` | `/whale/alerts?wallet=` | Recent whale movements — proxied from Oracle (Starter+ required) |
+| `GET` | `/llms.txt` | Machine-readable full spec for AI agents |
 | `GET` | `/status?wallet=` | Subscription tier, expiry, social lifetime |
 | `GET` | `/stream?wallet=` | SSE stream — live price push every 15s |
 | `POST` | `/register` | Register wallet for social alerts |
@@ -70,13 +71,13 @@ Source: [github.com/Elemzir/KTA-Social](https://github.com/Elemzir/KTA-Social) �
 
 Payments accumulate on-chain from the same wallet. Send KTA to the oracle wallet, then call `POST /activate-oracle`.
 
-| KTA sent | Tier | Oracle calls | Social alerts | Whale alerts | Duration |
-|----------|------|--------------|---------------|--------------|----------|
-| 0.1 | Free | 20 / day | 100 trial | 1 ever | 5 days |
-| 10 | Starter | 60 total | Trial only | 3 / month | 30 days |
-| 50 | Social | 150 / month | **Lifetime** | Unlimited | 30 days |
-| 300 | Pro | 300 / month | **Lifetime** | Unlimited | 30 days |
-| 600 | Business | Unlimited | **Lifetime** | Unlimited | 30 days |
+| KTA sent | Tier | Tools | Oracle calls | Social alerts | Whale alerts | Duration |
+|----------|------|-------|--------------|---------------|--------------|----------|
+| 0.1 | Free | 5 | 20 / day | 100 trial | 1 ever | 5 days |
+| 10 | Starter | 8 | 60 total | Trial only | 3 / month | 30 days |
+| 50 | Social | 8 | 150 / month | **Lifetime** | Unlimited | 30 days |
+| 300 | Pro | 13 | 300 / month | **Lifetime** | Unlimited | 30 days |
+| 600 | Business | 19 | Unlimited | **Lifetime** | Unlimited | 30 days |
 
 ### Tier Progression
 
@@ -246,6 +247,34 @@ Breakpoints: 860px (tablet), 600px (mobile), 480px (small mobile).
 ## AI Integration
 
 The `/tools` page exposes the Connect AI panel with SSE and REST connection strings. The `/guide` page has step-by-step setup for Claude API tool use, ChatGPT Custom GPT Actions, OpenAI function calling, and LangChain/CrewAI.
+
+### Agent quick-start
+
+```
+GET  https://kta.netrate.workers.dev/llms.txt        # full machine-readable spec
+GET  https://kta.netrate.workers.dev/status?wallet=  # current tier + tools._unlock hint
+GET  https://kta.netrate.workers.dev/stream?wallet=  # SSE live price feed
+```
+
+Every `/status` response now includes a `tools` object:
+
+```json
+{
+  "tools": {
+    "available": 5,
+    "locked": 14,
+    "_unlock": {
+      "name": "starter",
+      "kta_total": 10,
+      "kta_more": 9.9,
+      "tools_unlocked": ["/whale/alerts", "AI insights (embedded)", "portfolio calc (/rate)"],
+      "checkout": "https://kta-oracle.top/checkout"
+    }
+  }
+}
+```
+
+Agents can call `/status` at any time to discover their current tool count and exactly what KTA is needed to unlock the next tier. This makes the upgrade path fully autonomous — no human needed to read the docs.
 
 ---
 

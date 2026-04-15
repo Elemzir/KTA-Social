@@ -59,6 +59,94 @@ const DIGEST_FREQS:  AlertFrequency[] = ["12h", "1d"];
 const VALID_FREQS:   AlertFrequency[] = ["5min", "15min", "1h", "4h", "12h", "1d", "5%", "10%", "15%", "20%", "25%"];
 const VALID_PLATFORMS: SocialPlatform[] = ["discord", "telegram", "slack", "twitter"];
 
+const TIER_TOOL_COUNT: Record<string, number> = {
+  unregistered: 0, free: 5, starter: 8, social: 8, pro: 13, business: 19,
+};
+const TIER_NEW_TOOLS: Record<string, string[]> = {
+  starter:  ["/whale/alerts", "AI insights (embedded)", "portfolio calc (/rate)"],
+  social:   [],
+  pro:      ["/wallet/history", "/wallet/score", "/compliance/screen", "/analytics/network", "/network/health"],
+  business: ["/identity/resolve", "/kyc/verify", "/certificate/manage", "/container/seal", "/batch/build", "/permissions/manage"],
+};
+const TIER_KTA: Record<string, number> = {
+  free: 0.1, starter: 10, social: 50, pro: 300, business: 600,
+};
+const TIER_ORDER = ["free", "starter", "social", "pro", "business"];
+
+const LLMS_TXT = `# KTA Oracle — Machine-Readable Spec
+# https://kta-oracle.top · Built on Keeta Network
+
+## Service
+Real-time KTA/USD price intelligence, on-chain analytics, whale detection, and social alert broadcasting.
+19 SDK tools across 5 tiers. Payments fully on-chain. No API key — wallet address is identity.
+
+## Base URL
+https://kta.netrate.workers.dev
+
+## Authentication
+No key required for public endpoints.
+Tier-gated endpoints: pass ?wallet=keeta_xxx (GET) or { wallet } in body (POST).
+Tier = total KTA sent to oracle wallet, verified on-chain at activation.
+
+## Tiers
+tier:free      0.1 KTA →  5 tools  5-day trial, 100 social alerts, 1 whale alert
+tier:starter    10 KTA →  8 tools  30 days, 3 whale alerts/month, AI insight preview
+tier:social     50 KTA →  8 tools  30 days, LIFETIME social alerts, unlimited whale alerts
+tier:pro       300 KTA → 13 tools  30 days, lifetime alerts + 5 analytics tools
+tier:business  600 KTA → 19 tools  30 days, lifetime alerts, all tools, unlimited API calls
+
+Sends accumulate. Already sent 10 KTA? You only need 290 more for Pro.
+Check your total: GET /status?wallet=keeta_xxx — response includes tools._unlock
+
+## Free Tier (0.1 KTA) — 5 tools
+GET  /price                  → { price, change_pct, change_24h, change_7d, ts }
+GET  /rate?currency=EUR       → { currency, price, ts }
+POST /register                → body:{ wallet, platform, frequency, currency, ...creds }
+GET  /status?wallet=          → { tier, paid, tools:{ available, locked, _unlock }, ... }
+GET  /stream?wallet=          → SSE event:price every 15s — EventSource compatible
+
+## Starter Tier (10 KTA total) — 8 tools (+3)
+GET  /whale/alerts?wallet=    → { alerts:[{ amountKta, classification, ts }] }
+AI market insights embedded in every price alert
+
+## Social Tier (50 KTA total) — 8 tools (same endpoints, lifetime alerts)
+Upgrade is lifetime social delivery — no new tool endpoints.
+
+## Pro Tier (300 KTA total) — 13 tools (+5)
+GET  /wallet/history?wallet=       → { txs:[{ from, to, amount, token, ts }], count, ts }
+GET  /wallet/score?wallet=         → { score:0-100, grade:A-F, breakdown:{...}, ts }
+POST /compliance/screen            → body:{ wallet, caller? } → { risk_level, flags, summary, ts }
+GET  /analytics/network?wallet=    → { head_block, oracle_kta_balance, network, ts }
+GET  /network/health?wallet=       → { status, latency_ms, head_block, network, ts }
+
+## Business Tier (600 KTA total) — all 19 tools (+6)
+GET  /identity/resolve?q=&caller=  → { result, query, ts }
+POST /kyc/verify                   → body:{ wallet } → { supported_countries, wallet, ts }
+POST /certificate/manage           → body:{ wallet, caller? } → { certificates, ts }
+POST /container/seal               → body:{ wallet, data } → { container, ts }
+POST /batch/build                  → body:{ wallet, seed, operations[] } → { hashes, ts }
+POST /permissions/manage           → body:{ wallet, caller? } → { acls, ts }
+
+## Action Endpoints (all tiers)
+POST /activate-oracle  → body:{ wallet } → { tier, paid, socialLifetime }
+GET  /tools            → interactive 19-tool catalog (HTML)
+GET  /onboard          → registration + status checker (HTML)
+GET  /checkout         → pricing + payment methods (HTML)
+
+## Activation Flow
+1. POST /register { wallet, platform, frequency }
+2. Send KTA to oracle wallet (address shown on /onboard or in /status not-found response)
+3. POST /activate-oracle { wallet }
+4. GET /status?wallet= — confirm tier and tools._unlock
+
+## Upgrade Discovery
+Every GET /status?wallet= response includes:
+  tools.available  — how many tools your current tier can access
+  tools.locked     — how many tools are still locked
+  tools._unlock    — { name, kta_total, kta_more, tools_unlocked[], checkout }
+Use tools._unlock to autonomously discover your next upgrade step.
+`;
+
 const WHALE_LIMIT_FREE    = 1;
 const WHALE_LIMIT_STARTER = 3;
 
@@ -136,6 +224,9 @@ export default {
 
     if (method === "GET" && pathname === "/health")
       return Response.json({ status: "ok", service: "kta", ts: Date.now() }, { headers: corsHeaders });
+
+    if (method === "GET" && pathname === "/llms.txt")
+      return new Response(LLMS_TXT, { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600, s-maxage=3600" } });
 
     if (method === "GET" && pathname === "/price") {
       const cached = await env.KV.get<Record<string, unknown>>("social:price_cache", "json");
@@ -998,13 +1089,19 @@ async function handleStatus(searchParams: URLSearchParams, env: Env): Promise<Re
     ? "Trial exhausted — send 50 KTA to upgrade"
     : `Trial active — ${sub.alertCount} used · ${remaining} remaining`;
 
+  const effectiveTier = oracleTier ?? (sub.tier ?? (sub.paid ? "social" : "free"));
+  const tierIdx        = TIER_ORDER.indexOf(effectiveTier);
+  const nextTier       = TIER_ORDER[tierIdx + 1] ?? null;
+  const amountSent     = typeof oracle?.amount === "number" ? oracle.amount : 0;
+  const toolsAvailable = TIER_TOOL_COUNT[effectiveTier] ?? 5;
+
   return Response.json({
     found: true, wallet,
     platform:        sub.platform,
     frequency:       sub.frequency,
     currency:        sub.currency,
     paid:            sub.paid,
-    tier:            sub.tier ?? (sub.paid ? "social" : "free"),
+    tier:            effectiveTier,
     socialLifetime:  sub.socialLifetime ?? sub.paid,
     alertCount:      sub.alertCount,
     alertsRemaining: remaining,
@@ -1013,6 +1110,17 @@ async function handleStatus(searchParams: URLSearchParams, env: Env): Promise<Re
     lastAlertAt:     sub.lastAlertAt ? new Date(sub.lastAlertAt).toISOString() : null,
     registeredAt:    new Date(sub.registeredAt).toISOString(),
     status,
+    tools: {
+      available: toolsAvailable,
+      locked:    19 - toolsAvailable,
+      _unlock: nextTier ? {
+        name:           nextTier,
+        kta_total:      TIER_KTA[nextTier],
+        kta_more:       Math.max(0, +(TIER_KTA[nextTier] - amountSent).toFixed(2)),
+        tools_unlocked: TIER_NEW_TOOLS[nextTier] ?? [],
+        checkout:       `${env.APP_URL}/checkout`,
+      } : null,
+    },
     oracle: oracleTier ? {
       tier:           oracleTier,
       amount:         oracle?.amount,
