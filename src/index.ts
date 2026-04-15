@@ -185,8 +185,9 @@ export default {
     }
 
     if (method === "GET" && pathname === "/whale/alerts") {
-      const r = await oracleFetch(env, "/whale/alerts").catch(() => null);
-      if (!r?.ok) return Response.json({ alerts: [] }, { headers: corsHeaders });
+      const wallet = searchParams.get("wallet") ?? "";
+      const r = await oracleFetch(env, `/whale/alerts?wallet=${encodeURIComponent(wallet)}`).catch(() => null);
+      if (!r?.ok) return new Response(r?.body ?? null, { status: r?.status ?? 503, headers: { "Content-Type": "application/json", ...corsHeaders } });
       return new Response(r.body, { headers: { "Content-Type": "application/json", "Cache-Control": CC_WHALE, ...corsHeaders } });
     }
 
@@ -283,21 +284,24 @@ export default {
     }
 
     if (method === "GET" && pathname === "/analytics/network") {
-      const r = await oracleFetch(env, "/analytics/network").catch(() => null);
-      if (!r?.ok) return Response.json({ error: "unavailable" }, { status: 503, headers: corsHeaders });
+      const wallet = searchParams.get("wallet") ?? "";
+      const r = await oracleFetch(env, `/analytics/network?wallet=${encodeURIComponent(wallet)}`).catch(() => null);
+      if (!r?.ok) return new Response(r?.body ?? null, { status: r?.status ?? 503, headers: { "Content-Type": "application/json", ...corsHeaders } });
       return new Response(r.body, { headers: { "Content-Type": "application/json", ...corsHeaders } });
     }
 
     if (method === "GET" && pathname === "/network/health") {
-      const r = await oracleFetch(env, "/network/health").catch(() => null);
-      if (!r?.ok) return Response.json({ error: "unavailable" }, { status: 503, headers: corsHeaders });
+      const wallet = searchParams.get("wallet") ?? "";
+      const r = await oracleFetch(env, `/network/health?wallet=${encodeURIComponent(wallet)}`).catch(() => null);
+      if (!r?.ok) return new Response(r?.body ?? null, { status: r?.status ?? 503, headers: { "Content-Type": "application/json", ...corsHeaders } });
       return new Response(r.body, { headers: { "Content-Type": "application/json", ...corsHeaders } });
     }
 
     if (method === "GET" && pathname === "/identity/resolve") {
-      const q = searchParams.get("username") ?? searchParams.get("wallet") ?? searchParams.get("q") ?? "";
-      const r = await oracleFetch(env, `/identity/resolve?q=${encodeURIComponent(q)}`).catch(() => null);
-      if (!r?.ok) return Response.json({ error: "unavailable" }, { status: 503, headers: corsHeaders });
+      const q      = searchParams.get("username") ?? searchParams.get("q") ?? searchParams.get("wallet") ?? "";
+      const caller = searchParams.get("caller") ?? "";
+      const r = await oracleFetch(env, `/identity/resolve?q=${encodeURIComponent(q)}&caller=${encodeURIComponent(caller)}`).catch(() => null);
+      if (!r?.ok) return new Response(r?.body ?? null, { status: r?.status ?? 503, headers: { "Content-Type": "application/json", ...corsHeaders } });
       return new Response(r.body, { headers: { "Content-Type": "application/json", ...corsHeaders } });
     }
 
