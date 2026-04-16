@@ -1435,7 +1435,7 @@ async function handleSupport(request: Request, env: Env, cors: Record<string,str
             { name: "Message",   value: message,    inline: false },
             { name: "Ticket ID", value: ticketKey,  inline: false },
           ],
-          footer: { text: "Reply: POST /dev/support/reply  { ticket_id, reply }  X-Dev-Secret: ***" },
+          footer: { text: "KTA Oracle Support" },
           timestamp: new Date().toISOString(),
         }],
       }),
