@@ -241,7 +241,7 @@ const BOT_PATHS = new Set([
 const BLOCKED_METHODS = new Set(["PUT","PATCH","DELETE","TRACE","CONNECT","PURGE","PROPFIND","MOVE"]);
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     try {
     const { pathname, searchParams } = new URL(request.url);
     const method = request.method;
@@ -398,7 +398,7 @@ export default {
       return await handleIngest(request, env);
 
     if (method === "POST" && pathname === "/register")
-      return await handleRegister(request, env);
+      return await handleRegister(request, env, ctx);
 
     if (method === "POST" && pathname === "/upgrade")
       return await handleUpgrade(request, env);
@@ -901,7 +901,7 @@ async function sendTrialExhausted(env: Env, sub: SocialSubscriber): Promise<void
   } catch {}
 }
 
-async function handleRegister(request: Request, env: Env): Promise<Response> {
+async function handleRegister(request: Request, env: Env, ctx?: ExecutionContext): Promise<Response> {
   try {
   let body: Record<string, unknown>;
   try { body = await request.json() as Record<string, unknown>; }
@@ -991,6 +991,22 @@ async function handleRegister(request: Request, env: Env): Promise<Response> {
   if (existingIdx !== -1) existing[existingIdx] = sub;
   else existing.push(sub);
   await saveSubscribers(env, existing);
+
+  if (ctx) {
+    ctx.waitUntil(
+      oraclePost(env, "/activate", JSON.stringify({ wallet }))
+        .then(async r => {
+          if (!r.ok) return;
+          const d = await r.json() as Record<string, unknown>;
+          if ((d.success || d.tier) && d.socialLifetime) {
+            const subs = await getSubscribers(env);
+            const i    = subs.findIndex(s => s.wallet === wallet);
+            if (i !== -1) { subs[i].paid = true; subs[i].socialLifetime = true; await saveSubscribers(env, subs); }
+          }
+        })
+        .catch(() => {})
+    );
+  }
 
   const remaining = sub.paid ? "unlimited" : Math.max(0, TRIAL - sub.alertCount);
   const status    = sub.paid
@@ -1156,9 +1172,28 @@ async function handleStatus(searchParams: URLSearchParams, env: Env): Promise<Re
     oracleFetch(env, `/subscription?wallet=${encodeURIComponent(wallet)}`).catch(() => null),
   ]);
 
-  const sub    = subscribers.find(s => s.wallet === wallet);
-  const oracle = oracleR?.ok ? await oracleR.json() as Record<string, unknown> : null;
-  const oracleTier = typeof oracle?.tier === "string" && oracle.tier !== "unregistered" ? oracle.tier : null;
+  const sub = subscribers.find(s => s.wallet === wallet);
+  let oracle = oracleR?.ok ? await oracleR.json() as Record<string, unknown> : null;
+  let oracleTier = typeof oracle?.tier === "string" && oracle.tier !== "unregistered" ? oracle.tier : null;
+
+  if (!oracleTier) {
+    const debounceKey = `activ:auto:${wallet}`;
+    const debounced   = await env.KV.get(debounceKey);
+    if (!debounced) {
+      await env.KV.put(debounceKey, "1", { expirationTtl: 300 });
+      const activR = await oraclePost(env, "/activate", JSON.stringify({ wallet })).catch(() => null);
+      if (activR?.ok) {
+        const activData = await activR.json() as Record<string, unknown>;
+        if (activData.success || activData.tier) {
+          const freshR = await oracleFetch(env, `/subscription?wallet=${encodeURIComponent(wallet)}`).catch(() => null);
+          if (freshR?.ok) {
+            oracle     = await freshR.json() as Record<string, unknown>;
+            oracleTier = typeof oracle?.tier === "string" && oracle.tier !== "unregistered" ? oracle.tier : null;
+          }
+        }
+      }
+    }
+  }
 
   if (!sub) {
     return Response.json({

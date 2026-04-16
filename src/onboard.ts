@@ -1109,8 +1109,8 @@ ${INTG_STRIP}
     </div>
     <div style="display:flex;flex-direction:column;gap:8px">
       <details style="background:var(--surface);border:1px solid #111;border-radius:10px;padding:0;overflow:hidden">
-        <summary style="padding:14px 18px;cursor:pointer;font-size:0.86rem;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px">Not receiving alerts after registering<span style="color:var(--gold);font-size:0.75rem;white-space:nowrap">→ Activation missing</span></summary>
-        <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">Registration and activation are two separate steps. Registration stores your preferences. Activation scans your on-chain history and assigns your tier. <strong style="color:#fff">You must send ≥0.1 KTA first, then click Activate on this page.</strong> No KTA sent = no alerts.</div>
+        <summary style="padding:14px 18px;cursor:pointer;font-size:0.86rem;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px">Not receiving alerts after registering<span style="color:var(--gold);font-size:0.75rem;white-space:nowrap">→ KTA not sent yet</span></summary>
+        <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">Send ≥0.1 KTA from your registered wallet to the oracle wallet. Your tier is detected automatically — enter your wallet in the status checker above to see it instantly. No KTA sent = no alerts.</div>
       </details>
       <details style="background:var(--surface);border:1px solid #111;border-radius:10px;overflow:hidden">
         <summary style="padding:14px 18px;cursor:pointer;font-size:0.86rem;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px">Alerts stopped after working for a while<span style="color:var(--gold);font-size:0.75rem;white-space:nowrap">→ Check social lifetime</span></summary>
@@ -1125,8 +1125,8 @@ ${INTG_STRIP}
         <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">The bot cannot message you until you have started it. Open Telegram, find your bot, and send <code style="color:var(--accent);font-size:0.78rem">/start</code>. If you need your chat ID: visit <code style="color:var(--accent);font-size:0.78rem">api.telegram.org/bot{TOKEN}/getUpdates</code> after sending any message to the bot.</div>
       </details>
       <details style="background:var(--surface);border:1px solid #111;border-radius:10px;overflow:hidden">
-        <summary style="padding:14px 18px;cursor:pointer;font-size:0.86rem;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px">Wrong tier shown after sending KTA<span style="color:var(--gold);font-size:0.75rem;white-space:nowrap">→ Re-activate</span></summary>
-        <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">Tiers are assigned at activation time by scanning your full on-chain history. If you sent more KTA after your last activation, just click <strong style="color:#fff">Activate</strong> again — it will rescan and upgrade your tier automatically.</div>
+        <summary style="padding:14px 18px;cursor:pointer;font-size:0.86rem;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px">Wrong tier shown after sending more KTA<span style="color:var(--gold);font-size:0.75rem;white-space:nowrap">→ Check status again</span></summary>
+        <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">Tiers are based on total KTA sent from your wallet. Enter your wallet in the status checker — it rescans the chain automatically and updates your tier. If it still shows old tier, use the Activate button on the /checkout page to force an immediate rescan.</div>
       </details>
       <details style="background:var(--surface);border:1px solid #111;border-radius:10px;overflow:hidden">
         <summary style="padding:14px 18px;cursor:pointer;font-size:0.86rem;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px">No alerts for small price moves<span style="color:var(--gold);font-size:0.75rem;white-space:nowrap">→ By design</span></summary>
@@ -1506,7 +1506,7 @@ ${priceBar(appUrl)}
       </div>
       <div class="workflow">
         <div class="wf-step"><div class="wf-num">1</div><div class="wf-body"><h4>Send KTA to the oracle wallet</h4><p>From your registered Keeta wallet. Total sent from your address determines your tier.</p></div></div>
-        <div class="wf-step"><div class="wf-num">2</div><div class="wf-body"><h4>Click Activate below</h4><p>The oracle scans the chain, tallies your total, and assigns your tier instantly.</p></div></div>
+        <div class="wf-step"><div class="wf-num">2</div><div class="wf-body"><h4>Check your status</h4><p>Enter your wallet in the status checker on /onboard — tier is detected automatically. Or click Activate below for immediate confirmation.</p></div></div>
         <div class="wf-step"><div class="wf-num">3</div><div class="wf-body"><h4>Oracle + Social activate together</h4><p>From 50 KTA, Social lifetime alerts activate alongside the Oracle API tier.</p></div></div>
       </div>
       <div style="border-top:1px solid #111;margin:16px 0 14px"></div>
