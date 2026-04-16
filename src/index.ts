@@ -964,19 +964,46 @@ async function handleRegister(request: Request, env: Env, ctx?: ExecutionContext
   if (telegramUsed)
     return Response.json({ error: "This Telegram chat is already registered to another wallet. One platform credential per wallet." }, { status: 409 });
 
+  // New registrations must verify on-chain payment of at least 0.1 KTA
+  let activateData: Record<string, unknown> | null = null;
+  if (existingIdx === -1 && !isDev) {
+    const activateRes = await oraclePost(env, "/activate", JSON.stringify({ wallet })).catch(() => null);
+    if (!activateRes) {
+      return Response.json({ error: "Oracle unreachable — try again shortly." }, { status: 503 });
+    }
+    activateData = await activateRes.json().catch(() => ({})) as Record<string, unknown>;
+    if (!activateData.success) {
+      return Response.json({
+        error: "Payment required to register",
+        required: "0.1 KTA",
+        oracle_wallet: env.ORACLE_WALLET,
+        message: String(activateData.message ?? "Send at least 0.1 KTA to the oracle wallet first, then register."),
+        instructions: [
+          `1. Send at least 0.1 KTA to: ${env.ORACLE_WALLET}`,
+          `2. Wait ~1 second for on-chain confirmation`,
+          `3. Register again with the same wallet address`,
+        ],
+      }, { status: 402 });
+    }
+  }
+
+  const oracleSocial    = !!(activateData?.socialLifetime);
+  const oracleTier      = activateData?.tier as string | undefined;
+  const oracleExpiresAt = activateData?.expiresAt as string | undefined;
+
   const sub: SocialSubscriber = {
     wallet, platform, frequency, currency,
-    alertCount:   previous?.alertCount  ?? 0,
-    paid:         isDev ? true : (previous?.paid ?? false),
-    lastAlertAt:  previous?.lastAlertAt ?? 0,
-    registeredAt: previous?.registeredAt ?? Date.now(),
-    tier:         previous?.tier,
-    expiresAt:    previous?.expiresAt,
-    socialLifetime: previous?.socialLifetime,
-    whaleCount:   previous?.whaleCount,
+    alertCount:      previous?.alertCount     ?? 0,
+    paid:            isDev ? true : (oracleSocial ? true : (previous?.paid ?? false)),
+    lastAlertAt:     previous?.lastAlertAt    ?? 0,
+    registeredAt:    previous?.registeredAt   ?? Date.now(),
+    tier:            (oracleTier as any)      ?? previous?.tier,
+    expiresAt:       oracleExpiresAt ? new Date(oracleExpiresAt).getTime() : previous?.expiresAt,
+    socialLifetime:  oracleSocial             || (previous?.socialLifetime ?? false),
+    whaleCount:      previous?.whaleCount,
     whaleMonthCount: previous?.whaleMonthCount,
-    whaleMonth:   previous?.whaleMonth,
-    reminderSent: previous?.reminderSent,
+    whaleMonth:      previous?.whaleMonth,
+    reminderSent:    previous?.reminderSent,
     discordWebhook:   platform === "discord"  ? body.discordWebhook  as string : undefined,
     telegramBotToken: platform === "telegram" ? body.telegramBotToken as string : undefined,
     telegramChatId:   platform === "telegram" ? body.telegramChatId  as string : undefined,
@@ -993,17 +1020,21 @@ async function handleRegister(request: Request, env: Env, ctx?: ExecutionContext
   else existing.push(sub);
   await saveSubscribers(env, existing);
 
-  if (ctx) {
+  // For existing subscriber updates, refresh subscription tier in background
+  if (ctx && existingIdx !== -1 && !isDev) {
     ctx.waitUntil(
       oraclePost(env, "/activate", JSON.stringify({ wallet }))
         .then(async r => {
           if (!r.ok) return;
           const d = await r.json() as Record<string, unknown>;
-          if ((d.success || d.tier) && d.socialLifetime) {
-            const subs = await getSubscribers(env);
-            const i    = subs.findIndex(s => s.wallet === wallet);
-            if (i !== -1) { subs[i].paid = true; subs[i].socialLifetime = true; await saveSubscribers(env, subs); }
-          }
+          if (!d.success) return;
+          const subs = await getSubscribers(env);
+          const i    = subs.findIndex(s => s.wallet === wallet);
+          if (i === -1) return;
+          if (d.socialLifetime) { subs[i].paid = true; subs[i].socialLifetime = true; }
+          if (d.tier)      subs[i].tier      = d.tier as any;
+          if (d.expiresAt) subs[i].expiresAt = new Date(d.expiresAt as string).getTime();
+          await saveSubscribers(env, subs);
         })
         .catch(() => {})
     );

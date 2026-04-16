@@ -811,7 +811,7 @@ ${priceChart(appUrl)}
     </div>
   </div>
   <div class="btn-row">
-    <a href="#register" class="btn-primary">${ICONS.bolt} Start free — ${trialLimit} alerts</a>
+    <a href="#register" class="btn-primary">${ICONS.bolt} Start — 0.1 KTA · ${trialLimit} alerts</a>
     <a href="/checkout" class="btn-ghost">${ICONS.tier} View plans</a>
     <a href="/tools" class="btn-accent">${ICONS.tools} Browse tools</a>
   </div>
@@ -947,7 +947,7 @@ ${INTG_STRIP}
   <div class="wrap-sm">
     <div class="section-head">
       <div class="section-title">Register for <em>alerts</em></div>
-      <div class="section-sub">${trialLimit} free alerts included — no payment required. Connect your platform and start receiving KTA intelligence.</div>
+      <div class="section-sub">Send <strong>0.1 KTA</strong> to the oracle wallet first, then register to activate your trial of ${trialLimit} alerts.</div>
     </div>
     <div class="form-card">
       <h3>${ICONS.broadcast} New registration</h3>
@@ -1017,7 +1017,12 @@ ${INTG_STRIP}
             .map(c => `<option${c === "USD" ? " selected" : ""}>${c}</option>`).join("")}
         </select>
       </div>
-      <button class="btn-full" id="reg-submit-btn" onclick="submitRegister()">${ICONS.check} Register — ${trialLimit} free alerts</button>
+      <div style="background:rgba(196,163,90,0.07);border:1px solid rgba(196,163,90,0.2);border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.82rem;color:var(--muted2)">
+        <strong style="color:var(--gold)">Step 1:</strong> Send at least <strong>0.1 KTA</strong> to the oracle wallet:<br>
+        <code style="font-size:.72rem;word-break:break-all;color:var(--muted)">${oracleWallet}</code><br>
+        <strong style="color:var(--gold)">Step 2:</strong> Enter your wallet below and register.
+      </div>
+      <button class="btn-full" id="reg-submit-btn" onclick="submitRegister()">${ICONS.check} Register — requires 0.1 KTA</button>
       <div class="form-result" id="reg-result"></div>
     </div>
   </div>
@@ -1215,6 +1220,7 @@ async function submitRegister(){
     var txt=await r.text();
     var d;try{d=JSON.parse(txt);}catch(pe){res.className='form-result err';res.textContent='Server error ('+r.status+'). Reload and try again.';return;}
     if(d.ok){_saveWebhooks(wallet,platform,body);res.className='form-result ok';res.textContent='✓ '+(_regIsUpdate?'Settings saved':'Registered')+' — '+d.status+'. Alerts start on next cycle.';}
+    else if(r.status===402){res.className='form-result err';res.innerHTML='<strong>Payment required</strong><br>'+(d.message||'Send at least 0.1 KTA to the oracle wallet first.')+(d.oracle_wallet?'<br><br><span style="font-size:.78rem">Oracle wallet:</span><br><code style="font-size:.72rem;word-break:break-all">'+d.oracle_wallet+'</code>':'');}
     else{res.className='form-result err';res.textContent=d.error||'Failed — try again.';}
   }catch(e){res.className='form-result err';res.textContent='Request failed: '+(e&&e.message?e.message:'check connection and try again.');}
 }
