@@ -1,5 +1,3 @@
-const TRIAL_LIMIT     = 100;
-const LIFETIME_KTA    = 50;
 
 export function formatMarketCap(mc: number): string {
   if (mc >= 1_000_000_000) return `$${(mc / 1_000_000_000).toFixed(2)}B`;
@@ -50,7 +48,7 @@ export function buildPriceAlert(
   alertCount: number, paid: boolean, appUrl: string,
   currency = "USD", convertedPrice?: number,
   change7d: number | null = null, volume24h: number | null = null,
-  aiQuote: string | null = null,
+  aiQuote: string | null = null, trialLimit = 100,
 ): string {
   const dir    = priceChange > 0 ? "📈" : "📉";
   const sign   = priceChange > 0 ? "+" : "";
@@ -61,7 +59,7 @@ export function buildPriceAlert(
   const note   = buildMarketNote(priceChange, change24h, marketCap, change7d, volume24h);
   const c7dLine = change7d !== null ? `\n7d       ${change7d >= 0 ? "+" : ""}${change7d.toFixed(1)}%` : "";
   const link   = `${appUrl}/onboard`;
-  const footer = paid ? `KTA Oracle Agent` : `KTA Oracle Agent · Trial ${alertCount + 1}/${TRIAL_LIMIT}`;
+  const footer = paid ? `KTA Oracle Agent` : `KTA Oracle Agent · Trial ${alertCount + 1}/${trialLimit}`;
   const insight = aiQuote ? `\n💡 ${aiQuote}` : "";
   const sep     = `────────────────────`;
 
@@ -80,7 +78,7 @@ export function buildWhaleAlert(
   price: number, amountKta: number, classification: string,
   alertCount: number, paid: boolean, appUrl: string,
   currency = "USD", convertedPrice?: number,
-  change7d: number | null = null,
+  change7d: number | null = null, trialLimit = 100,
 ): string {
   const usdVal = (amountKta * price).toFixed(0);
   const locVal = convertedPrice ? (amountKta * convertedPrice).toFixed(0) : null;
@@ -90,7 +88,7 @@ export function buildWhaleAlert(
     ? `~${parseInt(locVal).toLocaleString()} ${currency} (~$${parseInt(usdVal).toLocaleString()})`
     : `~$${parseInt(usdVal).toLocaleString()}`;
   const link   = `${appUrl}/onboard`;
-  const footer = paid ? `KTA Oracle Agent` : `KTA Oracle Agent · Trial ${alertCount + 1}/${TRIAL_LIMIT}`;
+  const footer = paid ? `KTA Oracle Agent` : `KTA Oracle Agent · Trial ${alertCount + 1}/${trialLimit}`;
   const sep     = `────────────────────`;
 
   return [
@@ -111,7 +109,7 @@ export function buildDiscordPriceEmbed(
   currency = "USD", convertedPrice?: number,
   change7d: number | null = null, volume24h: number | null = null,
   aiQuote: string | null = null,
-  socialLifetime = false,
+  socialLifetime = false, trialLimit = 100,
 ) {
   const up     = priceChange > 0;
   const sign   = up ? "+" : "";
@@ -144,7 +142,7 @@ export function buildDiscordPriceEmbed(
     footer  = `KTA Oracle Agent`;
     regLink = `[⚙️ Your account](${appUrl}/onboard)  ·  [About Keeta](https://keeta.com)`;
   } else {
-    footer  = `KTA Oracle Agent · Trial ${alertCount + 1}/${TRIAL_LIMIT}`;
+    footer  = `KTA Oracle Agent · Trial ${alertCount + 1}/${trialLimit}`;
     regLink = `[📋 Register for free alerts](${appUrl}/onboard)  ·  [⚡ Lifetime access](${appUrl}/checkout)`;
   }
 
@@ -175,7 +173,7 @@ export function buildTwitterPrice(
   alertCount: number, paid: boolean, appUrl: string,
   currency = "USD", convertedPrice?: number,
   change7d: number | null = null, volume24h: number | null = null,
-  aiQuote: string | null = null,
+  aiQuote: string | null = null, trialLimit = 100,
 ): string | null {
   const up     = priceChange > 0;
   const sign   = up ? "+" : "";
@@ -184,7 +182,7 @@ export function buildTwitterPrice(
   const mc     = marketCap > 0 ? ` · Cap: ${formatMarketCap(marketCap)}` : "";
   const disp   = (convertedPrice ?? price).toFixed(4);
   const link   = `${appUrl}`;
-  const footer = paid ? `KTA Oracle Agent` : `KTA Oracle Agent · Trial ${alertCount + 1}/${TRIAL_LIMIT}`;
+  const footer = paid ? `KTA Oracle Agent` : `KTA Oracle Agent · Trial ${alertCount + 1}/${trialLimit}`;
   const note   = buildMarketNote(priceChange, change24h, marketCap, change7d, volume24h)
     .split(/\.\s/)[0].replace(/\.$/, "").trim();
   const short  = note.replace(/\$KTA\s*/g, "").trimStart();
@@ -208,13 +206,13 @@ export function buildTwitterPrice(
 
 export function buildTwitterWhale(
   price: number, amountKta: number, classification: string,
-  alertCount: number, paid: boolean, appUrl: string,
+  alertCount: number, paid: boolean, appUrl: string, trialLimit = 100,
 ): string | null {
   const usd    = (amountKta * price).toFixed(0);
   const emoji  = classification === "mega_whale" ? "🚨" : classification === "institutional" ? "🏦" : "🐋";
   const label  = classification.replace(/_/g, " ");
   const link   = `${appUrl}`;
-  const footer = paid ? `KTA Oracle Agent` : `KTA Oracle Agent · Trial ${alertCount + 1}/${TRIAL_LIMIT}`;
+  const footer = paid ? `KTA Oracle Agent` : `KTA Oracle Agent · Trial ${alertCount + 1}/${trialLimit}`;
 
   const attempts = [
     `${emoji} ${amountKta.toLocaleString()} $KTA moved (~$${parseInt(usd).toLocaleString()})\n${label} · 0.4s settlement on Keeta\n\n🔗 ${link}\n${footer}`,
@@ -229,7 +227,7 @@ export function buildDiscordWhaleEmbed(
   alertCount: number, paid: boolean, appUrl: string,
   currency = "USD", convertedPrice?: number,
   change7d: number | null = null,
-  socialLifetime = false,
+  socialLifetime = false, trialLimit = 100,
 ): object {
   const usdVal  = (amountKta * price).toFixed(0);
   const locVal  = convertedPrice ? (amountKta * convertedPrice).toFixed(0) : null;
@@ -257,7 +255,7 @@ export function buildDiscordWhaleEmbed(
     footer  = `KTA Oracle Agent`;
     regLink = `[⚙️ Your account](${appUrl}/onboard)  ·  [About Keeta](https://keeta.com)`;
   } else {
-    footer  = `KTA Oracle Agent · Trial ${alertCount + 1}/${TRIAL_LIMIT}`;
+    footer  = `KTA Oracle Agent · Trial ${alertCount + 1}/${trialLimit}`;
     regLink = `[📋 Register](${appUrl}/onboard)  ·  [⚡ Lifetime access](${appUrl}/checkout)`;
   }
 
@@ -280,13 +278,13 @@ export function buildDiscordWhaleEmbed(
   };
 }
 
-export function buildTrialWarningDiscord(appUrl: string, lifetimeKta: number): object {
+export function buildTrialWarningDiscord(appUrl: string, lifetimeKta: number, trialLimit = 100): object {
   return {
     embeds: [{
       title: "⚠️ 1 free alert remaining",
       color: 0xf39c12,
       description: [
-        `You've used **${TRIAL_LIMIT - 1} of ${TRIAL_LIMIT}** free KTA Oracle alerts. Your next alert will be your last.`,
+        `You've used **${trialLimit - 1} of ${trialLimit}** free KTA Oracle alerts. Your next alert will be your last.`,
         ``,
         `**Keep alerts going forever — ${lifetimeKta} KTA total, one payment.**`,
         ``,
@@ -302,11 +300,11 @@ export function buildTrialWarningDiscord(appUrl: string, lifetimeKta: number): o
   };
 }
 
-export function buildTrialWarningText(appUrl: string, lifetimeKta: number): string {
+export function buildTrialWarningText(appUrl: string, lifetimeKta: number, trialLimit = 100): string {
   return [
     `⚠️ 1 free alert remaining`,
     ``,
-    `You've used ${TRIAL_LIMIT - 1}/${TRIAL_LIMIT} free KTA Oracle alerts. Your next alert will be your last.`,
+    `You've used ${trialLimit - 1}/${trialLimit} free KTA Oracle alerts. Your next alert will be your last.`,
     ``,
     `Keep alerts going: ${lifetimeKta} KTA total — one payment, no renewals, ever.`,
     ``,
@@ -320,17 +318,17 @@ export function buildTrialWarningText(appUrl: string, lifetimeKta: number): stri
   ].join("\n");
 }
 
-export function buildTrialExhaustedDiscord(appUrl: string): object {
+export function buildTrialExhaustedDiscord(appUrl: string, trialLimit = 100, lifetimeKta = 50): object {
   return {
     embeds: [{
       title: "⏳ Your KTA Oracle trial has ended",
       color: 0xf39c12,
       description: [
-        `You've received all **${TRIAL_LIMIT} free KTA Oracle alerts**.`,
+        `You've received all **${trialLimit} free KTA Oracle alerts**.`,
         ``,
         `Over those alerts you've seen the oracle in action — live price moves, 7-day trend analysis, volume signals, and AI-powered insights delivered directly here.`,
         ``,
-        `**Lifetime access: ${LIFETIME_KTA} KTA total — one payment, no renewals, ever.**`,
+        `**Lifetime access: ${lifetimeKta} KTA total — one payment, no renewals, ever.**`,
         ``,
         `Already sent some KTA? Everything you've sent from your wallet already counts — check your total first:`,
         `👉 **[Check how much you've sent](${appUrl}/onboard)** — enter your wallet in the Status Checker`,
@@ -351,11 +349,11 @@ export function buildTrialExhaustedDiscord(appUrl: string): object {
   };
 }
 
-export function buildTrialExhaustedText(appUrl: string): string {
+export function buildTrialExhaustedText(appUrl: string, trialLimit = 100, lifetimeKta = 50): string {
   return [
-    `⏳ Your ${TRIAL_LIMIT} free KTA Oracle alerts are used up.`,
+    `⏳ Your ${trialLimit} free KTA Oracle alerts are used up.`,
     ``,
-    `Lifetime access: ${LIFETIME_KTA} KTA total — one payment, no renewals, ever.`,
+    `Lifetime access: ${lifetimeKta} KTA total — one payment, no renewals, ever.`,
     ``,
     `Already sent some KTA? Check your total first — it all counts:`,
     `👉 ${appUrl}/onboard  (Status Checker — enter your wallet)`,

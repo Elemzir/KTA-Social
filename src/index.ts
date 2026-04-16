@@ -750,14 +750,14 @@ async function broadcastToSubscribers(
 
     try {
       if (sub.platform === "discord" && sub.discordWebhook) {
-        const pricePayload = buildDiscordPriceEmbed(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, volume24h, aiQuote, socialLife);
+        const pricePayload = buildDiscordPriceEmbed(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, volume24h, aiQuote, socialLife, TRIAL);
         const finalPayload = celebType
           ? prependCelebEmbed(pricePayload, buildCelebEmbed(celebType, appUrl, celebTier, celebRemaining))
           : pricePayload;
         await sendDiscord(sub.discordWebhook, finalPayload, iconUrl);
         if (whale && isOracle && canReceiveWhale(sub)) {
           await sendDiscord(sub.discordWebhook,
-            buildDiscordWhaleEmbed(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, socialLife), iconUrl);
+            buildDiscordWhaleEmbed(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, socialLife, TRIAL), iconUrl);
           chargeWhale(sub);
         }
       }
@@ -765,10 +765,10 @@ async function broadcastToSubscribers(
       if (sub.platform === "telegram" && sub.telegramBotToken && sub.telegramChatId) {
         const prefix = celebType ? buildCelebText(celebType, appUrl, celebTier, celebRemaining) : "";
         await sendTelegram(sub.telegramBotToken, sub.telegramChatId,
-          prefix + buildPriceAlert(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, volume24h, aiQuote));
+          prefix + buildPriceAlert(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, volume24h, aiQuote, TRIAL));
         if (whale && isOracle && canReceiveWhale(sub)) {
           await sendTelegram(sub.telegramBotToken, sub.telegramChatId,
-            buildWhaleAlert(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, currency, undefined, change7d));
+            buildWhaleAlert(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, currency, undefined, change7d, TRIAL));
           chargeWhale(sub);
         }
       }
@@ -776,20 +776,20 @@ async function broadcastToSubscribers(
       if (sub.platform === "slack" && sub.slackWebhook) {
         const prefix = celebType ? buildCelebText(celebType, appUrl, celebTier, celebRemaining) : "";
         await sendSlack(sub.slackWebhook,
-          prefix + buildPriceAlert(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, volume24h, aiQuote), iconUrl);
+          prefix + buildPriceAlert(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, volume24h, aiQuote, TRIAL), iconUrl);
         if (whale && isOracle && canReceiveWhale(sub)) {
           await sendSlack(sub.slackWebhook,
-            buildWhaleAlert(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, currency, undefined, change7d), iconUrl);
+            buildWhaleAlert(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, currency, undefined, change7d, TRIAL), iconUrl);
           chargeWhale(sub);
         }
       }
 
       if (sub.platform === "twitter" && sub.twitterCreds) {
         await postTweet(sub,
-          buildTwitterPrice(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, null, aiQuote));
+          buildTwitterPrice(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, null, aiQuote, TRIAL));
         if (whale && isOracle && canReceiveWhale(sub)) {
           await postTweet(sub,
-            buildTwitterWhale(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl));
+            buildTwitterWhale(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, TRIAL));
           chargeWhale(sub);
         }
       }
@@ -867,15 +867,15 @@ async function sendTrialWarning(env: Env, sub: SocialSubscriber): Promise<void> 
   const appUrl   = env.APP_URL;
   const iconUrl  = `${appUrl}/icon.png`;
   const lifetime = lifetimeKta(env);
+  const tLimit   = trialLimit(env);
   try {
     if (sub.platform === "discord" && sub.discordWebhook)
-      await sendDiscord(sub.discordWebhook, buildTrialWarningDiscord(appUrl, lifetime), iconUrl);
+      await sendDiscord(sub.discordWebhook, buildTrialWarningDiscord(appUrl, lifetime, tLimit), iconUrl);
     if (sub.platform === "telegram" && sub.telegramBotToken && sub.telegramChatId)
-      await sendTelegram(sub.telegramBotToken, sub.telegramChatId, buildTrialWarningText(appUrl, lifetime));
+      await sendTelegram(sub.telegramBotToken, sub.telegramChatId, buildTrialWarningText(appUrl, lifetime, tLimit));
     if (sub.platform === "slack" && sub.slackWebhook)
-      await sendSlack(sub.slackWebhook, buildTrialWarningText(appUrl, lifetime), iconUrl);
+      await sendSlack(sub.slackWebhook, buildTrialWarningText(appUrl, lifetime, tLimit), iconUrl);
     if (sub.platform === "twitter" && sub.twitterCreds) {
-      const tLimit = trialLimit(env);
       const msg = `⚠️ 1 free $KTA alert remaining.\n\nYou've used ${tLimit - 1}/${tLimit} free oracle alerts.\n\nLifetime access: ${lifetime} KTA — one payment, no renewals.\nCheck your status or top up:\n👉 ${appUrl}/checkout`;
       if (msg.length <= 280) await postTweet(sub, msg);
     }
@@ -883,18 +883,18 @@ async function sendTrialWarning(env: Env, sub: SocialSubscriber): Promise<void> 
 }
 
 async function sendTrialExhausted(env: Env, sub: SocialSubscriber): Promise<void> {
-  const appUrl  = env.APP_URL;
-  const iconUrl = `${appUrl}/icon.png`;
+  const appUrl   = env.APP_URL;
+  const iconUrl  = `${appUrl}/icon.png`;
+  const TRIAL    = trialLimit(env);
+  const LIFETIME = lifetimeKta(env);
   try {
     if (sub.platform === "discord" && sub.discordWebhook)
-      await sendDiscord(sub.discordWebhook, buildTrialExhaustedDiscord(appUrl), iconUrl);
+      await sendDiscord(sub.discordWebhook, buildTrialExhaustedDiscord(appUrl, TRIAL, LIFETIME), iconUrl);
     if (sub.platform === "telegram" && sub.telegramBotToken && sub.telegramChatId)
-      await sendTelegram(sub.telegramBotToken, sub.telegramChatId, buildTrialExhaustedText(appUrl));
+      await sendTelegram(sub.telegramBotToken, sub.telegramChatId, buildTrialExhaustedText(appUrl, TRIAL, LIFETIME));
     if (sub.platform === "slack" && sub.slackWebhook)
-      await sendSlack(sub.slackWebhook, buildTrialExhaustedText(appUrl), iconUrl);
+      await sendSlack(sub.slackWebhook, buildTrialExhaustedText(appUrl, TRIAL, LIFETIME), iconUrl);
     if (sub.platform === "twitter" && sub.twitterCreds) {
-      const TRIAL = trialLimit(env);
-      const LIFETIME = lifetimeKta(env);
       const msg = `⏳ ${TRIAL} free $KTA alerts used up.\n\nYou've seen the oracle — price moves, AI insights, whale alerts.\n\nLifetime social alerts: ${LIFETIME} KTA once.\n\n👉 ${appUrl}/donate`;
       if (msg.length <= 280) await postTweet(sub, msg);
     }
@@ -1483,6 +1483,10 @@ async function handleSupport(request: Request, env: Env, cors: Record<string,str
   return Response.json({ ok: true, ticketId: ticketKey }, { headers: cors });
 }
 
+function escHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
 async function handleSupportStatus(searchParams: URLSearchParams, env: Env): Promise<Response> {
   const ticketId = (searchParams.get("ticket") ?? "").trim();
   const h = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Support Status · KTA Oracle</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e5e5e5;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}.card{background:#111;border:1px solid #1a1a1a;border-radius:16px;padding:32px 28px;max-width:540px;width:100%}h1{font-size:1.15rem;font-weight:800;color:#C4A35A;margin-bottom:6px}p.sub{font-size:0.8rem;color:#555;margin-bottom:28px}.field{margin-bottom:18px}.label{font-size:0.72rem;font-weight:700;letter-spacing:0.05em;color:#555;text-transform:uppercase;margin-bottom:6px}.value{font-size:0.9rem;color:#ccc;background:#0d0d0d;border:1px solid #1a1a1a;border-radius:8px;padding:12px 14px;line-height:1.5}input{width:100%;background:#0d0d0d;border:1px solid #1a1a1a;border-radius:8px;padding:12px 14px;color:#e5e5e5;font-size:0.88rem;outline:none;font-family:inherit}input:focus{border-color:#C4A35A}button{width:100%;background:#C4A35A;color:#000;font-weight:800;border:none;border-radius:20px;padding:13px;font-size:0.9rem;cursor:pointer;margin-top:12px}button:hover{background:#d4b46a}.pending{color:#888;font-style:italic}.accent{color:#C4A35A}.footer{margin-top:24px;font-size:0.72rem;color:#333;text-align:center}</style></head><body><div class="card">`;
@@ -1498,7 +1502,7 @@ async function handleSupportStatus(searchParams: URLSearchParams, env: Env): Pro
   ]);
 
   if (!raw) {
-    const page = h + `<h1>Support Status</h1><p class="sub">Ticket not found — check the ID and try again</p><form method="get" action="/support/status"><input name="ticket" value="${ticketId.replace(/"/g,'')}" required autocomplete="off"><button type="submit">Try Again</button></form><p class="footer">KTA Oracle Agent · Powered by Keeta Network</p></div></body></html>`;
+    const page = h + `<h1>Support Status</h1><p class="sub">Ticket not found — check the ID and try again</p><form method="get" action="/support/status"><input name="ticket" value="${escHtml(ticketId)}" required autocomplete="off"><button type="submit">Try Again</button></form><p class="footer">KTA Oracle Agent · Powered by Keeta Network</p></div></body></html>`;
     return new Response(page, { headers: { "Content-Type": "text/html;charset=utf-8" } });
   }
 
@@ -1512,13 +1516,13 @@ async function handleSupportStatus(searchParams: URLSearchParams, env: Env): Pro
   const repliedAt   = replyData?.ts ? new Date(replyData.ts as number).toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" }) : null;
 
   const replySection = replyData
-    ? `<div class="field"><div class="label">Dev Reply</div><div class="value accent">${String(replyData.reply ?? "").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div></div><div class="field"><div class="label">Replied at</div><div class="value">${repliedAt}</div></div>`
+    ? `<div class="field"><div class="label">Dev Reply</div><div class="value accent">${escHtml(String(replyData.reply ?? ""))}</div></div><div class="field"><div class="label">Replied at</div><div class="value">${repliedAt}</div></div>`
     : `<div class="field"><div class="label">Status</div><div class="value pending">Pending — no reply yet. Check back soon.</div></div>`;
 
   const page = h
-    + `<h1>Support Status</h1><p class="sub">Ticket · <code style="font-size:0.72rem;color:#555">${ticketId.replace(/</g,"&lt;")}</code></p>`
-    + `<div class="field"><div class="label">Name</div><div class="value">${String(ticket.name ?? "—").replace(/</g,"&lt;")}</div></div>`
-    + `<div class="field"><div class="label">Your message</div><div class="value">${String(ticket.message ?? "—").replace(/</g,"&lt;")}</div></div>`
+    + `<h1>Support Status</h1><p class="sub">Ticket · <code style="font-size:0.72rem;color:#555">${escHtml(ticketId)}</code></p>`
+    + `<div class="field"><div class="label">Name</div><div class="value">${escHtml(String(ticket.name ?? "—"))}</div></div>`
+    + `<div class="field"><div class="label">Your message</div><div class="value">${escHtml(String(ticket.message ?? "—"))}</div></div>`
     + `<div class="field"><div class="label">Submitted</div><div class="value">${submittedAt}</div></div>`
     + replySection
     + `<p class="footer" style="margin-top:28px">KTA Oracle Agent · Powered by Keeta Network</p></div></body></html>`;

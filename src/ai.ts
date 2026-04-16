@@ -248,7 +248,7 @@ GET  /identity/resolve?q=&caller=   → { result, query, ts } — caller=your wa
 POST /kyc/verify                    → body:{ wallet } → { supported_countries:[], wallet, ts }
 POST /certificate/manage            → body:{ wallet, caller? } → { certificates:[], ts }
 POST /container/seal                → body:{ wallet, data } → { container, ts }
-POST /batch/build                   → body:{ wallet, seed, operations:[{ method, args[], account? }] } → { hashes:[], ts }
+POST /batch/build                   → body:{ wallet, operations:[{ method, args[], account? }] } → { hashes:[], ts }
 POST /permissions/manage            → body:{ wallet, caller? } → { acls:[], ts }
 
 ACTION ENDPOINTS (all tiers):
