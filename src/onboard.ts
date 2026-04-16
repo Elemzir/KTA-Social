@@ -1048,7 +1048,7 @@ ${INTG_STRIP}
         </tr></thead>
         <tbody>
           <tr><td>Oracle API calls</td><td>20/day</td><td>60 / 30 days</td><td>150/month</td><td>300/month</td><td>Unlimited</td></tr>
-          <tr><td>Oracle access</td><td>Persistent</td><td>30 days</td><td>30 days</td><td>30 days</td><td>30 days</td></tr>
+          <tr><td>Oracle access</td><td>5 days</td><td>30 days</td><td>30 days</td><td>30 days</td><td>30 days</td></tr>
           <tr><td>Social alerts</td>
             <td><span style="color:var(--muted2)">Trial (${trialLimit})</span></td>
             <td><span style="color:var(--muted2)">Trial (${trialLimit})</span></td>

@@ -39,6 +39,7 @@ If `paid: false` and `alertCount >= 100` → trial exhausted, upgrade at `/check
 | Wrong currency in alerts | Stale FX rate or wrong registration | Re-register with correct currency at `/onboard`. FX updates every cron cycle (~5 min) |
 | `unregistered` after sending KTA | Activation not triggered | Sending KTA is step 1, activation is step 2. Use Activate button at `/onboard` |
 | Status shows old/wrong tier | KV not updated | Activation re-scans on-chain history. Send remaining KTA and re-activate |
+| `429 API quota exceeded` on any tool endpoint | Tier call limit reached | Starter: 60 total calls. Social: 150/month. Pro: 300/month. Business: unlimited. Upgrade at `/checkout` |
 
 ---
 

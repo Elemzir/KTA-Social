@@ -24,7 +24,7 @@ All payments are made in KTA to the oracle wallet. Amounts accumulate on-chain â
 
 | Amount | Tier | Oracle access | Social alerts | Duration |
 |--------|------|--------------|---------------|----------|
-| 0.1 KTA | Free | 20 calls / day | 100 trial | Permanent |
+| 0.1 KTA | Free | 20 calls / day | 100 trial | 5 days |
 | 10 KTA | Starter | 60 calls total | Trial only | 30 days |
 | 50 KTA | Social | 150 calls / month | Lifetime | 30 days |
 | 300 KTA | Pro | 300 calls / month | Lifetime | 30 days |

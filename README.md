@@ -326,6 +326,7 @@ Subscribers on a daily digest still receive alerts within 30 minutes on a 20%+ m
 | Wrong currency in alerts | Stale FX rate or wrong registration | Re-register with correct currency at `/onboard`. FX updates every cron cycle (~5 min) |
 | `unregistered` after sending KTA | Activation not triggered | Sending KTA is step 1, activation is step 2. Must call `POST /activate-oracle` or use the Activate button at `/onboard` |
 | Status shows old tier | KV not updated | Activation re-scans on-chain history. If tier is wrong, send the difference and re-activate |
+| `429 API quota exceeded` | Tier call limit reached | Starter: 60 total. Social: 150/month. Pro: 300/month. Business: unlimited. Upgrade at `/checkout` |
 
 **Check wallet status instantly:**
 ```

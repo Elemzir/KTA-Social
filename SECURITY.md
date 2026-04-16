@@ -33,6 +33,10 @@ All secrets (webhook URLs, API keys, `INTERNAL_SECRET`) are stored as encrypted 
 
 The `/support` endpoint is rate-limited to 5 submissions per IP per day via Cloudflare KV. The `/agent` chat endpoint is rate-limited to 10 messages per hour per IP.
 
+### API Quotas
+
+All tier-gated SDK tool endpoints enforce per-wallet call quotas tracked in Cloudflare KV: Starter 60 total, Social 150/month, Pro 300/month, Business unlimited. Requests exceeding the quota receive HTTP 429 before any on-chain or SDK operation is performed.
+
 ### Input Validation
 
 All wallet addresses are validated against the `keeta_[a-z0-9]+` pattern. Social platform credentials provided by subscribers are stored in KV and never logged or returned in responses.
