@@ -529,15 +529,16 @@ async function handleActivateOracle(request: Request, env: Env, cors: Record<str
   const headers  = { "Content-Type": "application/json" };
 
   let res: Response | null = null;
+  let fetchErr = "";
   if (env.ORACLE_SERVICE) {
-    res = await env.ORACLE_SERVICE.fetch("https://oracle/activate", { method: "POST", headers, body: payload }).catch(() => null);
+    res = await env.ORACLE_SERVICE.fetch("https://oracle/activate", { method: "POST", headers, body: payload }).catch((e: unknown) => { fetchErr = String(e); return null; });
   } else {
     const base = env.KTA_ORACLE_URL ?? "";
     if (!base) return Response.json({ error: "Oracle not configured" }, { status: 503, headers: cors });
-    res = await fetch(`${base}/activate`, { method: "POST", headers, body: payload, signal: AbortSignal.timeout(20000) }).catch(() => null);
+    res = await fetch(`${base}/activate`, { method: "POST", headers, body: payload, signal: AbortSignal.timeout(20000) }).catch((e: unknown) => { fetchErr = String(e); return null; });
   }
 
-  if (!res) return Response.json({ error: "Activation failed — Oracle unreachable." }, { status: 502, headers: cors });
+  if (!res) return Response.json({ error: "Activation failed — Oracle unreachable.", detail: fetchErr || "no response" }, { status: 502, headers: cors });
   return new Response(res.body, { status: res.status, headers: { "Content-Type": "application/json", ...cors } });
 }
 
@@ -1181,17 +1182,7 @@ async function handleStatus(searchParams: URLSearchParams, env: Env): Promise<Re
     const debounced   = await env.KV.get(debounceKey);
     if (!debounced) {
       await env.KV.put(debounceKey, "1", { expirationTtl: 300 });
-      const activR = await oraclePost(env, "/activate", JSON.stringify({ wallet })).catch(() => null);
-      if (activR?.ok) {
-        const activData = await activR.json() as Record<string, unknown>;
-        if (activData.success || activData.tier) {
-          const freshR = await oracleFetch(env, `/subscription?wallet=${encodeURIComponent(wallet)}`).catch(() => null);
-          if (freshR?.ok) {
-            oracle     = await freshR.json() as Record<string, unknown>;
-            oracleTier = typeof oracle?.tier === "string" && oracle.tier !== "unregistered" ? oracle.tier : null;
-          }
-        }
-      }
+      oraclePost(env, "/activate", JSON.stringify({ wallet })).catch(() => {});
     }
   }
 

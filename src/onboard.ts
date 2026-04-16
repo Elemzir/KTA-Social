@@ -1710,7 +1710,7 @@ async function activateOracle(inputId,resultId){
     var res=await fetch('/activate-oracle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet:wallet}),signal:AbortSignal.timeout(25000)});
     var data=await res.json();
     if(data.success){result.className='form-result ok';result.textContent='✓ '+data.message+(data.socialLifetime?' — Social Agent lifetime included.':'');}
-    else{result.className='form-result err';result.textContent=data.message||'Activation failed. Ensure your payment has settled.';}
+    else{result.className='form-result err';result.textContent=(data.message||data.error||'Activation failed.')+(data.detail?' ('+data.detail+')':'');}
   }catch(e){result.className='form-result err';result.textContent='Network error — try again.';}
 }
 
@@ -1995,7 +1995,7 @@ async function donateActivate(){
       if(social)msg+=' Lifetime social alerts active.';
       result.className='form-result ok';result.textContent=msg;
     } else {
-      result.className='form-result err';result.textContent=data.message||data.error||'No qualifying payment found yet. Ensure your transaction has confirmed on Keeta Network.';
+      result.className='form-result err';result.textContent=(data.message||data.error||'No qualifying payment found yet.')+(data.detail?' ('+data.detail+')':'');
     }
   }catch(e){result.className='form-result err';result.textContent='Network error — try again.';}
 }
