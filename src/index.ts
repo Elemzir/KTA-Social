@@ -521,7 +521,7 @@ async function handleActivateOracle(request: Request, env: Env, cors: Record<str
   const ip      = request.headers.get("CF-Connecting-IP") ?? "unknown";
   const aKey    = `activ:rate:${await hashFp(ip + wallet)}`;
   const aCount  = parseInt((await env.KV.get(aKey)) ?? "0");
-  if (aCount >= 5)
+  if (aCount >= 20)
     return Response.json({ error: "Too many activation attempts — try again in an hour." }, { status: 429, headers: cors });
   await env.KV.put(aKey, String(aCount + 1), { expirationTtl: 3600 });
 
