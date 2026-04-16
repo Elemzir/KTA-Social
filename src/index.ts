@@ -1,5 +1,5 @@
 import type { Env, SocialSubscriber, AlertFrequency, SocialPlatform } from "./types.js";
-import { requireInternalAuth, sanitiseWallet }                        from "./auth.js";
+import { requireInternalAuth, requireDevAuth, sanitiseWallet }        from "./auth.js";
 import { getSubscribers, saveSubscribers, trialLimit, lifetimeKta }   from "./store.js";
 import {
   buildPriceAlert, buildWhaleAlert,
@@ -404,9 +404,8 @@ export default {
       return await handleUpgrade(request, env);
 
     if (method === "POST" && pathname === "/oracle-activate") {
-      const secret = request.headers.get("X-Internal-Secret");
-      if (!secret || secret !== env.INTERNAL_SECRET)
-        return Response.json({ error: "Unauthorized" }, { status: 401 });
+      const authErr = requireInternalAuth(request, env.INTERNAL_SECRET);
+      if (authErr) return authErr;
       return await handleOracleActivate(request, env);
     }
 
@@ -1151,13 +1150,21 @@ async function handleOracleActivate(request: Request, env: Env): Promise<Respons
   const expiresAt     = body.expiresAt as number | undefined;
   const socialLifetime = !!(body.socialLifetime);
 
+  const TIER_RANK: Record<string, number> = {
+    unregistered: 0, free: 1, starter: 2, social: 3, pro: 4, business: 5,
+  };
+
   const subscribers = await getSubscribers(env);
   const idx         = subscribers.findIndex(s => s.wallet === wallet);
 
   if (idx === -1)
     return Response.json({ ok: false, message: "Wallet not yet registered in Social — register first to receive alerts." });
 
-  if (subscribers[idx].paid && subscribers[idx].socialLifetime)
+  const currentRank  = TIER_RANK[subscribers[idx].tier ?? "free"] ?? 0;
+  const incomingRank = TIER_RANK[tier ?? "free"] ?? 0;
+  const alreadyLifetime = subscribers[idx].paid && subscribers[idx].socialLifetime;
+
+  if (alreadyLifetime && incomingRank <= currentRank)
     return Response.json({ ok: true, already: true });
 
   const wasTrialWithAlerts = subscribers[idx].firstAlertSent && !subscribers[idx].paid;
@@ -1290,8 +1297,8 @@ async function handleDevRegister(request: Request, env: Env): Promise<Response> 
   if (!devSecret || !devWallet)
     return Response.json({ error: "Not configured" }, { status: 503 });
 
-  if (request.headers.get("X-Dev-Secret") !== devSecret)
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  const devAuthErr = requireDevAuth(request, devSecret);
+  if (devAuthErr) return devAuthErr;
 
   let body: Record<string, unknown>;
   try { body = await request.json() as Record<string, unknown>; }
@@ -1627,9 +1634,8 @@ async function handleDiscordInteractions(request: Request, env: Env): Promise<Re
 }
 
 async function handleDevSupportReply(request: Request, env: Env): Promise<Response> {
-  const secret = request.headers.get("X-Dev-Secret");
-  if (!secret || secret !== env.DEV_SECRET)
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  const devAuthErr = requireDevAuth(request, env.DEV_SECRET ?? "");
+  if (devAuthErr) return devAuthErr;
 
   let body: Record<string, unknown>;
   try { body = await request.json() as Record<string, unknown>; }
