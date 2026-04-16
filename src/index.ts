@@ -537,8 +537,8 @@ async function handleActivateOracle(request: Request, env: Env, cors: Record<str
     res = await fetch(`${base}/activate`, { method: "POST", headers, body: payload, signal: AbortSignal.timeout(20000) }).catch(() => null);
   }
 
-  if (!res?.ok) return Response.json({ error: "Activation failed" }, { status: 502, headers: cors });
-  return new Response(res.body, { headers: { "Content-Type": "application/json", ...cors } });
+  if (!res) return Response.json({ error: "Activation failed — Oracle unreachable." }, { status: 502, headers: cors });
+  return new Response(res.body, { status: res.status, headers: { "Content-Type": "application/json", ...cors } });
 }
 
 async function handleIngest(request: Request, env: Env): Promise<Response> {

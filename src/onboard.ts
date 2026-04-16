@@ -1989,13 +1989,13 @@ async function donateActivate(){
   try{
     var res=await fetch('${appUrl}/activate-oracle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet}),signal:AbortSignal.timeout(25000)});
     var data=await res.json();
-    if(data.ok||data.tier){
-      var social=data.socialLifetime||data.paid;
-      var msg='✓ '+(data.tier?data.tier.charAt(0).toUpperCase()+data.tier.slice(1)+' tier activated':'Recorded')+'.';
+    if(data.success){
+      var social=data.socialLifetime;
+      var msg='✓ '+(data.tier?data.tier.charAt(0).toUpperCase()+data.tier.slice(1)+' tier activated':'Activated')+'.';
       if(social)msg+=' Lifetime social alerts active.';
       result.className='form-result ok';result.textContent=msg;
     } else {
-      result.className='form-result err';result.textContent=data.error||'No qualifying donation found yet. Check that your transaction has confirmed.';
+      result.className='form-result err';result.textContent=data.message||data.error||'No qualifying payment found yet. Ensure your transaction has confirmed on Keeta Network.';
     }
   }catch(e){result.className='form-result err';result.textContent='Network error — try again.';}
 }
