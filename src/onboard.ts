@@ -1602,7 +1602,7 @@ ${priceBar(appUrl)}
         <div class="wf-step"><div class="wf-num">1</div><div class="wf-body"><h4>Get KTA</h4><p>Buy KTA on the <a href="https://keeta.com" target="_blank" rel="noopener" style="color:var(--gold)">Keeta Network bridge</a> using your Visa card. Takes under a minute.</p></div></div>
         <div class="wf-step"><div class="wf-num">2</div><div class="wf-body"><h4>Send to the wallet above</h4><p>Use your Keeta-connected Visa account. Send the KTA equivalent of your chosen tier.</p></div></div>
         <div class="wf-step"><div class="wf-num">3</div><div class="wf-body"><h4>0.4s settlement</h4><p>Keeta Network settles instantly. No waiting for card clearing cycles.</p></div></div>
-        <div class="wf-step"><div class="wf-num">4</div><div class="wf-body"><h4>Verify &amp; activate</h4><p>Enter your registered Keeta wallet below to confirm and activate your tier.</p></div></div>
+        <div class="wf-step"><div class="wf-num">4</div><div class="wf-body"><h4>Tier detected automatically</h4><p>Enter your wallet in the status checker on <a href="/onboard" style="color:var(--gold)">/onboard</a> to confirm your tier, or click Activate below for immediate confirmation.</p></div></div>
       </div>
       <div class="activate-section">
         <h4>${ICONS.check} Verify Visa Direct payment</h4>
@@ -1876,7 +1876,7 @@ ${header("donate")}
     <div class="donate-steps">
       <div class="ds-step"><div class="ds-num">1</div><div class="ds-body"><h4>Copy the wallet above</h4><p>Send your chosen KTA amount from your registered Keeta wallet to this address.</p></div></div>
       <div class="ds-step"><div class="ds-num">2</div><div class="ds-body"><h4>Confirm on Keeta Network</h4><p>Settlement takes 0.4 seconds. You'll see the transaction confirmed instantly on-chain.</p></div></div>
-      <div class="ds-step"><div class="ds-num">3</div><div class="ds-body"><h4>Paste your wallet below &amp; activate</h4><p>We scan your on-chain history. If your total reaches ${lifetimeKta} KTA, Social tier + lifetime alerts activate immediately.</p></div></div>
+      <div class="ds-step"><div class="ds-num">3</div><div class="ds-body"><h4>Check your status</h4><p>Enter your wallet in the status checker on the <a href="/onboard" style="color:var(--gold)">onboard page</a> — your tier is detected automatically. Or click Activate below to confirm immediately.</p></div></div>
     </div>
 
     <div class="activate-section">
