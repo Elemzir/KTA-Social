@@ -50,6 +50,7 @@ export interface Env {
   DEV_SECRET?:           string;
   DEV_WALLET?:           string;
   DISCORD_WEBHOOK_URL?:    string;
+  ALERTS_DISCORD_WEBHOOK_URL?: string;
   DISCORD_PUBLIC_KEY?:     string;
   RESEND_API_KEY?:          string;
   TELEGRAM_BOT_TOKEN?:   string;

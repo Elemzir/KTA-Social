@@ -825,8 +825,8 @@ async function broadcastDevChannels(
   const appUrl  = env.APP_URL;
   const iconUrl = `${appUrl}/icon.png`;
 
-  if (env.DISCORD_WEBHOOK_URL)
-    await sendDiscord(env.DISCORD_WEBHOOK_URL,
+  if (env.ALERTS_DISCORD_WEBHOOK_URL)
+    await sendDiscord(env.ALERTS_DISCORD_WEBHOOK_URL,
       buildDiscordPriceEmbed(price, priceChange, change24h, 0, 0, true, appUrl, "USD", undefined, change7d, volume24h, aiQuote, true), iconUrl)
       .catch(() => {});
 
@@ -845,8 +845,8 @@ async function broadcastDevChannels(
     .catch(() => {});
 
   if (whale) {
-    if (env.DISCORD_WEBHOOK_URL)
-      await sendDiscord(env.DISCORD_WEBHOOK_URL,
+    if (env.ALERTS_DISCORD_WEBHOOK_URL)
+      await sendDiscord(env.ALERTS_DISCORD_WEBHOOK_URL,
         { content: buildWhaleAlert(price, whale.amountKta, whale.classification, 0, true, appUrl) }, iconUrl)
         .catch(() => {});
     if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID)
