@@ -1713,12 +1713,12 @@ async function activateOracle(inputId,resultId){
   result.className='form-result loading';result.textContent='Scanning Keeta chain…';
   if(!wallet.startsWith('keeta_')){result.className='form-result err';result.textContent='Enter a valid keeta_ wallet address.';return;}
   try{
-    var res=await fetch('/activate-oracle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet:wallet}),signal:AbortSignal.timeout(25000)});
-    var data=await res.json();
+    var res=await fetch('/activate-oracle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet:wallet}),signal:AbortSignal.timeout(30000)});
+    var txt=await res.text();
+    var data;try{data=JSON.parse(txt);}catch(pe){result.className='form-result err';result.textContent='Server error (HTTP '+res.status+'). Try again or contact support.';return;}
     if(data.success){result.className='form-result ok';result.textContent='✓ '+data.message+(data.socialLifetime?' — Social Agent lifetime included.':'');}
     else{result.className='form-result err';result.textContent=(data.message||data.error||'Activation failed.')+(data.detail?' ('+data.detail+')':'');}
-  }catch(e){result.className='form-result err';result.textContent='Network error — try again.';}
-}
+  }catch(e){result.className='form-result err';result.textContent=(e&&e.name==='AbortError'?'Request timed out — the chain scan took too long. Try again.':'Network error — check your connection and try again.');}
 
 async function verifyAndActivate(inputId,resultId){
   var wallet=document.getElementById(inputId).value.trim();
@@ -1993,8 +1993,9 @@ async function donateActivate(){
   result.className='form-result loading';result.textContent='Checking on-chain…';
   if(!wallet.startsWith('keeta_')){result.className='form-result err';result.textContent='Enter a valid keeta_ wallet address.';return;}
   try{
-    var res=await fetch('${appUrl}/activate-oracle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet}),signal:AbortSignal.timeout(25000)});
-    var data=await res.json();
+    var res=await fetch('${appUrl}/activate-oracle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet}),signal:AbortSignal.timeout(30000)});
+    var txt=await res.text();
+    var data;try{data=JSON.parse(txt);}catch(pe){result.className='form-result err';result.textContent='Server error (HTTP '+res.status+'). Try again or contact support.';return;}
     if(data.success){
       var social=data.socialLifetime;
       var msg='✓ '+(data.tier?data.tier.charAt(0).toUpperCase()+data.tier.slice(1)+' tier activated':'Activated')+'.';
@@ -2003,7 +2004,7 @@ async function donateActivate(){
     } else {
       result.className='form-result err';result.textContent=(data.message||data.error||'No qualifying payment found yet.')+(data.detail?' ('+data.detail+')':'');
     }
-  }catch(e){result.className='form-result err';result.textContent='Network error — try again.';}
+  }catch(e){result.className='form-result err';result.textContent=(e&&e.name==='AbortError'?'Request timed out — the chain scan took too long. Try again.':'Network error — check your connection and try again.');}
 }
 </script>
 </body>
