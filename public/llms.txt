@@ -13,7 +13,7 @@ Two Cloudflare Workers operate in tandem:
 - **KTA Social** (public-facing): https://kta.netrate.workers.dev — all UI pages, subscriber management, alert delivery, proxy layer for all SDK calls. This is the ONLY URL external callers should use.
 - **KTA Oracle** (internal): kta-oracle.netrate.workers.dev — price engine, on-chain data, Keeta SDK operations. Never called directly by browsers or external agents — Social proxies via service binding.
 
-All 19 tools are accessible through the Social worker URL. Tier gating is enforced at the subscription level — the endpoints are open but the alerts and features activate based on accumulated KTA sent.
+All 19 tools are accessible through the Social worker URL. Tier gating is enforced at the subscription level.
 
 ---
 
@@ -37,6 +37,8 @@ All payments go to the oracle wallet. KTA sent from the same wallet accumulates 
 | 300      | Pro      | 300 / month      | **Lifetime**     | Unlimited    | 30 days   |
 | 600      | Business | Unlimited        | **Lifetime**     | Unlimited    | 30 days   |
 
+API call quotas are enforced per wallet in KV. Exceeding the quota returns HTTP 429 with { error, tier, remaining: 0, reset, upgrade }.
+
 ---
 
 ## Tier Progression — When and Why Users Upgrade
@@ -45,7 +47,7 @@ Each tier has a natural ceiling. Understanding these moments is the key to guidi
 
 ### Free → Starter (10 KTA total)
 Ceiling: Free tier lasts 5 days. The whale feed on /onboard is locked. Free users receive only 1 whale alert ever. API quota is 20 calls/day.
-Upgrade value: Starter extends access to 30 days, unlocks the live whale feed immediately, raises whale alerts to 3/month, and triples API quota to 60 total calls. Already sent 0.1 KTA? Only 9.9 more — sends accumulate.
+Upgrade value: Starter extends access to 30 days, unlocks the live whale feed immediately, raises whale alerts to 3/month, and triples the API quota to 60 total calls. Already sent 0.1 KTA? Only 9.9 more — sends accumulate.
 
 ### Starter → Social (50 KTA total)
 Ceiling: Starter alerts expire after 30 days. Alert delivery still counts against the 100-trial lifetime cap. Users who rely on Discord/Telegram/Slack alerts and don't want them to stop need Social.
@@ -84,13 +86,14 @@ GET  /price                — Live KTA/USD price with 1h, 24h, 7d change percen
 GET  /price/live           — Same as /price
 GET  /price/history        — Ring buffer of recent price points for charting
 GET  /rate?currency=XXX    — KTA rate in any of 160+ fiat currencies (ISO 4217)
-GET  /whale/alerts         — Recent large on-chain KTA transactions
-GET  /status?wallet=       — Tier, expiry, socialLifetime flag for a wallet
+GET  /whale/alerts?wallet= — Recent large on-chain KTA transactions (Starter+ required, pass wallet)
+GET  /status?wallet=       — Tier, expiry, socialLifetime flag, tools._unlock for a wallet
 GET  /stream?wallet=       — SSE stream (EventSource) for real-time price + tier updates
 GET  /payment-links        — Returns configured checkout URLs (Coinbase Commerce)
 GET  /tools                — Full 19-tool Oracle SDK browser (HTML)
 GET  /onboard              — Registration, status checker, whale feed (HTML)
 GET  /checkout             — Pricing page: tier cards, payment methods, activate (HTML). Also reachable via /donate.
+GET  /llms.txt             — This file (machine-readable spec)
 GET  /health               — { status: "ok" }
 
 ### Authenticated (POST, user-triggered)
@@ -101,23 +104,28 @@ POST /upgrade              — Activate Social lifetime alerts post-payment
 POST /support              — Contact form (rate-limited 5/day per IP)
 POST /agent                — Chat with the KTA Oracle AI Agent ({ message })
 
-### Pro tier endpoints (300 KTA)
+### Pro tier endpoints (300 KTA) — 429 if quota exceeded
 
 GET  /wallet/history?wallet=   — On-chain tx history for any wallet: { txs:[{from,amount,token,ts}], count, ts }
 GET  /wallet/score?wallet=     — Activity score 0–100 with grade A–F: { score, grade, breakdown:{activity,volume,age,frequency}, ts }
-POST /compliance/screen        — body:{ wallet } → { risk_level:"low"|"medium"|"high", flags:[], summary, ts }
-GET  /analytics/network        — { head_block, oracle_kta_balance, network:"main", ts }
-GET  /network/health           — { status:"ok"|"degraded", latency_ms, head_block, network:"main", ts }
+POST /compliance/screen        — body:{ wallet, caller? } → { risk_level:"low"|"medium"|"high", flags:[], summary, ts }
+GET  /analytics/network?wallet= — { head_block, oracle_kta_balance, network:"main", ts }
+GET  /network/health?wallet=   — { status:"ok"|"degraded", latency_ms, head_block, network:"main", ts }
 
-### Business tier endpoints (600 KTA)
+### Business tier endpoints (600 KTA) — 429 if quota exceeded
 
-GET  /identity/resolve?q=      — Resolve username or wallet via Keeta Username anchor: { result, query, ts }
-                                 Pass a username (e.g. alice@keeta) or keeta_ address
-POST /kyc/verify               — body:{ wallet? } → { supported_countries:[], wallet, ts } — KYC anchor
-POST /certificate/manage       — body:{ wallet } → { certificates:[], ts } — on-chain DER certificates
-POST /container/seal           — body:{ data } or { plaintext } → { container, ts } — EncryptedContainer
-POST /batch/build              — body:{ seed, operations:[{method,args[],account?}] } → { hashes:[], ts }
-POST /permissions/manage       — body:{ wallet } → { acls:[], ts } — listACLsByPrincipal for wallet
+GET  /identity/resolve?q=&caller= — Resolve username or wallet via Keeta Username anchor: { result, query, ts }
+POST /kyc/verify               — body:{ wallet } → { supported_countries:[], wallet, ts } — KYC anchor
+POST /certificate/manage       — body:{ wallet, caller? } → { certificates:[], ts } — on-chain DER certificates
+POST /container/seal           — body:{ wallet, data } → { container, ts } — EncryptedContainer
+POST /batch/build              — body:{ wallet, operations:[{ method, args[], account? }] } → { hashes:[], ts }
+POST /permissions/manage       — body:{ wallet, caller? } → { acls:[], ts } — listACLsByPrincipal for wallet
+
+### Error responses
+
+403  — Tier too low: { error: "Requires X tier", required, current }
+429  — Quota exceeded: { error: "API quota exceeded", tier, remaining: 0, reset, upgrade }
+401  — wallet param missing
 
 ---
 
@@ -139,7 +147,7 @@ The Oracle overrides the user's frequency setting for large moves:
 ## Whale Alert Classifications
 
 Whale detection scans Keeta chain history on a periodic basis (not every price cycle).
-Classifications: Whale, Institutional, Mega Whale.
+Thresholds: Whale ≥ 10,000 KTA · Institutional ≥ 100,000 KTA · Mega Whale ≥ 1,000,000 KTA
 Free: 1 alert ever. Starter: 3/month. Social, Pro, Business: unlimited.
 The live whale feed on /onboard is locked for Free tier — visible and auto-refreshing for Starter and above.
 
@@ -147,16 +155,18 @@ The live whale feed on /onboard is locked for Free tier — visible and auto-ref
 
 ## AI Market Insights
 
-Every price alert includes an AI-generated market insight calibrated to the price movement, 24h performance, 7d trend, and Keeta payment settlement context. Insight depth by tier:
+Every price alert includes an AI-generated market insight calibrated to the price movement, 24h performance, 7d trend, volume/liquidity, and Keeta payment settlement context. Insight depth by tier:
 - Free: no AI insight
-- Starter: preview-level insight
-- Social, Pro, Business: full institutional-grade insight on every alert
+- Starter: preview-level insight (short directional signal)
+- Social: standard insight (market phase + payment timing context)
+- Pro, Business: full institutional-grade insight (volume conviction, liquidity analysis, 7d trend)
 
 ---
 
 ## Platforms Supported
 
-Discord (webhook URL), Telegram (bot token + chat ID), Slack (webhook URL), X/Twitter (4 API keys). A wallet can register on multiple platforms simultaneously.
+Discord (webhook URL), Telegram (bot token + chat ID), Slack (webhook URL), X/Twitter (4 API keys).
+One platform per wallet. To switch platform or update credentials, re-register at /onboard with the same wallet — all tier data and alert counts are preserved.
 
 ---
 
@@ -185,40 +195,46 @@ Wrong tier showing: just activate again — it re-scans the full on-chain histor
 
 Small moves not alerting: by design — moves under 5% produce no alerts to prevent noise.
 
+Quota exceeded (429): Starter gets 60 total calls, Social gets 150/month, Pro gets 300/month. Business is unlimited. Upgrade at /checkout.
+
 ---
 
-## 19 SDK Tools — Full Catalog (Correct Tier Order)
+## 19 SDK Tools — Full Catalog
 
 ### Free Tier (0.1 KTA) — 5 tools
 
 1. **Live Price Feed** — `GET /price` — Real-time KTA/USD price with 1h, 24h, 7d change + volume/liquidity
 2. **Multi-currency FX Rate** — `GET /rate?currency=EUR` — KTA rate in 160+ fiat currencies via Keeta Anchor FX
 3. **Social Alert Delivery** — `POST /register` — Subscribe wallet to Discord, Telegram, Slack, or X/Twitter alerts
-4. **Subscription Status** — `GET /status?wallet=keeta_xxx` — Check tier, expiry, lifetime flag, alert count
-5. **Live SSE Stream** (Connect AI) — `GET /stream?wallet=keeta_xxx` — EventSource stream for AI agent integration
+4. **Subscription Status** — `GET /status?wallet=keeta_xxx` — Check tier, expiry, lifetime flag, alert count, tools._unlock
+5. **Live SSE Stream** — `GET /stream?wallet=keeta_xxx` — EventSource stream for AI agent integration
 
 ### Starter Tier (10 KTA) — +3 tools (8 total)
 
-6. **Whale Movement Alerts** — `GET /whale/alerts` — Recent large on-chain KTA transactions with classification
-7. **AI Market Insights** — Embedded in alerts — Institutional-grade analysis on every price event
+6. **Whale Movement Alerts** — `GET /whale/alerts?wallet=keeta_xxx` — Recent large on-chain KTA transactions with classification
+7. **AI Market Insights** — Embedded in alerts — Tiered analysis on every price event (preview at Starter, standard at Social, full at Pro/Business)
 8. **Portfolio Value Calculator** — `GET /rate?currency=EUR` — Real-time KTA portfolio valuation via FX
+
+### Social Tier (50 KTA) — same 8 tools, lifetime alert delivery
+
+No new tool endpoints. Upgrade unlocks lifetime social platform alerts that never expire even if Oracle access lapses.
 
 ### Pro Tier (300 KTA) — +5 tools (13 total)
 
-9. **Compliance Screening** — `POST /compliance/screen` — body:{wallet} → {risk_level, flags[], summary}
-10. **Transaction History** — `GET /wallet/history?wallet=` → {txs:[{from,amount,token,ts}], count, ts}
-11. **Wallet Scoring** — `GET /wallet/score?wallet=` → {score:0-100, grade:A-F, breakdown:{activity,volume,age,frequency}}
-12. **On-chain Analytics** — `GET /analytics/network` → {head_block, oracle_kta_balance, network, ts}
-13. **Network Health Monitor** — `GET /network/health` → {status, latency_ms, head_block, network, ts}
+9.  **Compliance Screening** — `POST /compliance/screen` — body:{ wallet, caller? } → { risk_level, flags[], summary, ts }
+10. **Transaction History** — `GET /wallet/history?wallet=` → { txs:[{from,to,amount,token,ts}], count, ts }
+11. **Wallet Scoring** — `GET /wallet/score?wallet=` → { score:0-100, grade:A-F, breakdown:{activity,volume,age,frequency}, ts }
+12. **On-chain Analytics** — `GET /analytics/network?wallet=` → { head_block, oracle_kta_balance, network, ts }
+13. **Network Health Monitor** — `GET /network/health?wallet=` → { status, latency_ms, head_block, network, ts }
 
 ### Business Tier (600 KTA) — +6 tools (19 total)
 
-14. **KYC Verification** — `POST /kyc/verify` — body:{wallet?} → {supported_countries[], wallet, ts} — Keeta KYC anchor
-15. **Certificate Operations** — `POST /certificate/manage` — body:{wallet} → {certificates[], ts} — on-chain DER certs
-16. **Identity Resolution** — `GET /identity/resolve?q=alice@keeta` → {result, query, ts} — Username anchor
-17. **Encrypted Container Operations** — `POST /container/seal` — body:{data} → {container, ts} — EncryptedContainer
-18. **Batch Transaction Builder** — `POST /batch/build` — body:{seed, operations:[{method,args[],account?}]} → {hashes[], ts}
-19. **Permission Management** — `POST /permissions/manage` — body:{wallet} → {acls[], ts} — listACLsByPrincipal
+14. **KYC Verification** — `POST /kyc/verify` — body:{ wallet } → { supported_countries[], wallet, ts }
+15. **Certificate Operations** — `POST /certificate/manage` — body:{ wallet, caller? } → { certificates[], ts }
+16. **Identity Resolution** — `GET /identity/resolve?q=alice@keeta&caller=keeta_xxx` → { result, query, ts }
+17. **Encrypted Container Operations** — `POST /container/seal` — body:{ wallet, data } → { container, ts }
+18. **Batch Transaction Builder** — `POST /batch/build` — body:{ wallet, operations:[{ method, args[], account? }] } → { hashes[], ts }
+19. **Permission Management** — `POST /permissions/manage` — body:{ wallet, caller? } → { acls[], ts }
 
 ---
 
