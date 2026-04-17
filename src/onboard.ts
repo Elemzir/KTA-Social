@@ -1719,6 +1719,7 @@ async function activateOracle(inputId,resultId){
     if(data.success){result.className='form-result ok';result.textContent='✓ '+data.message+(data.socialLifetime?' — Social Agent lifetime included.':'');}
     else{result.className='form-result err';result.textContent=(data.message||data.error||'Activation failed.')+(data.detail?' ('+data.detail+')':'');}
   }catch(e){result.className='form-result err';result.textContent=(e&&e.name==='AbortError'?'Request timed out — the chain scan took too long. Try again.':'Network error — check your connection and try again.');}
+}
 
 async function verifyAndActivate(inputId,resultId){
   var wallet=document.getElementById(inputId).value.trim();
