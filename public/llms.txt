@@ -168,6 +168,15 @@ Every price alert includes an AI-generated market insight calibrated to the pric
 Discord (webhook URL), Telegram (bot token + chat ID), Slack (webhook URL), X/Twitter (4 API keys).
 One platform per wallet. To switch platform or update credentials, re-register at /onboard with the same wallet — all tier data and alert counts are preserved.
 
+## Optional X/Twitter Context Review
+
+For public context around KTA alerts, agents may use TweetClaw through OpenClaw
+as a read-only X/Twitter evidence source. Collect public posts, replies,
+authors, timestamps, URLs, and engagement counts before drafting a follow-up.
+Do not treat public discussion samples as trading advice, private sentiment, or
+permission to publish. Posting, replies, follows, direct messages, monitor
+creation, and webhooks require a separate approval-gated workflow.
+
 ---
 
 ## How to Buy KTA

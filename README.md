@@ -80,6 +80,14 @@ One platform per wallet. To switch platform or update credentials, re-register a
 | Slack | Block message with icon |
 | X / Twitter | Tweet with cashtag, AI quote, price direction |
 
+### Optional X/Twitter Context Review
+
+If you publish KTA alerts to X/Twitter, you can review public conversation
+context before drafting follow-up posts or summaries. See
+[X/Twitter context with TweetClaw](docs/x-twitter-context.md) for a read-only
+OpenClaw workflow that collects public posts, replies, authors, timestamps, and
+links without turning the alert agent into an unattended publisher.
+
 ---
 
 ## Subscription Tiers
