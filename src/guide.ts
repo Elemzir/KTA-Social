@@ -380,7 +380,7 @@ document.addEventListener('click',function(e){var m=document.getElementById('mob
         <div class="step-num">1</div>
         <div class="step-body">
           <h4>Select a tier matching your call volume</h4>
-          <p>Free: 20 calls/day. Starter: 60 total / 30 days. Pro: 300/month. Business: unlimited. All endpoints share the same base URL: <code style="color:var(--gold);font-size:0.8em">https://kta.netrate.workers.dev</code></p>
+          <p>Free: 20 calls/day. Starter: 60 total / 30 days. Pro: 300/month. Business: unlimited. All endpoints share the same base URL: <code style="color:var(--gold);font-size:0.8em">${base}</code></p>
         </div>
       </div>
       <div class="step">
@@ -408,19 +408,19 @@ document.addEventListener('click',function(e){var m=document.getElementById('mob
 
     <div class="gs-title" style="margin-top:36px;font-size:1.1rem">Example API calls</div>
     <div class="code-block"><span class="cm"># Live KTA/USD price</span>
-<span class="hl">GET</span> https://kta.netrate.workers.dev/price
+<span class="hl">GET</span> ${base}/price
 
 <span class="cm"># FX rate — replace EUR with any supported currency</span>
-<span class="hl">GET</span> https://kta.netrate.workers.dev/rate?currency=EUR
+<span class="hl">GET</span> ${base}/rate?currency=EUR
 
 <span class="cm"># Recent whale movements</span>
-<span class="hl">GET</span> https://kta.netrate.workers.dev/whale/alerts
+<span class="hl">GET</span> ${base}/whale/alerts
 
 <span class="cm"># Check wallet tier and expiry</span>
-<span class="hl">GET</span> https://kta.netrate.workers.dev/subscription?wallet=keeta_your_wallet
+<span class="hl">GET</span> ${base}/subscription?wallet=keeta_your_wallet
 
 <span class="cm"># SSE stream — reconnects every 15s</span>
-<span class="hl">GET</span> https://kta.netrate.workers.dev/stream?wallet=keeta_your_wallet</div>
+<span class="hl">GET</span> ${base}/stream?wallet=keeta_your_wallet</div>
 
     <div class="gs-title" style="margin-top:24px;font-size:1.1rem">Response formats</div>
     <div class="code-block"><span class="cm">// GET /price</span>
@@ -496,13 +496,13 @@ document.addEventListener('click',function(e){var m=document.getElementById('mob
         <div class="step-num">C</div>
         <div class="step-body">
           <h4>Add REST tools to your agent definition</h4>
-          <p>Define each Oracle endpoint as an HTTP tool in your agent configuration. Minimal setup — GET requests with no auth headers. The base URL is always <code style="color:var(--gold);font-size:0.8em">https://kta.netrate.workers.dev</code>.</p>
+          <p>Define each Oracle endpoint as an HTTP tool in your agent configuration. Minimal setup — GET requests with no auth headers. The base URL is always <code style="color:var(--gold);font-size:0.8em">${base}</code>.</p>
         </div>
       </div>
     </div>
 
     <div class="code-block" style="margin-top:24px"><span class="cm"># SSE connection (your wallet pre-filled by Connect AI panel)</span>
-<span class="hl">GET</span> https://kta.netrate.workers.dev/stream?wallet=keeta_your_wallet
+<span class="hl">GET</span> ${base}/stream?wallet=keeta_your_wallet
 
 <span class="cm"># SSE payload format (received every 15s)</span>
 event: price
@@ -512,7 +512,7 @@ data: { <span class="hl">"wallet"</span>: "keeta_...", <span class="hl">"tier"</
 You have access to live KTA price data via KTA Oracle.
 Use GET /price for current price, GET /rate?currency= for FX rates,
 GET /whale/alerts for large on-chain movements.
-Base URL: https://kta.netrate.workers.dev
+Base URL: ${base}
 All responses are JSON. No authentication required for public endpoints.</div>
 
     <div class="gs-title" style="margin-top:48px;font-size:1.15rem">Platform-specific connector setup</div>
@@ -539,9 +539,9 @@ All responses are JSON. No authentication required for public endpoints.</div>
 }
 
 <span class="cm">// Tool execution — fetch Oracle and return result</span>
-<span class="hl">GET</span> https://kta.netrate.workers.dev/price
-<span class="hl">GET</span> https://kta.netrate.workers.dev/rate?currency=EUR
-<span class="hl">GET</span> https://kta.netrate.workers.dev/whale/alerts</div>
+<span class="hl">GET</span> ${base}/price
+<span class="hl">GET</span> ${base}/rate?currency=EUR
+<span class="hl">GET</span> ${base}/whale/alerts</div>
     </div>
 
     <div class="guide-card" style="margin-bottom:14px">
@@ -553,7 +553,7 @@ info:
   title: KTA Oracle
   version: "1.0"
 servers:
-  - url: https://kta.netrate.workers.dev
+  - url: ${base}
 paths:
   /price:
     get:
@@ -594,7 +594,7 @@ paths:
 }
 
 <span class="cm">// On tool_call response, execute and return</span>
-const res = await fetch("https://kta.netrate.workers.dev/price");
+const res = await fetch("${base}/price");
 const data = await res.json();
 <span class="cm">// Return as tool message with tool_call_id</span></div>
     </div>
@@ -608,19 +608,19 @@ import requests
 
 kta_price_tool = Tool(
     name="kta_price",
-    func=lambda _: requests.get("https://kta.netrate.workers.dev/price").json(),
+    func=lambda _: requests.get("${base}/price").json(),
     description="Returns live KTA/USD price and 1h/24h/7d change percentages"
 )
 
 kta_rate_tool = Tool(
     name="kta_rate",
-    func=lambda currency: requests.get(f"https://kta.netrate.workers.dev/rate?currency={currency}").json(),
+    func=lambda currency: requests.get(f"${base}/rate?currency={currency}").json(),
     description="Convert KTA to fiat. Input: currency code like EUR, GBP, SEK"
 )
 
 <span class="cm"># SSE stream in Python (for live price push)</span>
 import sseclient, requests
-stream = requests.get("https://kta.netrate.workers.dev/stream?wallet=keeta_your_wallet", stream=True)
+stream = requests.get("${base}/stream?wallet=keeta_your_wallet", stream=True)
 for event in sseclient.SSEClient(stream):
     print(event.data)</div>
     </div>

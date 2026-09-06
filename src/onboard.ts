@@ -1219,10 +1219,22 @@ async function submitRegister(){
     var r=await fetch('${appUrl}/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     var txt=await r.text();
     var d;try{d=JSON.parse(txt);}catch(pe){res.className='form-result err';res.textContent='Server error ('+r.status+'). Reload and try again.';return;}
-    if(d.ok){_saveWebhooks(wallet,platform,body);res.className='form-result ok';res.textContent='✓ '+(_regIsUpdate?'Settings saved':'Registered')+' — '+d.status+'. Alerts start on next cycle.';}
+    if(d.ok){_saveWebhooks(wallet,platform,body);res.className='form-result ok';res.innerHTML='✓ '+(_regIsUpdate?'Settings saved':'Registered')+' — '+d.status+'. Alerts start on next cycle. <div style="margin-top:8px"><button onclick="sendTestAlert(\''+wallet+'\')" class="btn-sm" style="padding:4px 10px;font-size:0.75rem">Send test alert</button><span id="test-alert-res" style="margin-left:8px;font-size:0.75rem"></span></div>';}
     else if(r.status===402){res.className='form-result err';res.innerHTML='<strong>Payment required</strong><br>'+(d.message||'Send at least 0.1 KTA to the oracle wallet first.')+(d.oracle_wallet?'<br><br><span style="font-size:.78rem">Oracle wallet:</span><br><code style="font-size:.72rem;word-break:break-all">'+d.oracle_wallet+'</code>':'');}
     else{res.className='form-result err';res.textContent=d.error||'Failed — try again.';}
   }catch(e){res.className='form-result err';res.textContent='Request failed: '+(e&&e.message?e.message:'check connection and try again.');}
+}
+
+async function sendTestAlert(wallet){
+  var el=document.getElementById('test-alert-res');
+  if(!el)return;
+  el.textContent='Testing…';
+  try{
+    var r=await fetch('${appUrl}/test-alert',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet})});
+    var d=await r.json();
+    if(d.ok)el.textContent='✓ Test alert sent!';
+    else el.textContent='Delivery failed: '+(d.error||'Check webhook');
+  }catch(e){el.textContent='Test error';}
 }
 
 async function checkStatus(){
@@ -1507,8 +1519,15 @@ ${priceBar(appUrl)}
       <div class="info-strip">Send <strong id="kta-amount-inline">—</strong> KTA from your registered wallet to the address below. Amounts accumulate — multiple payments add up. <strong>No auto-billing</strong> — you pay manually when you need access.</div>
       <div class="wallet-block">
         <div class="wbl-label">Oracle wallet — all tiers <span>Keeta Network</span></div>
-        <div class="wbl-addr" onclick="copyAddr(this,'cc-kta')">${oracleWallet}</div>
-        <div class="copy-hint">${icon('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', 12)} Click address to copy &nbsp;·&nbsp; Send from your <strong style="color:#fff">registered</strong> wallet<span class="copy-confirm" id="cc-kta">Copied!</span></div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <div style="flex:1;min-width:220px">
+            <div class="wbl-addr" onclick="copyAddr(this,'cc-kta')">${oracleWallet}</div>
+            <div class="copy-hint">${icon('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', 12)} Click address to copy &nbsp;·&nbsp; Send from your <strong style="color:#fff">registered</strong> wallet<span class="copy-confirm" id="cc-kta">Copied!</span></div>
+          </div>
+          <div style="background:#000;padding:5px;border-radius:8px;border:1px solid var(--gold-border);flex-shrink:0">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=92x92&data=${oracleWallet}&bgcolor=000000&color=C4A35A" width="92" height="92" alt="Deposit QR Code" style="display:block;border-radius:4px" />
+          </div>
+        </div>
       </div>
       <div class="workflow">
         <div class="wf-step"><div class="wf-num">1</div><div class="wf-body"><h4>Send KTA to the oracle wallet</h4><p>From your registered Keeta wallet. Total sent from your address determines your tier.</p></div></div>
@@ -1874,10 +1893,17 @@ ${header("donate")}
     </div>
     <div style="font-size:0.72rem;color:var(--muted2);margin-bottom:16px">You are donating: <strong style="color:var(--gold)" id="amt-display">${lifetimeKta} KTA</strong> <span id="amt-usd-inline" style="color:var(--muted)"></span></div>
 
-    <div class="wallet-block" onclick="copyAddr(this,'cc-don')">
+    <div class="wallet-block">
       <div class="wbl-label">Donation wallet <span>Keeta Network</span></div>
-      <div class="wbl-addr">${oracleWallet}</div>
-      <div class="copy-hint">${icon('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',12)} Click to copy address<span class="copy-confirm" id="cc-don">Copied!</span></div>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px">
+          <div class="wbl-addr" onclick="copyAddr(this,'cc-don')">${oracleWallet}</div>
+          <div class="copy-hint">${icon('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',12)} Click to copy address<span class="copy-confirm" id="cc-don">Copied!</span></div>
+        </div>
+        <div style="background:#000;padding:5px;border-radius:8px;border:1px solid var(--gold-border);flex-shrink:0">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=92x92&data=${oracleWallet}&bgcolor=000000&color=C4A35A" width="92" height="92" alt="Donation QR Code" style="display:block;border-radius:4px" />
+        </div>
+      </div>
     </div>
 
     <div class="donate-steps">

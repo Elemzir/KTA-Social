@@ -1,6 +1,6 @@
 import type { Env, SocialSubscriber, AlertFrequency, SocialPlatform } from "./types.js";
 import { requireInternalAuth, requireDevAuth, sanitiseWallet }        from "./auth.js";
-import { getSubscribers, saveSubscribers, trialLimit, lifetimeKta }   from "./store.js";
+import { getSubscribers, saveSubscribers, getSubscriber, saveSubscriber, trialLimit, lifetimeKta }   from "./store.js";
 import {
   buildPriceAlert, buildWhaleAlert,
   buildDiscordPriceEmbed, buildDiscordWhaleEmbed, buildTwitterPrice, buildTwitterWhale,
@@ -423,6 +423,9 @@ export default {
     if (method === "POST" && pathname === "/support")
       return await handleSupport(request, env, corsHeaders);
 
+    if (method === "POST" && pathname === "/test-alert")
+      return await handleTestAlert(request, env, corsHeaders);
+
     if (method === "OPTIONS")
       return new Response(null, { headers: { ...corsHeaders, "Access-Control-Allow-Methods": "GET,POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type,X-Internal-Secret" } });
 
@@ -673,138 +676,148 @@ async function broadcastToSubscribers(
   const updated: SocialSubscriber[] = [];
   let dirty = false;
 
-  for (const sub of subscribers) {
-    const isDev = !!(devWallet && sub.wallet.toLowerCase() === devWallet);
+  const BATCH_SIZE = 10;
+  for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
+    const chunk = subscribers.slice(i, i + BATCH_SIZE);
+    const chunkResults = await Promise.all(chunk.map(async (sub) => {
+      let subDirty = false;
+      const isDev = !!(devWallet && sub.wallet.toLowerCase() === devWallet);
 
-    if (!isDev && !sub.paid && sub.alertCount >= TRIAL) {
-      updated.push(sub);
-      continue;
-    }
-
-    const freq        = sub.frequency ?? "15min";
-    const isDigest    = DIGEST_FREQS.includes(freq as AlertFrequency);
-    const pctThresh   = CHANGE_PCT[freq as AlertFrequency];
-    const silenceMs   = now - (sub.lastAlertAt ?? 0);
-    let   intervalMet: boolean;
-    if (changeLevel === "extreme") {
-      intervalMet = silenceMs >= 5 * 60_000;
-    } else if (changeLevel === "major") {
-      intervalMet = silenceMs >= 30 * 60_000;
-    } else if (changeLevel === "notable") {
-      intervalMet = silenceMs >= 60 * 60_000;
-    } else if (changeLevel === "normal") {
-      intervalMet = silenceMs >= 4 * 60 * 60_000;
-    } else if (pctThresh !== undefined) {
-      const cooldownMet = silenceMs >= PCT_COOLDOWN;
-      const lastP       = sub.lastAlertPrice ?? 0;
-      const pctMoved    = lastP > 0 ? Math.abs((price - lastP) / lastP * 100) : 100;
-      intervalMet       = cooldownMet && pctMoved >= pctThresh;
-    } else {
-      intervalMet = silenceMs >= (FREQ_MS[freq as AlertFrequency] ?? FREQ_MS["15min"]!);
-    }
-
-    if (!intervalMet) {
-      updated.push(sub);
-      continue;
-    }
-
-    const currency      = (sub.currency ?? "USD").toUpperCase();
-    const convertedPrice = currency !== "USD" ? (fxPrices.get(currency) ?? undefined) : undefined;
-    const socialLife    = !!(sub.socialLifetime ?? sub.paid);
-    const isExpired     = sub.expiresAt ? sub.expiresAt < now : false;
-    const isOracle      = !isExpired || sub.tier === "free";
-
-    if (!isDev && isExpired && !socialLife) {
-      updated.push(sub);
-      continue;
-    }
-
-    if (!isDev && sub.expiresAt && !sub.reminderSent) {
-      const hoursLeft = (sub.expiresAt - now) / 3_600_000;
-      if (hoursLeft <= 24 && hoursLeft > 0) {
-        const tierLabel = sub.tier ?? "Oracle";
-        try {
-          if (sub.platform === "discord" && sub.discordWebhook)
-            await sendDiscord(sub.discordWebhook, buildExpiryReminderDiscord(appUrl, tierLabel, hoursLeft), iconUrl);
-          if (sub.platform === "telegram" && sub.telegramBotToken && sub.telegramChatId)
-            await sendTelegram(sub.telegramBotToken, sub.telegramChatId, buildExpiryReminderText(appUrl, tierLabel, hoursLeft));
-          if (sub.platform === "slack" && sub.slackWebhook)
-            await sendSlack(sub.slackWebhook, buildExpiryReminderText(appUrl, tierLabel, hoursLeft), iconUrl);
-        } catch {}
-        sub.reminderSent = true;
-        dirty = true;
+      if (!isDev && !sub.paid && sub.alertCount >= TRIAL) {
+        return { sub, dirty: false };
       }
-    }
 
-    const aiQuote = pickQuote(sub.tier, quotePreview, quoteStandard, quoteFull);
+      const freq        = sub.frequency ?? "15min";
+      const isDigest    = DIGEST_FREQS.includes(freq as AlertFrequency);
+      const pctThresh   = CHANGE_PCT[freq as AlertFrequency];
+      const silenceMs   = now - (sub.lastAlertAt ?? 0);
+      let   intervalMet: boolean;
+      if (changeLevel === "extreme") {
+        intervalMet = silenceMs >= 5 * 60_000;
+      } else if (changeLevel === "major") {
+        intervalMet = silenceMs >= 30 * 60_000;
+      } else if (changeLevel === "notable") {
+        intervalMet = silenceMs >= 60 * 60_000;
+      } else if (changeLevel === "normal") {
+        intervalMet = silenceMs >= 4 * 60 * 60_000;
+      } else if (pctThresh !== undefined) {
+        const cooldownMet = silenceMs >= PCT_COOLDOWN;
+        const lastP       = sub.lastAlertPrice ?? 0;
+        const pctMoved    = lastP > 0 ? Math.abs((price - lastP) / lastP * 100) : 100;
+        intervalMet       = cooldownMet && pctMoved >= pctThresh;
+      } else {
+        intervalMet = silenceMs >= (FREQ_MS[freq as AlertFrequency] ?? FREQ_MS["15min"]!);
+      }
 
-    const celebType: CelebType | null = !sub.firstAlertSent
-      ? ((sub.paid || sub.socialLifetime) ? "lifetime_welcome" : "trial_welcome")
-      : sub.celebPending ?? null;
-    const celebTier      = sub.tier ?? (sub.paid ? "social" : "free");
-    const celebRemaining = TRIAL - sub.alertCount - 1;
+      if (!intervalMet) {
+        return { sub, dirty: false };
+      }
 
-    try {
-      if (sub.platform === "discord" && sub.discordWebhook) {
-        const pricePayload = buildDiscordPriceEmbed(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, volume24h, aiQuote, socialLife, TRIAL);
-        const finalPayload = celebType
-          ? prependCelebEmbed(pricePayload, buildCelebEmbed(celebType, appUrl, celebTier, celebRemaining))
-          : pricePayload;
-        await sendDiscord(sub.discordWebhook, finalPayload, iconUrl);
-        if (whale && isOracle && canReceiveWhale(sub)) {
-          await sendDiscord(sub.discordWebhook,
-            buildDiscordWhaleEmbed(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, socialLife, TRIAL), iconUrl);
-          chargeWhale(sub);
+      const currency      = (sub.currency ?? "USD").toUpperCase();
+      const convertedPrice = currency !== "USD" ? (fxPrices.get(currency) ?? undefined) : undefined;
+      const socialLife    = !!(sub.socialLifetime ?? sub.paid);
+      const isExpired     = sub.expiresAt ? sub.expiresAt < now : false;
+      const isOracle      = !isExpired || sub.tier === "free";
+
+      if (!isDev && isExpired && !socialLife) {
+        return { sub, dirty: false };
+      }
+
+      if (!isDev && sub.expiresAt && !sub.reminderSent) {
+        const hoursLeft = (sub.expiresAt - now) / 3_600_000;
+        if (hoursLeft <= 24 && hoursLeft > 0) {
+          const tierLabel = sub.tier ?? "Oracle";
+          try {
+            if (sub.platform === "discord" && sub.discordWebhook)
+              await sendDiscord(sub.discordWebhook, buildExpiryReminderDiscord(appUrl, tierLabel, hoursLeft), iconUrl);
+            if (sub.platform === "telegram" && sub.telegramBotToken && sub.telegramChatId)
+              await sendTelegram(sub.telegramBotToken, sub.telegramChatId, buildExpiryReminderText(appUrl, tierLabel, hoursLeft));
+            if (sub.platform === "slack" && sub.slackWebhook)
+              await sendSlack(sub.slackWebhook, buildExpiryReminderText(appUrl, tierLabel, hoursLeft), iconUrl);
+          } catch {}
+          sub.reminderSent = true;
+          subDirty = true;
         }
       }
 
-      if (sub.platform === "telegram" && sub.telegramBotToken && sub.telegramChatId) {
-        const prefix = celebType ? buildCelebText(celebType, appUrl, celebTier, celebRemaining) : "";
-        await sendTelegram(sub.telegramBotToken, sub.telegramChatId,
-          prefix + buildPriceAlert(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, volume24h, aiQuote, TRIAL));
-        if (whale && isOracle && canReceiveWhale(sub)) {
+      const aiQuote = pickQuote(sub.tier, quotePreview, quoteStandard, quoteFull);
+
+      const celebType: CelebType | null = !sub.firstAlertSent
+        ? ((sub.paid || sub.socialLifetime) ? "lifetime_welcome" : "trial_welcome")
+        : sub.celebPending ?? null;
+      const celebTier      = sub.tier ?? (sub.paid ? "social" : "free");
+      const celebRemaining = TRIAL - sub.alertCount - 1;
+
+      try {
+        if (sub.platform === "discord" && sub.discordWebhook) {
+          const pricePayload = buildDiscordPriceEmbed(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, volume24h, aiQuote, socialLife, TRIAL);
+          const finalPayload = celebType
+            ? prependCelebEmbed(pricePayload, buildCelebEmbed(celebType, appUrl, celebTier, celebRemaining))
+            : pricePayload;
+          await sendDiscord(sub.discordWebhook, finalPayload, iconUrl);
+          if (whale && isOracle && canReceiveWhale(sub)) {
+            await sendDiscord(sub.discordWebhook,
+              buildDiscordWhaleEmbed(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, socialLife, TRIAL), iconUrl);
+            chargeWhale(sub);
+          }
+        }
+
+        if (sub.platform === "telegram" && sub.telegramBotToken && sub.telegramChatId) {
+          const prefix = celebType ? buildCelebText(celebType, appUrl, celebTier, celebRemaining) : "";
           await sendTelegram(sub.telegramBotToken, sub.telegramChatId,
-            buildWhaleAlert(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, currency, undefined, change7d, TRIAL));
-          chargeWhale(sub);
+            prefix + buildPriceAlert(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, volume24h, aiQuote, TRIAL));
+          if (whale && isOracle && canReceiveWhale(sub)) {
+            await sendTelegram(sub.telegramBotToken, sub.telegramChatId,
+              buildWhaleAlert(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, currency, undefined, change7d, TRIAL));
+            chargeWhale(sub);
+          }
         }
-      }
 
-      if (sub.platform === "slack" && sub.slackWebhook) {
-        const prefix = celebType ? buildCelebText(celebType, appUrl, celebTier, celebRemaining) : "";
-        await sendSlack(sub.slackWebhook,
-          prefix + buildPriceAlert(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, volume24h, aiQuote, TRIAL), iconUrl);
-        if (whale && isOracle && canReceiveWhale(sub)) {
+        if (sub.platform === "slack" && sub.slackWebhook) {
+          const prefix = celebType ? buildCelebText(celebType, appUrl, celebTier, celebRemaining) : "";
           await sendSlack(sub.slackWebhook,
-            buildWhaleAlert(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, currency, undefined, change7d, TRIAL), iconUrl);
-          chargeWhale(sub);
+            prefix + buildPriceAlert(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, volume24h, aiQuote, TRIAL), iconUrl);
+          if (whale && isOracle && canReceiveWhale(sub)) {
+            await sendSlack(sub.slackWebhook,
+              buildWhaleAlert(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, currency, undefined, change7d, TRIAL), iconUrl);
+            chargeWhale(sub);
+          }
         }
-      }
 
-      if (sub.platform === "twitter" && sub.twitterCreds) {
-        await postTweet(sub,
-          buildTwitterPrice(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, null, aiQuote, TRIAL));
-        if (whale && isOracle && canReceiveWhale(sub)) {
+        if (sub.platform === "twitter" && sub.twitterCreds) {
           await postTweet(sub,
-            buildTwitterWhale(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, TRIAL));
-          chargeWhale(sub);
+            buildTwitterPrice(price, priceChange, change24h, 0, sub.alertCount, sub.paid, appUrl, currency, convertedPrice, change7d, null, aiQuote, TRIAL));
+          if (whale && isOracle && canReceiveWhale(sub)) {
+            await postTweet(sub,
+              buildTwitterWhale(price, whale.amountKta, whale.classification, sub.alertCount, sub.paid, appUrl, TRIAL));
+            chargeWhale(sub);
+          }
         }
+
+        sub.alertCount     += 1;
+        sub.lastAlertAt      = now;
+        sub.lastAlertPrice   = price;
+        if (!sub.firstAlertSent) sub.firstAlertSent = true;
+        if (sub.celebPending)    sub.celebPending   = undefined;
+        subDirty = true;
+
+        if (!isDev && !sub.paid && sub.alertCount === TRIAL - 1)
+          await sendTrialWarning(env, sub);
+        if (!isDev && !sub.paid && sub.alertCount === TRIAL)
+          await sendTrialExhausted(env, sub);
+
+      } catch {}
+
+      return { sub, dirty: subDirty };
+    }));
+
+    for (const item of chunkResults) {
+      updated.push(item.sub);
+      if (item.dirty) {
+        dirty = true;
+        await env.KV.put(`sub:${item.sub.wallet.toLowerCase()}`, JSON.stringify(item.sub));
       }
-
-      sub.alertCount     += 1;
-      sub.lastAlertAt      = now;
-      sub.lastAlertPrice   = price;
-      if (!sub.firstAlertSent) sub.firstAlertSent = true;
-      if (sub.celebPending)    sub.celebPending   = undefined;
-      dirty = true;
-
-      if (!isDev && !sub.paid && sub.alertCount === TRIAL - 1)
-        await sendTrialWarning(env, sub);
-      if (!isDev && !sub.paid && sub.alertCount === TRIAL)
-        await sendTrialExhausted(env, sub);
-
-    } catch {}
-
-    updated.push(sub);
+    }
   }
 
   if (dirty) await saveSubscribers(env, updated);
@@ -1014,6 +1027,7 @@ async function handleRegister(request: Request, env: Env, ctx?: ExecutionContext
   if (existingIdx !== -1) existing[existingIdx] = sub;
   else existing.push(sub);
   await saveSubscribers(env, existing);
+  await env.KV.put(`sub:${wallet.toLowerCase()}`, JSON.stringify(sub));
 
   // For existing subscriber updates, refresh subscription tier in background
   if (ctx && existingIdx !== -1 && !isDev) {
@@ -1202,12 +1216,11 @@ async function handleStatus(searchParams: URLSearchParams, env: Env): Promise<Re
   const TRIAL    = trialLimit(env);
   const LIFETIME = lifetimeKta(env);
 
-  const [subscribers, oracleR] = await Promise.all([
-    getSubscribers(env),
+  const [sub, oracleR] = await Promise.all([
+    getSubscriber(env, wallet),
     oracleFetch(env, `/subscription?wallet=${encodeURIComponent(wallet)}`).catch(() => null),
   ]);
 
-  const sub = subscribers.find(s => s.wallet === wallet);
   let oracle = oracleR?.ok ? await oracleR.json() as Record<string, unknown> : null;
   let oracleTier = typeof oracle?.tier === "string" && oracle.tier !== "unregistered" ? oracle.tier : null;
 
@@ -1682,4 +1695,34 @@ async function handleDevSupportReply(request: Request, env: Env): Promise<Respon
     await sendReplyEmail(env.RESEND_API_KEY, String(ticket.email), String(ticket.name ?? "there"), String(ticket.message ?? ""), reply);
 
   return Response.json({ ok: true, ticketId });
+}
+
+async function handleTestAlert(request: Request, env: Env, corsHeaders: Record<string, string>): Promise<Response> {
+  let body: Record<string, unknown>;
+  try { body = await request.json() as Record<string, unknown>; }
+  catch { return Response.json({ error: "Invalid JSON" }, { status: 400, headers: corsHeaders }); }
+
+  const wallet = sanitiseWallet(body.wallet);
+  if (!wallet) return Response.json({ error: "wallet required" }, { status: 400, headers: corsHeaders });
+
+  const sub = await getSubscriber(env, wallet);
+  if (!sub) return Response.json({ error: "Wallet not registered" }, { status: 404, headers: corsHeaders });
+
+  const appUrl = env.APP_URL;
+  const iconUrl = `${appUrl}/icon.png`;
+  let sent = false;
+
+  try {
+    if (sub.platform === "discord" && sub.discordWebhook) {
+      sent = await sendDiscord(sub.discordWebhook, {
+        content: "✓ KTA Oracle alert delivery verified.",
+      }, iconUrl);
+    } else if (sub.platform === "telegram" && sub.telegramBotToken && sub.telegramChatId) {
+      sent = await sendTelegram(sub.telegramBotToken, sub.telegramChatId, "✓ *KTA Oracle alert delivery verified.*");
+    } else if (sub.platform === "slack" && sub.slackWebhook) {
+      sent = await sendSlack(sub.slackWebhook, "✓ KTA Oracle alert delivery verified.", iconUrl);
+    }
+  } catch {}
+
+  return Response.json({ ok: sent, platform: sub.platform }, { headers: corsHeaders });
 }

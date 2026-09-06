@@ -40,6 +40,26 @@ export async function saveSubscribers(env: Env, subs: SocialSubscriber[]): Promi
   ]);
 }
 
+export async function getSubscriber(env: Env, wallet: string): Promise<SocialSubscriber | null> {
+  const norm = wallet.toLowerCase();
+  const direct = await env.KV.get<SocialSubscriber>(`sub:${norm}`, "json");
+  if (direct) return direct;
+  const all = await getSubscribers(env);
+  const found = all.find(s => s.wallet.toLowerCase() === norm) ?? null;
+  if (found) await env.KV.put(`sub:${norm}`, JSON.stringify(found));
+  return found;
+}
+
+export async function saveSubscriber(env: Env, sub: SocialSubscriber): Promise<void> {
+  const norm = sub.wallet.toLowerCase();
+  await env.KV.put(`sub:${norm}`, JSON.stringify(sub));
+  const all = await getSubscribers(env);
+  const idx = all.findIndex(s => s.wallet.toLowerCase() === norm);
+  if (idx >= 0) all[idx] = sub;
+  else all.push(sub);
+  await saveSubscribers(env, all);
+}
+
 export function trialLimit(env: Env): number {
   return parseInt(env.TRIAL_LIMIT ?? "100");
 }

@@ -41,56 +41,86 @@ async function twitterOAuthHeader(
     .join(", ");
 }
 
-export async function sendDiscord(webhook: string, payload: object, iconUrl?: string): Promise<void> {
+export async function sendDiscord(webhook: string, payload: object, iconUrl?: string): Promise<boolean> {
   const body = iconUrl
     ? { username: AGENT_NAME, avatar_url: iconUrl, ...(payload as Record<string, unknown>) }
     : payload;
-  await fetch(webhook, {
-    method:  "POST",
-    headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify(body),
-  });
+  try {
+    const r = await fetch(webhook, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(body),
+      signal:  AbortSignal.timeout(6000),
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
 }
 
-export async function sendTelegram(botToken: string, chatId: string, text: string): Promise<void> {
-  await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-    method:  "POST",
-    headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ chat_id: chatId, text, parse_mode: "Markdown", disable_web_page_preview: true }),
-  });
+export async function sendTelegram(botToken: string, chatId: string, text: string): Promise<boolean> {
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ chat_id: chatId, text, parse_mode: "Markdown", disable_web_page_preview: true }),
+      signal:  AbortSignal.timeout(6000),
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
 }
 
-export async function sendSlack(webhook: string, text: string, iconUrl?: string): Promise<void> {
+export async function sendSlack(webhook: string, text: string, iconUrl?: string): Promise<boolean> {
   const body: Record<string, unknown> = { text, username: AGENT_NAME };
   if (iconUrl) body.icon_url = iconUrl;
-  await fetch(webhook, {
-    method:  "POST",
-    headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify(body),
-  });
+  try {
+    const r = await fetch(webhook, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(body),
+      signal:  AbortSignal.timeout(6000),
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
 }
 
 export async function postTweet(
   sub: SocialSubscriber, text: string | null,
-): Promise<void> {
-  if (!sub.twitterCreds || !text) return;
-  const { apiKey, apiSecret, accessToken, accessSecret } = sub.twitterCreds;
-  const url    = "https://api.twitter.com/2/tweets";
-  const header = await twitterOAuthHeader("POST", url, apiKey, apiSecret, accessToken, accessSecret);
-  await fetch(url, {
-    method:  "POST",
-    headers: { "Authorization": header, "Content-Type": "application/json" },
-    body:    JSON.stringify({ text }),
-  });
+): Promise<boolean> {
+  if (!sub.twitterCreds || !text) return false;
+  try {
+    const { apiKey, apiSecret, accessToken, accessSecret } = sub.twitterCreds;
+    const url    = "https://api.twitter.com/2/tweets";
+    const header = await twitterOAuthHeader("POST", url, apiKey, apiSecret, accessToken, accessSecret);
+    const r = await fetch(url, {
+      method:  "POST",
+      headers: { "Authorization": header, "Content-Type": "application/json" },
+      body:    JSON.stringify({ text }),
+      signal:  AbortSignal.timeout(6000),
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
 }
 
-export async function sendDevTwitter(env: Env, text: string | null): Promise<void> {
-  if (!text || !env.TWITTER_API_KEY || !env.TWITTER_API_SECRET || !env.TWITTER_ACCESS_TOKEN || !env.TWITTER_ACCESS_SECRET) return;
-  const url    = "https://api.twitter.com/2/tweets";
-  const header = await twitterOAuthHeader("POST", url, env.TWITTER_API_KEY, env.TWITTER_API_SECRET, env.TWITTER_ACCESS_TOKEN, env.TWITTER_ACCESS_SECRET);
-  await fetch(url, {
-    method:  "POST",
-    headers: { "Authorization": header, "Content-Type": "application/json" },
-    body:    JSON.stringify({ text }),
-  });
+export async function sendDevTwitter(env: Env, text: string | null): Promise<boolean> {
+  if (!text || !env.TWITTER_API_KEY || !env.TWITTER_API_SECRET || !env.TWITTER_ACCESS_TOKEN || !env.TWITTER_ACCESS_SECRET) return false;
+  try {
+    const url    = "https://api.twitter.com/2/tweets";
+    const header = await twitterOAuthHeader("POST", url, env.TWITTER_API_KEY, env.TWITTER_API_SECRET, env.TWITTER_ACCESS_TOKEN, env.TWITTER_ACCESS_SECRET);
+    const r = await fetch(url, {
+      method:  "POST",
+      headers: { "Authorization": header, "Content-Type": "application/json" },
+      body:    JSON.stringify({ text }),
+      signal:  AbortSignal.timeout(6000),
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
 }
