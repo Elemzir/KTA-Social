@@ -1,4 +1,4 @@
-import { BASE_CSS } from './onboard.js';
+import { BASE_CSS, header, footer, agentWidget } from './onboard.js';
 
 export function renderGuide(appUrl: string): string {
   const base = appUrl || '';
@@ -90,42 +90,8 @@ export function renderGuide(appUrl: string): string {
 </style>
 </head>
 <body>
-<header class="hdr">
-  <div class="hdr-inner">
-    <div style="display:flex;align-items:center;gap:8px">
-      <a href="/onboard" class="logo">
-        <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/></svg></div>
-        KTA <em>Oracle</em>
-      </a>
-      <div style="width:1px;height:16px;background:#1e1e1e;margin:0 2px;flex-shrink:0"></div>
-      <a href="/oracle" class="nav-oracle-pill"><span class="live-dot" style="width:5px;height:5px;flex-shrink:0"></span>Oracle</a>
-      <a href="/guide" class="nav-guide-pill active">Guide</a>
-    </div>
-    <nav class="nav">
-      <a href="/onboard">Onboard</a>
-      <a href="/checkout">Pricing</a>
-      <a href="/tools">Tools</a>
-      <a href="/donate" class="nav-donate">Donate</a>
-      <a href="/tools#ai" class="nav-ai-btn">Connect AI</a>
-      <a href="/checkout" class="nav-cta">Get access →</a>
-    </nav>
-    <button class="hbg" id="hbg-btn" onclick="toggleMobNav()" aria-label="Menu"><span></span><span></span><span></span></button>
-  </div>
-</header>
-<nav class="mob-nav" id="mob-nav">
-  <a href="/oracle">Oracle</a>
-  <a href="/onboard">Onboard</a>
-  <a href="/guide" class="mob-active">Guide</a>
-  <a href="/checkout">Pricing</a>
-  <a href="/tools">Tools</a>
-  <a href="/donate" class="mob-donate">Donate</a>
-  <a href="/tools#ai" class="mob-ai">Connect AI</a>
-  <a href="/checkout" class="mob-cta">Get access →</a>
-</nav>
-<script>
-function toggleMobNav(){var b=document.getElementById('hbg-btn'),m=document.getElementById('mob-nav');if(!b||!m)return;b.classList.toggle('is-open');m.classList.toggle('is-open');}
-document.addEventListener('click',function(e){var m=document.getElementById('mob-nav'),b=document.getElementById('hbg-btn');if(!m||!m.classList.contains('is-open'))return;if(!m.contains(e.target)&&(!b||!b.contains(e.target))){m.classList.remove('is-open');if(b)b.classList.remove('is-open');}});
-</script>
+${header("guide")}
+<main id="page-root">
 
 <div class="guide-hero">
   <div style="display:inline-flex;align-items:center;gap:8px;background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--gold);font-size:0.72rem;font-weight:700;padding:5px 14px;border-radius:100px;margin-bottom:24px;letter-spacing:0.05em;text-transform:uppercase">
@@ -680,21 +646,6 @@ for event in sseclient.SSEClient(stream):
 
 </div>
 
-<footer style="border-top:1px solid #080808;padding:32px 28px;text-align:center;color:var(--muted2);font-size:0.76rem;margin-top:32px">
-  <div style="display:flex;justify-content:center;gap:24px;margin-bottom:12px;flex-wrap:wrap">
-    <a href="/onboard" style="color:var(--muted2)">Onboard</a>
-    <a href="/oracle" style="color:var(--muted2)">Oracle</a>
-    <a href="/tools" style="color:var(--muted2)">Tools</a>
-    <a href="/checkout" style="color:var(--muted2)">Pricing</a>
-    <a href="/donate" style="color:var(--muted2)">Donate</a>
-    <a href="/legal" style="color:var(--muted2)">Legal</a>
-    <a href="/privacy" style="color:var(--muted2)">Privacy</a>
-    <a href="https://x.com/elemzir" target="_blank" rel="noopener" style="color:var(--muted2)">@elemzir</a>
-  </div>
-  <div style="margin-bottom:8px">KTA Oracle Agent &nbsp;·&nbsp; Powered by Keeta Network &nbsp;·&nbsp; Sweden, EU</div>
-  <div style="font-size:0.71rem;letter-spacing:0.03em">&copy; 2026 ELEMZIR. All rights reserved.</div>
-</footer>
-
 <script>
 function showAudience(id, btn) {
   document.querySelectorAll('.audience-section').forEach(function(el){el.classList.remove('show');});
@@ -716,6 +667,9 @@ function showPlatform(id, btn) {
   if(pg) pg.classList.add('show');
 }
 </script>
+</main>
+${footer()}
+${agentWidget()}
 </body>
 </html>`;
 }

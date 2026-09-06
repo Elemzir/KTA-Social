@@ -414,17 +414,56 @@ Write a precise market insight under ${maxChars} characters. Lead with market st
   }
 }
 
+function getKnowledgeReply(msg: string): string {
+  const m = msg.toLowerCase();
+
+  if (/^(hi|hello|hey|yo|sup|greetings|start)(\b|[!?.,\s])/.test(m) || m.length <= 4) {
+    return "Hey! I'm the KTA Oracle Agent. I can help you with tiers (Free, Starter, Social, Pro, Business), wallet activation, tools, payments, or setting up social alerts. What would you like to know?";
+  }
+
+  if (/(tier|plan|starter|social|pro|business|free|benefit|accumulat)/.test(m)) {
+    return "KTA Oracle has 5 tiers based on accumulated KTA sent to the oracle wallet:\n• Free (0.1 KTA): 5 tools, 5-day trial, 100 alerts\n• Starter (10 KTA): 8 tools, 60 API calls/30d, 3 whale alerts/mo\n• Social (50 KTA): 8 tools, 150 API calls/30d, LIFETIME social alerts, unlimited whale alerts\n• Pro (300 KTA): 13 tools (adds compliance, wallet history & scoring), 300 calls/30d\n• Business (600 KTA): All 19 tools, unlimited API calls\n\nPayments accumulate automatically from the same wallet!";
+  }
+
+  if (/(price|cost|buy|pay|checkout|upgrade|stripe|card|coinbase|kraken|phantom|keeta wallet)/.test(m)) {
+    return "You can buy KTA directly via Keeta Wallet (wallet.keeta.com with Visa Direct), Coinbase, Kraken, or Phantom. To activate, send KTA to the oracle wallet or visit /checkout for card & crypto payment options. 50 KTA unlocks permanent lifetime social alerts on Discord, Telegram, Slack, or X.";
+  }
+
+  if (/(activat|how to|setup|register|step|begin)/.test(m)) {
+    return "Activation takes 4 simple steps:\n1. Send KTA from your wallet to the oracle wallet.\n2. Go to /onboard → Activate section (or POST /activate-oracle with your wallet).\n3. The Oracle scans your on-chain history and assigns your tier in under 2 seconds.\n4. Check your status at /status?wallet=keeta_yourwallet.\nNote: Registration sets your bot; activation reads your payment.";
+  }
+
+  if (/(tool|api|endpoint|sdk|playground|stream|compliance|history|kyc)/.test(m)) {
+    return "All 19 tools are served through https://kta-oracle.top. Key endpoints:\n• /price & /rate — Live KTA market data and FX conversions\n• /stream — Real-time price Server-Sent Events\n• /whale/alerts — On-chain whale transaction detection\n• /compliance/screen & /wallet/history — On-chain compliance & history (Pro+)\n• /kyc/verify & /certificate/manage — Institutional identity & verification (Business)\nVisit /tools to explore the interactive playground.";
+  }
+
+  if (/(discord|telegram|slack|twitter|alert|webhook|bot|frequency|daily|digest)/.test(m)) {
+    return "You can receive alerts on Discord (webhook), Telegram (bot token + chat ID), Slack (webhook), or X/Twitter (API keys). Set your platform and frequency at /onboard. Large moves (25%+) alert within 5 minutes automatically regardless of chosen frequency setting!";
+  }
+
+  if (/(status|check|wallet|trial|expir|remaining|stopped|not working|broke)/.test(m)) {
+    return "To check your active tier, remaining trial alerts, and expiration, query /status?wallet=keeta_your_wallet. If your trial ran out (100 alerts used) or 30-day window expired, sending 50 KTA total gives you permanent lifetime social alerts.";
+  }
+
+  if (/(contact|human|email|support|bug|issue|ticket|help)/.test(m)) {
+    return "For direct support, use the 'Contact' button at the top of this panel to submit a message, or reach out to @elemzir on X.";
+  }
+
+  return "I'm the KTA Oracle Agent. I can help with tiers, activation, tools, or payments. Visit /status?wallet=your_wallet to check your tier, /checkout to upgrade, or /tools to explore our 19 API endpoints.";
+}
+
 export async function chatWithAgent(
   aiKey: string | undefined,
   aiEndpoint: string | undefined,
   aiModel: string | undefined,
   message: string,
 ): Promise<string> {
-  if (!aiKey || !aiEndpoint || !aiModel) {
-    return "Support Agent is unavailable right now. Check /status?wallet=your_wallet for your tier info, or visit /checkout to see plans.";
-  }
+  const safeMessage = message.slice(0, 500).replace(/[<>]/g, "").trim();
+  if (!safeMessage) return getKnowledgeReply("");
 
-  const safeMessage = message.slice(0, 500).replace(/[<>]/g, "");
+  if (!aiKey || !aiEndpoint || !aiModel) {
+    return getKnowledgeReply(safeMessage);
+  }
 
   try {
     const res = await fetch(aiEndpoint, {
@@ -442,15 +481,19 @@ export async function chatWithAgent(
       signal: AbortSignal.timeout(8000),
     });
 
-    if (!res.ok) return "Support Agent is taking a quick break. Visit /checkout to upgrade or /status?wallet= to check your tier.";
+    if (!res.ok) {
+      console.error("AI upstream error", res.status);
+      return getKnowledgeReply(safeMessage);
+    }
 
     const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> };
     const text = data?.choices?.[0]?.message?.content?.trim() ?? "";
 
-    if (!text) return "Got your message. For tier info: /status?wallet=your_wallet — for upgrades: /checkout.";
+    if (!text) return getKnowledgeReply(safeMessage);
 
     return text.slice(0, 600);
-  } catch {
-    return "Support Agent timed out. Try /status?wallet=your_wallet to check your current access level.";
+  } catch (err) {
+    console.error("AI chat error", err);
+    return getKnowledgeReply(safeMessage);
   }
 }

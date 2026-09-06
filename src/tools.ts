@@ -1,3 +1,5 @@
+import { BASE_CSS, header, footer, agentWidget } from "./onboard.js";
+
 const TOOLS_CSS = `
 html{scroll-behavior:smooth}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -409,45 +411,11 @@ export function renderTools(appUrl: string): string {
 <meta name="description" content="All ${totalTools} KTA Oracle tools. From live price feeds to certificate management — each tool mapped to the tier that unlocks it.">
 <meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/tools"><meta property="og:title" content="Tools — KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<style>${TOOLS_CSS}</style>
+<style>${BASE_CSS}${TOOLS_CSS}</style>
 </head>
 <body>
-<header class="hdr">
-  <div class="hdr-inner">
-    <div style="display:flex;align-items:center;gap:8px">
-      <a href="/onboard" class="logo">
-        <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="#000"/></svg></div>
-        KTA <em>Oracle</em>
-      </a>
-      <div style="width:1px;height:16px;background:#1e1e1e;margin:0 2px;flex-shrink:0"></div>
-      <a href="/oracle" class="nav-oracle-pill"><span class="live-dot" style="width:5px;height:5px;flex-shrink:0"></span>Oracle</a>
-      <a href="/guide" class="nav-guide-pill">Guide</a>
-    </div>
-    <nav class="nav">
-      <a href="/onboard">Onboard</a>
-      <a href="/checkout">Pricing</a>
-      <a href="/tools" class="active">Tools</a>
-      <a href="/donate" class="nav-donate">Donate</a>
-      <a href="/tools#ai" class="nav-ai-btn nav-ai-active">Connect AI</a>
-      <a href="/checkout" class="nav-cta">Get access →</a>
-    </nav>
-    <button class="hbg" id="hbg-btn" onclick="toggleMobNav()" aria-label="Menu"><span></span><span></span><span></span></button>
-  </div>
-</header>
-<nav class="mob-nav" id="mob-nav">
-  <a href="/oracle">Oracle</a>
-  <a href="/onboard">Onboard</a>
-  <a href="/guide">Guide</a>
-  <a href="/checkout">Pricing</a>
-  <a href="/tools" class="mob-active">Tools</a>
-  <a href="/donate" class="mob-donate">Donate</a>
-  <a href="/tools#ai" class="mob-ai">Connect AI</a>
-  <a href="/checkout" class="mob-cta">Get access →</a>
-</nav>
-<script>
-function toggleMobNav(){var b=document.getElementById('hbg-btn'),m=document.getElementById('mob-nav');if(!b||!m)return;b.classList.toggle('is-open');m.classList.toggle('is-open');}
-document.addEventListener('click',function(e){var m=document.getElementById('mob-nav'),b=document.getElementById('hbg-btn');if(!m||!m.classList.contains('is-open'))return;if(!m.contains(e.target)&&(!b||!b.contains(e.target))){m.classList.remove('is-open');if(b)b.classList.remove('is-open');}});
-</script>
+${header("tools")}
+<main id="page-root">
 
 <section class="hero">
   <div class="hero-eyebrow">${si('<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>', 14)} ${totalTools} tools · Keeta Network SDK</div>
@@ -536,21 +504,9 @@ function buildSSE(wallet){
 }
 </script>
 </div>
-
-<footer class="footer">
-  <div class="footer-links">
-    <a href="/onboard">Onboard</a>
-    <a href="/checkout">Pricing</a>
-    <a href="/tools">Tools</a>
-    <a href="/legal">Legal</a>
-    <a href="/privacy">Privacy</a>
-    <a href="https://keeta.com" target="_blank" rel="noopener">Keeta Network</a>
-  </div>
-  <div style="color:var(--muted)">
-    KTA Oracle Agent &nbsp;·&nbsp; Built on Keeta Network SDK &nbsp;·&nbsp; Sweden, EU
-  </div>
-  <div style="margin-top:10px;color:var(--muted);font-size:0.71rem;letter-spacing:0.03em">&copy; 2026 ELEMZIR. All rights reserved.</div>
-</footer>
+</main>
+${footer()}
+${agentWidget()}
 </body>
 </html>`;
 }
