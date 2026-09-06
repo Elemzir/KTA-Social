@@ -37,4 +37,4 @@ Payments are non-refundable. Tier activation is automatic and on-chain. No accou
 ## Contact
 
 Support: [@elemzir](https://x.com/elemzir) on X/Twitter
-Email: elemzir@gmail.com
+Website: [kta-oracle.top](https://kta-oracle.top)

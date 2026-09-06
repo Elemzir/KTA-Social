@@ -127,4 +127,4 @@ Ticket IDs appear in the Discord embed footer when a support message is received
 
 ## Contact
 
-[@elemzir on X](https://x.com/elemzir) · [/onboard Support Agent](https://kta.netrate.workers.dev/onboard)
+[@elemzir on X](https://x.com/elemzir) · [/onboard Support Agent](https://kta-oracle.top/onboard)

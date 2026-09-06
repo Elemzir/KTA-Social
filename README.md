@@ -6,7 +6,7 @@ The subscriber-facing layer of KTA Oracle. Receives live price and whale events 
 
 **One Cloudflare Worker. One URL. No infrastructure to manage.**
 
-→ **[kta-oracle.top](https://kta-oracle.top)** · [Tools catalog](https://kta-oracle.top/tools) · [Machine-readable spec](https://kta.netrate.workers.dev/llms.txt) · [Companion: KTA-Oracle](https://github.com/Elemzir/KTA-Oracle)
+→ **[kta-oracle.top](https://kta-oracle.top)** · [Tools catalog](https://kta-oracle.top/tools) · [Machine-readable spec](https://kta-oracle.top/llms.txt) · [Companion: KTA-Oracle](https://github.com/Elemzir/KTA-Oracle)
 
 ---
 
@@ -48,7 +48,7 @@ The subscriber-facing layer of KTA Oracle. Receives live price and whale events 
 |--------|------|-------------|
 | `GET` | `/price` | Live KTA/USD price — proxied from Oracle |
 | `GET` | `/rate?currency=` | KTA rate in 160+ fiat currencies with real-time FX conversion |
-| `GET` | `/whale/alerts?wallet=` | Recent whale movements — proxied from Oracle (Starter+ required) |
+| `GET` | `/whale/alerts?wallet=` | Recent whale movements & live pool trades (public preview, full feed with Starter+) |
 | `GET` | `/llms.txt` | Machine-readable full spec for AI agents |
 | `GET` | `/status?wallet=` | Subscription tier, expiry, social lifetime |
 | `GET` | `/stream?wallet=` | SSE stream — live price push every 15s |
@@ -266,9 +266,9 @@ The `/tools` page exposes the Connect AI panel with SSE and REST connection stri
 ### Agent quick-start
 
 ```
-GET  https://kta.netrate.workers.dev/llms.txt        # full machine-readable spec
-GET  https://kta.netrate.workers.dev/status?wallet=  # current tier + tools._unlock hint
-GET  https://kta.netrate.workers.dev/stream?wallet=  # SSE live price feed
+GET  https://kta-oracle.top/llms.txt        # full machine-readable spec
+GET  https://kta-oracle.top/status?wallet=  # current tier + tools._unlock hint
+GET  https://kta-oracle.top/stream?wallet=  # SSE live price feed
 ```
 
 Every `/status` response now includes a `tools` object:
@@ -290,6 +290,15 @@ Every `/status` response now includes a `tools` object:
 ```
 
 Agents can call `/status` at any time to discover their current tool count and exactly what KTA is needed to unlock the next tier. This makes the upgrade path fully autonomous — no human needed to read the docs.
+
+### Model Context Protocol (MCP) & AI Agent Integration
+
+All 19 tools are designed with strict JSON input/output schemas compatible with MCP (Model Context Protocol) and LLM function calling:
+
+- **Agent Discovery**: AI crawlers and autonomous agents read `https://kta-oracle.top/llms.txt` for automatic capability discovery.
+- **MCP Compatibility**: Works seamlessly with MCP fetch/HTTP servers (e.g., `@modelcontextprotocol/server-fetch` or Claude Desktop tool configurations).
+- **Public & Authenticated Calls**: Public endpoints (`/price`, `/rate`, `/whale/alerts` preview) require no wallet parameters. Tier-gated endpoints receive `?wallet=keeta_...` to execute authenticated SDK actions.
+- **Live Stream**: Supports Server-Sent Events (SSE) via `GET /stream?wallet=keeta_...` for streaming price intelligence into LLM context windows.
 
 ---
 

@@ -81,7 +81,7 @@ Real-time KTA/USD price intelligence, on-chain analytics, whale detection, and s
 19 SDK tools across 5 tiers. Payments fully on-chain. No API key — wallet address is identity.
 
 ## Base URL
-https://kta.netrate.workers.dev
+https://kta-oracle.top
 
 ## Authentication
 No key required for public endpoints.

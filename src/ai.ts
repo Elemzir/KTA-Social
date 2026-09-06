@@ -37,7 +37,7 @@ KTA Oracle is a real-time KTA/USD price intelligence engine, on-chain analytics 
 
 ARCHITECTURE — TWO CLOUDFLARE WORKERS:
 - KTA Social (public-facing): https://kta-oracle.top — handles all UI pages, subscriber management, alert delivery, and proxies SDK calls to Oracle. This is the ONLY URL external users and agents interact with.
-- KTA Oracle (internal price engine): kta-oracle.netrate.workers.dev — price fetching, on-chain operations, whale detection, all Keeta SDK operations. Never called directly by browsers or external agents — Social proxies everything via service binding.
+- KTA Oracle (internal price engine): kta-oracle — price fetching, on-chain operations, whale detection, all Keeta SDK operations. Never called directly by browsers or external agents — Social proxies everything via service binding.
 All 19 tools are served through the Social worker at https://kta-oracle.top. Never tell users to call the Oracle URL directly.
 
 TIERS (exact values — never deviate or approximate):
