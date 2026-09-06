@@ -666,6 +666,8 @@ function showPlatform(id, btn) {
   var pg = document.getElementById('pg-' + id);
   if(pg) pg.classList.add('show');
 }
+window.showAudience=showAudience;
+window.showPlatform=showPlatform;
 </script>
 </main>
 ${footer()}

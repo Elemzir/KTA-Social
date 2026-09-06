@@ -502,6 +502,8 @@ function buildSSE(wallet){
   el.textContent='SSE:  '+base+'/stream?wallet='+wallet+'\\nREST: '+base+'/price\\n      '+base+'/rate?currency=USD&wallet='+wallet;
   el.style.color='var(--accent)';
 }
+window.toggleAiPanel=toggleAiPanel;
+window.buildSSE=buildSSE;
 </script>
 </div>
 </main>

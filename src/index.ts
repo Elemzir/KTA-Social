@@ -344,7 +344,8 @@ export default {
 
     if (method === "GET" && pathname === "/whale/alerts") {
       const wallet = searchParams.get("wallet") ?? "";
-      const r = await oracleFetch(env, `/whale/alerts?wallet=${encodeURIComponent(wallet)}`).catch(() => null);
+      const path = wallet ? `/whale/alerts?wallet=${encodeURIComponent(wallet)}` : "/whale/alerts";
+      const r = await oracleFetch(env, path).catch(() => null);
       if (!r?.ok) return new Response(r?.body ?? null, { status: r?.status ?? 503, headers: { "Content-Type": "application/json", ...corsHeaders } });
       return new Response(r.body, { headers: { "Content-Type": "application/json", "Cache-Control": CC_WHALE, ...corsHeaders } });
     }
@@ -602,7 +603,7 @@ function currentYYYYMM(): number {
 }
 
 function canReceiveWhale(sub: SocialSubscriber): boolean {
-  const tier = sub.tier ?? (sub.paid ? "social" : "free");
+  const tier = sub.tier ?? ((sub.paid || sub.socialLifetime) ? "social" : "free");
   if (["social", "pro", "business"].includes(tier)) return true;
   const month = currentYYYYMM();
   if (tier === "starter") {
@@ -613,7 +614,7 @@ function canReceiveWhale(sub: SocialSubscriber): boolean {
 }
 
 function chargeWhale(sub: SocialSubscriber): void {
-  const tier = sub.tier ?? (sub.paid ? "social" : "free");
+  const tier = sub.tier ?? ((sub.paid || sub.socialLifetime) ? "social" : "free");
   if (["social", "pro", "business"].includes(tier)) return;
   const month = currentYYYYMM();
   if (tier === "starter") {
