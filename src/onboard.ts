@@ -327,20 +327,34 @@ td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.03);vertical-ali
   table{font-size:0.62rem}
   th,td{padding:4px 5px}
 }
-.intg-strip{padding:32px 0;border-top:1px solid #0d0d0d;border-bottom:1px solid #0d0d0d;background:var(--surface);overflow:hidden;position:relative}
-.intg-strip::before,.intg-strip::after{content:'';position:absolute;top:0;height:100%;width:100px;z-index:2;pointer-events:none}
-.intg-strip::before{left:0;background:linear-gradient(to right,var(--surface) 0%,transparent 100%)}
-.intg-strip::after{right:0;background:linear-gradient(to left,var(--surface) 0%,transparent 100%)}
-.intg-label{text-align:center;font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;font-weight:600;margin-bottom:20px}
-.intg-scroll{overflow:hidden}
-.intg-track{display:flex;gap:0;width:max-content;animation:marquee 36s linear infinite}
-@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.intg-item{display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 20px;opacity:.45;transition:opacity .2s;flex-shrink:0;cursor:default}
-.intg-item:hover{opacity:1}
-.intg-icon{width:42px;height:42px;border-radius:11px;background:var(--surface2);border:1px solid #181818;display:flex;align-items:center;justify-content:center;transition:border-color .2s}
-.intg-item:hover .intg-icon{border-color:var(--gold-border)}
-.intg-name{font-size:0.62rem;color:var(--muted2);letter-spacing:0.06em;text-transform:uppercase;font-weight:600;white-space:nowrap}
-.intg-divider{width:1px;height:52px;background:#141414;align-self:center;flex-shrink:0;margin:0 12px}
+.eco-section{padding:48px 0 56px;position:relative;z-index:1}
+.eco-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1040px;margin:0 auto}
+.eco-col{background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:0 18px 40px rgba(0,0,0,0.35);position:relative;overflow:hidden}
+.eco-col::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent)}
+.eco-col.gold::before{background:linear-gradient(90deg,transparent,rgba(196,163,90,0.4),transparent)}
+.eco-col.accent::before{background:linear-gradient(90deg,transparent,rgba(0,212,170,0.4),transparent)}
+.eco-col-hdr{display:flex;align-items:center;gap:10px;font-size:0.82rem;font-weight:700;color:#fff;letter-spacing:0.02em;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.eco-dot{width:7px;height:7px;border-radius:50%}
+.eco-dot.gold{background:var(--gold);box-shadow:0 0 8px rgba(196,163,90,0.6)}
+.eco-dot.accent{background:var(--accent);box-shadow:0 0 8px rgba(0,212,170,0.6)}
+.eco-count{margin-left:auto;font-size:0.68rem;color:var(--muted);font-weight:600;background:rgba(255,255,255,0.04);padding:2px 8px;border-radius:20px}
+.eco-cards{display:grid;grid-template-columns:1fr;gap:8px}
+.eco-card{background:var(--surface2);border:1px solid rgba(255,255,255,0.04);border-radius:11px;padding:11px 14px;display:flex;align-items:center;gap:12px;transition:all .18s;user-select:none}
+.eco-card:hover{background:rgba(255,255,255,0.04);border-color:rgba(196,163,90,0.3);transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,0.35)}
+.eco-card.acc:hover{border-color:rgba(0,212,170,0.3)}
+.eco-icon{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.eco-icon.gold{color:var(--gold);background:rgba(196,163,90,0.08);border-color:rgba(196,163,90,0.2)}
+.eco-icon.accent{color:var(--accent);background:rgba(0,212,170,0.08);border-color:rgba(0,212,170,0.2)}
+.eco-meta{flex:1;min-width:0}
+.eco-name{font-size:0.84rem;font-weight:700;color:#fff;line-height:1.2}
+.eco-type{font-size:0.71rem;color:var(--muted2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eco-badge{font-size:0.64rem;font-weight:700;padding:3px 8px;border-radius:6px;background:rgba(196,163,90,0.08);border:1px solid rgba(196,163,90,0.22);color:var(--gold);white-space:nowrap;letter-spacing:0.03em}
+.eco-badge.accent{background:rgba(0,212,170,0.08);border-color:rgba(0,212,170,0.22);color:var(--accent)}
+
+@media(max-width:768px){
+  .eco-grid{grid-template-columns:1fr;gap:14px}
+  .eco-col{padding:18px 14px}
+}
 
 details summary{user-select:none;-webkit-tap-highlight-color:transparent}
 details summary::-webkit-details-marker{display:none}
@@ -499,28 +513,124 @@ details[open] summary::after{content:'−'}
 @media(max-width:380px){.scell{padding:12px 8px}.sval{font-size:1.35rem}.svs{padding:0 6px}}
 `;
 
-const INTG_ITEMS = `
-      <div class="intg-item"><div class="intg-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3C7 3 3 7 3 12s4 9 9 9 9-4 9-9-4-9-9-9zm0 4c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 10c-2.5 0-4.7-1.3-6-3.2.9-1.4 2.5-2.3 4.2-2.3h3.5c1.8 0 3.4.9 4.3 2.3C16.7 15.7 14.5 17 12 17z" fill="rgba(196,163,90,0.8)"/></svg></div><span class="intg-name">Claude</span></div>
-      <div class="intg-item"><div class="intg-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 3l2 4-4 2 4 2-2 4-2-4 4-2-4-2 2-4z" fill="rgba(196,163,90,0.8)"/></svg></div><span class="intg-name">ChatGPT</span></div>
-      <div class="intg-item"><div class="intg-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3zm6 9l.8 2.2L21 15l-2.2.8L18 18l-.8-2.2L15 15l2.2-.8L18 12zm-12 0l.8 2.2L9 15l-2.2.8L6 18l-.8-2.2L3 15l2.2-.8L6 12z" fill="rgba(196,163,90,0.8)"/></svg></div><span class="intg-name">Gemini</span></div>
-      <div class="intg-item"><div class="intg-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 17V7l8-4 8 4v10l-8 4-8-4zm8-11L6 9v6l6 3 6-3V9l-6-3z" fill="rgba(196,163,90,0.8)"/></svg></div><span class="intg-name">DeepSeek</span></div>
-      <div class="intg-item"><div class="intg-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19" stroke="rgba(196,163,90,0.8)" stroke-width="2.5" stroke-linecap="round"/></svg></div><span class="intg-name">Grok</span></div>
-      <div class="intg-item"><div class="intg-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9M5 10v9h4v-5h6v5h4v-9" stroke="rgba(196,163,90,0.8)" stroke-width="2" stroke-linejoin="round" fill="none"/></svg></div><span class="intg-name">Mistral</span></div>
-      <div class="intg-divider"></div>
-      <div class="intg-item"><div class="intg-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20 4H4C2.9 4 2 4.9 2 6v9c0 1.1.9 2 2 2h4v3l4-3h8c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM9 11a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm6 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" fill="rgba(0,212,170,0.75)"/></svg></div><span class="intg-name">Discord</span></div>
-      <div class="intg-item"><div class="intg-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="rgba(0,212,170,0.75)" stroke-width="2" stroke-linejoin="round" fill="none"/></svg></div><span class="intg-name">Telegram</span></div>
-      <div class="intg-item"><div class="intg-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M14 9a5 5 0 0 1-5 5M10 9a5 5 0 0 0 5 5m-5-5V5m5 4V5M5 14a5 5 0 0 1 5-5m-5 5v4m14-4a5 5 0 0 0-5-5m5 5v4" stroke="rgba(0,212,170,0.75)" stroke-width="2" stroke-linecap="round"/></svg></div><span class="intg-name">Slack</span></div>
-      <div class="intg-item"><div class="intg-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 4l16 16M20 4L4 20" stroke="rgba(0,212,170,0.75)" stroke-width="2.5" stroke-linecap="round"/></svg></div><span class="intg-name">X / Twitter</span></div>
-      <div class="intg-item"><div class="intg-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M10 3H3v7h7V3zm11 0h-7v7h7V3zm0 11h-7v7h7v-7zm-11 0H3v7h7v-7z" fill="rgba(0,212,170,0.75)"/></svg></div><span class="intg-name">MCP / SDK</span></div>
-      <div class="intg-divider"></div>`;
-
 const INTG_STRIP = `
-<div class="intg-strip">
-  <div class="intg-label">Works with every major AI &amp; platform</div>
-  <div class="intg-scroll">
-    <div class="intg-track">${INTG_ITEMS}${INTG_ITEMS}</div>
+<section class="eco-section">
+  <div class="wrap">
+    <div class="section-head" style="margin-bottom:28px">
+      <div class="section-title">Works with every major <em>AI &amp; platform</em></div>
+      <div class="section-sub">Direct native compatibility for real-time price pushes, whale movement alerts, and automated trading triggers.</div>
+    </div>
+    <div class="eco-grid">
+      <div class="eco-col gold">
+        <div class="eco-col-hdr">
+          <span class="eco-dot gold"></span>
+          <span>AI Models &amp; Frameworks</span>
+          <span class="eco-count">6 models</span>
+        </div>
+        <div class="eco-cards">
+          <div class="eco-card">
+            <div class="eco-icon gold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3C7 3 3 7 3 12s4 9 9 9 9-4 9-9-4-9-9-9zm0 4c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 10c-2.5 0-4.7-1.3-6-3.2.9-1.4 2.5-2.3 4.2-2.3h3.5c1.8 0 3.4.9 4.3 2.3C16.7 15.7 14.5 17 12 17z" fill="currentColor"/></svg></div>
+            <div class="eco-meta">
+              <div class="eco-name">Claude</div>
+              <div class="eco-type">Tool Use &middot; SSE Stream</div>
+            </div>
+            <span class="eco-badge">REST / SSE</span>
+          </div>
+          <div class="eco-card">
+            <div class="eco-icon gold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 3l2 4-4 2 4 2-2 4-2-4 4-2-4-2 2-4z" fill="currentColor"/></svg></div>
+            <div class="eco-meta">
+              <div class="eco-name">ChatGPT</div>
+              <div class="eco-type">Custom GPT Actions</div>
+            </div>
+            <span class="eco-badge">OpenAPI</span>
+          </div>
+          <div class="eco-card">
+            <div class="eco-icon gold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3zm6 9l.8 2.2L21 15l-2.2.8L18 18l-.8-2.2L15 15l2.2-.8L18 12zm-12 0l.8 2.2L9 15l-2.2.8L6 18l-.8-2.2L3 15l2.2-.8L6 12z" fill="currentColor"/></svg></div>
+            <div class="eco-meta">
+              <div class="eco-name">Gemini</div>
+              <div class="eco-type">Google AI Tools</div>
+            </div>
+            <span class="eco-badge">Function</span>
+          </div>
+          <div class="eco-card">
+            <div class="eco-icon gold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 17V7l8-4 8 4v10l-8 4-8-4zm8-11L6 9v6l6 3 6-3V9l-6-3z" fill="currentColor"/></svg></div>
+            <div class="eco-meta">
+              <div class="eco-name">DeepSeek</div>
+              <div class="eco-type">JSON Reasoning</div>
+            </div>
+            <span class="eco-badge">REST API</span>
+          </div>
+          <div class="eco-card">
+            <div class="eco-icon gold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+            <div class="eco-meta">
+              <div class="eco-name">Grok</div>
+              <div class="eco-type">xAI Real-time Tools</div>
+            </div>
+            <span class="eco-badge">Function</span>
+          </div>
+          <div class="eco-card">
+            <div class="eco-icon gold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9M5 10v9h4v-5h6v5h4v-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/></svg></div>
+            <div class="eco-meta">
+              <div class="eco-name">Mistral</div>
+              <div class="eco-type">Function Calling &middot; JSON</div>
+            </div>
+            <span class="eco-badge">REST API</span>
+          </div>
+        </div>
+      </div>
+      <div class="eco-col accent">
+        <div class="eco-col-hdr">
+          <span class="eco-dot accent"></span>
+          <span>Alert Channels &amp; Protocols</span>
+          <span class="eco-count">5 platforms</span>
+        </div>
+        <div class="eco-cards">
+          <div class="eco-card acc">
+            <div class="eco-icon accent"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 4H4C2.9 4 2 4.9 2 6v9c0 1.1.9 2 2 2h4v3l4-3h8c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM9 11a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm6 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" fill="currentColor"/></svg></div>
+            <div class="eco-meta">
+              <div class="eco-name">Discord</div>
+              <div class="eco-type">Webhook Rich Embeds</div>
+            </div>
+            <span class="eco-badge accent">Live Webhook</span>
+          </div>
+          <div class="eco-card acc">
+            <div class="eco-icon accent"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/></svg></div>
+            <div class="eco-meta">
+              <div class="eco-name">Telegram</div>
+              <div class="eco-type">Direct Bot Alerts</div>
+            </div>
+            <span class="eco-badge accent">Bot API</span>
+          </div>
+          <div class="eco-card acc">
+            <div class="eco-icon accent"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M14 9a5 5 0 0 1-5 5M10 9a5 5 0 0 0 5 5m-5-5V5m5 4V5M5 14a5 5 0 0 1 5-5m-5 5v4m14-4a5 5 0 0 0-5-5m5 5v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+            <div class="eco-meta">
+              <div class="eco-name">Slack</div>
+              <div class="eco-type">Team Channel Updates</div>
+            </div>
+            <span class="eco-badge accent">Incoming Hook</span>
+          </div>
+          <div class="eco-card acc">
+            <div class="eco-icon accent"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 4l16 16M20 4L4 20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+            <div class="eco-meta">
+              <div class="eco-name">X / Twitter</div>
+              <div class="eco-type">Automated Posts</div>
+            </div>
+            <span class="eco-badge accent">X API v2</span>
+          </div>
+          <div class="eco-card acc">
+            <div class="eco-icon accent"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M10 3H3v7h7V3zm11 0h-7v7h7V3zm0 11h-7v7h7v-7zm-11 0H3v7h7v-7z" fill="currentColor"/></svg></div>
+            <div class="eco-meta">
+              <div class="eco-name">MCP / Agent SDK</div>
+              <div class="eco-type">IDE &amp; Autonomous Agents</div>
+            </div>
+            <span class="eco-badge accent">Model Protocol</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>`;
+</section>
+`;
 
 export function header(active: string): string {
   return `
