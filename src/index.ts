@@ -1,4 +1,4 @@
-﻿import type { Env, SocialSubscriber, AlertFrequency, SocialPlatform } from "./types.js";
+import type { Env, SocialSubscriber, AlertFrequency, SocialPlatform } from "./types.js";
 import { requireInternalAuth, requireDevAuth, sanitiseWallet }        from "./auth.js";
 import { getSubscribers, saveSubscribers, getSubscriber, saveSubscriber, subKey, trialLimit, lifetimeKta }   from "./store.js";
 import {
@@ -700,21 +700,34 @@ async function broadcastToSubscribers(
       const pctThresh   = CHANGE_PCT[freq as AlertFrequency];
       const silenceMs   = now - (sub.lastAlertAt ?? 0);
       let   intervalMet: boolean;
-      if (changeLevel === "extreme") {
-        intervalMet = silenceMs >= 5 * 60_000;
-      } else if (changeLevel === "major") {
-        intervalMet = silenceMs >= 30 * 60_000;
-      } else if (changeLevel === "notable") {
-        intervalMet = silenceMs >= 60 * 60_000;
-      } else if (changeLevel === "normal") {
-        intervalMet = silenceMs >= 4 * 60 * 60_000;
-      } else if (pctThresh !== undefined) {
-        const cooldownMet = silenceMs >= PCT_COOLDOWN;
-        const lastP       = sub.lastAlertPrice ?? 0;
-        const pctMoved    = lastP > 0 ? Math.abs((price - lastP) / lastP * 100) : 100;
-        intervalMet       = cooldownMet && pctMoved >= pctThresh;
+      if (pctThresh !== undefined) {
+        if (changeLevel === "extreme") {
+          intervalMet = silenceMs >= 5 * 60_000;
+        } else if (changeLevel === "major") {
+          intervalMet = silenceMs >= 30 * 60_000;
+        } else if (changeLevel === "notable") {
+          intervalMet = silenceMs >= 60 * 60_000;
+        } else if (changeLevel === "normal") {
+          intervalMet = silenceMs >= 4 * 60 * 60_000;
+        } else {
+          const cooldownMet = silenceMs >= PCT_COOLDOWN;
+          const lastP       = sub.lastAlertPrice ?? 0;
+          const pctMoved    = lastP > 0 ? Math.abs((price - lastP) / lastP * 100) : 100;
+          intervalMet       = cooldownMet && pctMoved >= pctThresh;
+        }
       } else {
-        intervalMet = silenceMs >= (FREQ_MS[freq as AlertFrequency] ?? FREQ_MS["15min"]!);
+        const baseMs = FREQ_MS[freq as AlertFrequency] ?? FREQ_MS["15min"]!;
+        let effectiveMs = baseMs;
+        if (changeLevel === "extreme") {
+          effectiveMs = Math.min(baseMs, 5 * 60_000);
+        } else if (changeLevel === "major") {
+          effectiveMs = Math.min(baseMs, 30 * 60_000);
+        } else if (changeLevel === "notable") {
+          effectiveMs = Math.min(baseMs, 60 * 60_000);
+        } else if (changeLevel === "normal") {
+          effectiveMs = Math.min(baseMs, 4 * 60 * 60_000);
+        }
+        intervalMet = silenceMs >= effectiveMs;
       }
 
       if (!intervalMet) {
