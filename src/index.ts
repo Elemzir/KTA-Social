@@ -664,7 +664,6 @@ async function broadcastToSubscribers(
   if (!subscribers.length) return;
 
   const TRIAL = trialLimit(env);
-  const devWallet = env.DEV_WALLET?.trim().toLowerCase();
   const appUrl    = env.APP_URL;
   const iconUrl   = `${appUrl}/icon.png`;
   const DAY_MS    = 24 * 60 * 60 * 1000;
@@ -689,9 +688,8 @@ async function broadcastToSubscribers(
     const chunk = subscribers.slice(i, i + BATCH_SIZE);
     const chunkResults = await Promise.all(chunk.map(async (sub) => {
       let subDirty = false;
-      const isDev = !!(devWallet && sub.wallet.toLowerCase() === devWallet);
 
-      if (!isDev && !sub.paid && sub.alertCount >= TRIAL) {
+      if (!sub.paid && !sub.socialLifetime && sub.alertCount >= TRIAL) {
         return { sub, dirty: false };
       }
 
@@ -740,11 +738,11 @@ async function broadcastToSubscribers(
       const isExpired     = sub.expiresAt ? sub.expiresAt < now : false;
       const isOracle      = !isExpired || sub.tier === "free";
 
-      if (!isDev && isExpired && !socialLife) {
+      if (isExpired && !socialLife) {
         return { sub, dirty: false };
       }
 
-      if (!isDev && sub.expiresAt && !sub.reminderSent) {
+      if (!socialLife && sub.expiresAt && !sub.reminderSent) {
         const hoursLeft = (sub.expiresAt - now) / 3_600_000;
         if (hoursLeft <= 24 && hoursLeft > 0) {
           const tierLabel = sub.tier ?? "Oracle";
@@ -822,9 +820,9 @@ async function broadcastToSubscribers(
         if (sub.celebPending)    sub.celebPending   = undefined;
         subDirty = true;
 
-        if (!isDev && !sub.paid && sub.alertCount === TRIAL - 1)
+        if (!sub.paid && !sub.socialLifetime && sub.alertCount === TRIAL - 1)
           await sendTrialWarning(env, sub);
-        if (!isDev && !sub.paid && sub.alertCount === TRIAL)
+        if (!sub.paid && !sub.socialLifetime && sub.alertCount === TRIAL)
           await sendTrialExhausted(env, sub);
 
       } catch {}
@@ -1314,9 +1312,8 @@ async function handleStatus(searchParams: URLSearchParams, env: Env, corsHeaders
 
 async function handleDevRegister(request: Request, env: Env): Promise<Response> {
   const devSecret = env.DEV_SECRET?.trim();
-  const devWallet = env.DEV_WALLET?.trim();
 
-  if (!devSecret || !devWallet)
+  if (!devSecret)
     return Response.json({ error: "Not configured" }, { status: 503 });
 
   const devAuthErr = requireDevAuth(request, devSecret);
@@ -1326,6 +1323,10 @@ async function handleDevRegister(request: Request, env: Env): Promise<Response> 
   try { body = await request.json() as Record<string, unknown>; }
   catch { return Response.json({ error: "Invalid JSON" }, { status: 400 }); }
 
+  const wallet = typeof body.wallet === "string" ? body.wallet.trim() : "";
+  if (!wallet)
+    return Response.json({ error: "wallet required" }, { status: 400 });
+
   const platform = body.platform as SocialPlatform | undefined;
   if (!platform || !VALID_PLATFORMS.includes(platform))
     return Response.json({ error: "platform required", options: VALID_PLATFORMS }, { status: 400 });
@@ -1334,11 +1335,11 @@ async function handleDevRegister(request: Request, env: Env): Promise<Response> 
   if (credError) return Response.json({ error: credError }, { status: 400 });
 
   const existing    = await getSubscribers(env);
-  const existingIdx = existing.findIndex(s => s.wallet === devWallet);
+  const existingIdx = existing.findIndex(s => s.wallet.toLowerCase() === wallet.toLowerCase());
   const previous    = existingIdx !== -1 ? existing[existingIdx] : null;
 
   const devSub: SocialSubscriber = {
-    wallet:            devWallet,
+    wallet,
     platform,
     frequency:        (body.frequency as AlertFrequency) ?? "15min",
     currency:         (body.currency  as string)         ?? "USD",
@@ -1360,7 +1361,7 @@ async function handleDevRegister(request: Request, env: Env): Promise<Response> 
     } : undefined,
   };
 
-  const updated = [...existing.filter(s => s.wallet !== devWallet), devSub];
+  const updated = [...existing.filter(s => s.wallet.toLowerCase() !== wallet.toLowerCase()), devSub];
   await saveSubscribers(env, updated);
 
   return Response.json({ ok: true, platform: devSub.platform, frequency: devSub.frequency, paid: true });

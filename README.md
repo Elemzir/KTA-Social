@@ -155,7 +155,6 @@ npx wrangler secret put AI_KEY
 npx wrangler secret put AI_ENDPOINT
 npx wrangler secret put AI_MODEL
 npx wrangler secret put DEV_SECRET
-npx wrangler secret put DEV_WALLET
 npx wrangler secret put DISCORD_WEBHOOK_URL
 npx wrangler secret put TELEGRAM_BOT_TOKEN
 npx wrangler secret put TELEGRAM_CHAT_ID

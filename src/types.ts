@@ -48,7 +48,6 @@ export interface Env {
   AI_ENDPOINT?:          string;
   AI_MODEL?:             string;
   DEV_SECRET?:           string;
-  DEV_WALLET?:           string;
   DISCORD_WEBHOOK_URL?:    string;
   ALERTS_DISCORD_WEBHOOK_URL?: string;
   DISCORD_PUBLIC_KEY?:     string;
