@@ -408,7 +408,7 @@ export default {
     }
 
     if (method === "GET" && pathname === "/status")
-      return await handleStatus(searchParams, env);
+      return await handleStatus(searchParams, env, corsHeaders);
 
     if (method === "POST" && pathname === "/dev/register")
       return await handleDevRegister(request, env);
@@ -1221,13 +1221,14 @@ async function handleOracleActivate(request: Request, env: Env): Promise<Respons
   return Response.json({ ok: true, wallet, activated: true });
 }
 
-async function handleStatus(searchParams: URLSearchParams, env: Env): Promise<Response> {
+async function handleStatus(searchParams: URLSearchParams, env: Env, corsHeaders: Record<string, string> = {}): Promise<Response> {
   const wallet = sanitiseWallet(searchParams.get("wallet"));
   if (!wallet)
-    return Response.json({ error: "wallet query param required" }, { status: 400 });
+    return Response.json({ error: "wallet query param required" }, { status: 400, headers: corsHeaders });
 
   const TRIAL    = trialLimit(env);
   const LIFETIME = lifetimeKta(env);
+  const isDev    = !!(env.DEV_WALLET && wallet.toLowerCase() === env.DEV_WALLET.trim().toLowerCase());
 
   const [sub, oracleR] = await Promise.all([
     getSubscriber(env, wallet),
@@ -1237,7 +1238,17 @@ async function handleStatus(searchParams: URLSearchParams, env: Env): Promise<Re
   let oracle = oracleR?.ok ? await oracleR.json() as Record<string, unknown> : null;
   let oracleTier = typeof oracle?.tier === "string" && oracle.tier !== "unregistered" ? oracle.tier : null;
 
-  if (!oracleTier) {
+  if (isDev) {
+    oracleTier = "business";
+    oracle = {
+      tier: "business",
+      amount: 600,
+      expiresAt: "9999-12-31T23:59:59.000Z",
+      socialLifetime: true,
+    };
+  }
+
+  if (!oracleTier && !isDev) {
     const debounceKey = `activ:auto:${wallet}`;
     const debounced   = await env.KV.get(debounceKey);
     if (!debounced) {
@@ -1256,21 +1267,21 @@ async function handleStatus(searchParams: URLSearchParams, env: Env): Promise<Re
         socialLifetime: oracle?.socialLifetime ?? false,
       } : null,
       register: { endpoint: `POST ${env.APP_URL}/register`, trial: `${TRIAL} free alerts included` },
-    }, { status: 404 });
+    }, { status: 404, headers: corsHeaders });
   }
 
-  const remaining = sub.paid ? "unlimited" : Math.max(0, TRIAL - sub.alertCount);
-  const isExpired = sub.expiresAt ? sub.expiresAt < Date.now() : false;
-  const status    = sub.paid
+  const remaining = (sub.paid || isDev) ? "unlimited" : Math.max(0, TRIAL - sub.alertCount);
+  const isExpired = isDev ? false : (sub.expiresAt ? sub.expiresAt < Date.now() : false);
+  const status    = (sub.paid || isDev)
     ? `Lifetime social alerts${isExpired ? " (Oracle expired - renew for API access)" : " - active"}`
     : remaining === 0
     ? "Trial exhausted - send 50 KTA to upgrade"
     : `Trial active - ${sub.alertCount} used · ${remaining} remaining`;
 
-  const effectiveTier = oracleTier ?? (sub.tier ?? (sub.paid ? "social" : "free"));
+  const effectiveTier = isDev ? "business" : (oracleTier ?? (sub.tier ?? (sub.paid ? "social" : "free")));
   const tierIdx        = TIER_ORDER.indexOf(effectiveTier);
-  const nextTier       = TIER_ORDER[tierIdx + 1] ?? null;
-  const amountSent     = typeof oracle?.amount === "number" ? oracle.amount : 0;
+  const nextTier       = isDev ? null : (TIER_ORDER[tierIdx + 1] ?? null);
+  const amountSent     = isDev ? 600 : (typeof oracle?.amount === "number" ? oracle.amount : 0);
   const toolsAvailable = TIER_TOOL_COUNT[effectiveTier] ?? 5;
 
   return Response.json({
@@ -1278,12 +1289,12 @@ async function handleStatus(searchParams: URLSearchParams, env: Env): Promise<Re
     platform:        sub.platform,
     frequency:       sub.frequency,
     currency:        sub.currency,
-    paid:            sub.paid,
+    paid:            sub.paid || isDev,
     tier:            effectiveTier,
-    socialLifetime:  sub.socialLifetime ?? sub.paid,
+    socialLifetime:  sub.socialLifetime ?? (sub.paid || isDev),
     alertCount:      sub.alertCount,
     alertsRemaining: remaining,
-    expiresAt:       sub.expiresAt ? new Date(sub.expiresAt).toISOString() : null,
+    expiresAt:       isDev ? null : (sub.expiresAt ? new Date(sub.expiresAt).toISOString() : null),
     oracleExpired:   isExpired,
     lastAlertAt:     sub.lastAlertAt ? new Date(sub.lastAlertAt).toISOString() : null,
     registeredAt:    new Date(sub.registeredAt).toISOString(),
@@ -1305,11 +1316,11 @@ async function handleStatus(searchParams: URLSearchParams, env: Env): Promise<Re
       expiresAt:      oracle?.expiresAt ?? null,
       socialLifetime: oracle?.socialLifetime ?? false,
     } : null,
-    upgrade: sub.paid ? null : {
+    upgrade: (sub.paid || isDev) ? null : {
       cost: `${LIFETIME} KTA (one-time)`,
       endpoint: `POST ${env.APP_URL}/upgrade`,
     },
-  });
+  }, { headers: corsHeaders });
 }
 
 async function handleDevRegister(request: Request, env: Env): Promise<Response> {

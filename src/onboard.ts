@@ -1551,7 +1551,7 @@ async function checkWalletExisting(){
   var btn=document.getElementById('reg-submit-btn');
   if(!wallet.startsWith('keeta_')||wallet.length<20){banner.style.display='none';_regIsUpdate=false;btn.innerHTML='${ICONS.check} Register - ${trialLimit} free alerts';return;}
   try{
-    var r=await fetch('${appUrl}/status?wallet='+encodeURIComponent(wallet));
+    var r=await fetch('/status?wallet='+encodeURIComponent(wallet));
     var d=await r.json();
     if(d.found){
       _regIsUpdate=true;
@@ -1585,10 +1585,16 @@ async function submitRegister(){
   if(platform==='slack')body.slackWebhook=document.getElementById('reg-slackWebhook').value.trim();
   if(platform==='twitter'){body.apiKey=document.getElementById('reg-apiKey').value.trim();body.apiSecret=document.getElementById('reg-apiSecret').value.trim();body.accessToken=document.getElementById('reg-accessToken').value.trim();body.accessSecret=document.getElementById('reg-accessSecret').value.trim();}
   try{
-    var r=await fetch('${appUrl}/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    var r=await fetch('/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     var txt=await r.text();
     var d;try{d=JSON.parse(txt);}catch(pe){res.className='form-result err';res.textContent='Server error ('+r.status+'). Reload and try again.';return;}
-    if(d.ok){_saveWebhooks(wallet,platform,body);res.className='form-result ok';res.innerHTML='✓ '+(_regIsUpdate?'Settings saved':'Registered')+' - '+d.status+'. Alerts start on next cycle. <div style="margin-top:8px"><button onclick="sendTestAlert(\''+wallet+'\')" class="btn-sm" style="padding:4px 10px;font-size:0.75rem">Send test alert</button><span id="test-alert-res" style="margin-left:8px;font-size:0.75rem"></span></div>';}
+    if(d.ok){
+      _saveWebhooks(wallet,platform,body);
+      res.className='form-result ok';
+      res.innerHTML='✓ '+(_regIsUpdate?'Settings saved':'Registered')+' - '+d.status+'. Alerts start on next cycle. <div style="margin-top:8px"><button id="btn-test-alert" class="btn-sm" style="padding:4px 10px;font-size:0.75rem">Send test alert</button><span id="test-alert-res" style="margin-left:8px;font-size:0.75rem"></span></div>';
+      var bta=document.getElementById('btn-test-alert');
+      if(bta)bta.onclick=function(){sendTestAlert(wallet);};
+    }
     else if(r.status===402){res.className='form-result err';res.innerHTML='<strong>Payment required</strong><br>'+(d.message||'Send at least 0.1 KTA to the oracle wallet first.')+(d.oracle_wallet?'<br><br><span style="font-size:.78rem">Oracle wallet:</span><br><code style="font-size:.72rem;word-break:break-all">'+d.oracle_wallet+'</code>':'');}
     else{res.className='form-result err';res.textContent=d.error||'Failed - try again.';}
   }catch(e){res.className='form-result err';res.textContent='Request failed: '+(e&&e.message?e.message:'check connection and try again.');}
@@ -1599,7 +1605,7 @@ async function sendTestAlert(wallet){
   if(!el)return;
   el.textContent='Testing…';
   try{
-    var r=await fetch('${appUrl}/test-alert',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet})});
+    var r=await fetch('/test-alert',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet})});
     var d=await r.json();
     if(d.ok)el.textContent='✓ Test alert sent!';
     else el.textContent='Delivery failed: '+(d.error||'Check webhook');
@@ -1616,7 +1622,7 @@ async function checkStatus(){
   }
   out.className='result-box show';out.innerHTML='<div class="rrow"><span style="color:var(--muted2);font-size:.82rem">Looking up…</span></div>';
   try{
-    var r=await fetch('${appUrl}/status?wallet='+encodeURIComponent(wallet));
+    var r=await fetch('/status?wallet='+encodeURIComponent(wallet));
     var d=await r.json();
     if(!d.found){
       out.innerHTML='<div class="rrow"><span style="color:var(--danger);font-size:.82rem">Not registered. Use the form below to sign up.</span></div><div class="rrow" style="padding-top:12px"><a href="#register" style="color:var(--gold);font-size:.82rem">→ Register now</a></div>';return;
@@ -2039,7 +2045,7 @@ async function verifyAndActivate(inputId,resultId){
   result.className='form-result loading';result.textContent='Verifying on Keeta chain…';
   if(!wallet.startsWith('keeta_')){result.className='form-result err';result.textContent='Enter a valid keeta_ wallet address.';return;}
   try{
-    var res=await fetch('${appUrl}/upgrade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet})});
+    var res=await fetch('/upgrade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet})});
     var data=await res.json();
     if(data.ok){result.className='form-result ok';result.textContent='✓ '+(data.message||'Access activated!');}
     else{result.className='form-result err';result.textContent=data.error||'Verification failed. Check that payment has confirmed.';}
@@ -2052,7 +2058,7 @@ async function checkCoStatus(){
   if(!wallet.startsWith('keeta_')){out.className='result-box show';out.innerHTML='<div style="color:var(--danger);font-size:.82rem">Enter a valid keeta_ wallet address.</div>';return;}
   out.className='result-box show';out.innerHTML='<div style="color:var(--muted2);font-size:.82rem">Looking up on-chain…</div>';
   try{
-    var r=await fetch('${appUrl}/status?wallet='+encodeURIComponent(wallet));
+    var r=await fetch('/status?wallet='+encodeURIComponent(wallet));
     var d=await r.json();
     if(!d.registered&&!d.tier){out.innerHTML='<div style="color:var(--muted2);font-size:.82rem">No record found for this wallet. Register on the <a href="/onboard#register" style="color:var(--gold)">onboard page</a> first, then send KTA to activate.</div>';return;}
     var tiers=[{k:0.1,n:'Free'},{k:10,n:'Starter'},{k:50,n:'Social',social:true},{k:300,n:'Pro',social:true},{k:600,n:'Business',social:true}];
