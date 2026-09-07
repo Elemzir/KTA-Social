@@ -73,6 +73,9 @@ const TIER_KTA: Record<string, number> = {
 };
 const TIER_ORDER = ["free", "starter", "social", "pro", "business"];
 
+let memPriceCache: { data: Record<string, unknown>; ts: number } | null = null;
+let lastPriceKvWrite = 0;
+
 const LLMS_TXT = `# KTA Oracle — Machine-Readable Spec
 # https://kta-oracle.top · Built on Keeta Network
 
@@ -296,16 +299,26 @@ export default {
       return new Response(LLMS_TXT, { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600, s-maxage=3600" } });
 
     if (method === "GET" && pathname === "/price") {
+      if (memPriceCache && Date.now() - memPriceCache.ts < 360_000)
+        return Response.json(memPriceCache.data, { headers: { "Cache-Control": CC_PRICE, ...corsHeaders } });
       const cached = await env.KV.get<Record<string, unknown>>("social:price_cache", "json");
-      if (cached) return Response.json(cached, { headers: { "Cache-Control": CC_PRICE, ...corsHeaders } });
+      if (cached) {
+        memPriceCache = { data: cached, ts: Date.now() };
+        return Response.json(cached, { headers: { "Cache-Control": CC_PRICE, ...corsHeaders } });
+      }
       const r = await oracleFetch(env, "/price").catch(() => null);
       if (!r?.ok) return Response.json({ error: "unavailable" }, { status: 503, headers: corsHeaders });
       return new Response(r.body, { headers: { "Content-Type": "application/json", "Cache-Control": CC_PRICE, ...corsHeaders } });
     }
 
     if (method === "GET" && pathname === "/price/live") {
+      if (memPriceCache && Date.now() - memPriceCache.ts < 360_000)
+        return Response.json(memPriceCache.data, { headers: { "Cache-Control": CC_PRICE, ...corsHeaders } });
       const cached = await env.KV.get<Record<string, unknown>>("social:price_cache", "json");
-      if (cached) return Response.json(cached, { headers: { "Cache-Control": CC_PRICE, ...corsHeaders } });
+      if (cached) {
+        memPriceCache = { data: cached, ts: Date.now() };
+        return Response.json(cached, { headers: { "Cache-Control": CC_PRICE, ...corsHeaders } });
+      }
       const r = await oracleFetch(env, "/price/live").catch(() => null);
       if (!r?.ok) return Response.json({ error: "unavailable" }, { status: 503, headers: corsHeaders });
       return new Response(r.body, { headers: { "Content-Type": "application/json", "Cache-Control": CC_PRICE, ...corsHeaders } });
@@ -566,11 +579,17 @@ async function handleIngest(request: Request, env: Env): Promise<Response> {
     const QUOTE_TTL   = 16 * 60_000;
 
     type QuoteCache = { standard: string; full: string; preview: string; ts: number };
+    const priceData = {
+      price, change_pct: change1h ?? priceChange, change_24h: change24h, change_7d: change7d ?? null, ts: now,
+    };
+    memPriceCache = { data: priceData, ts: now };
+
+    const shouldWritePriceKv = now - lastPriceKvWrite >= 15 * 60_000;
+    if (shouldWritePriceKv) lastPriceKvWrite = now;
+
     const [quoteCache] = await Promise.all([
       env.KV.get<QuoteCache>("social:quote_cache", "json"),
-      env.KV.put("social:price_cache", JSON.stringify({
-        price, change_pct: change1h ?? priceChange, change_24h: change24h, change_7d: change7d ?? null, ts: now,
-      }), { expirationTtl: 600 }),
+      shouldWritePriceKv ? env.KV.put("social:price_cache", JSON.stringify(priceData), { expirationTtl: 1800 }) : Promise.resolve(),
     ]);
 
     let quoteStandard: string;
