@@ -1689,7 +1689,8 @@ function _timeAgo(ts){
 }
 
 window.loadWhaleFeed=loadWhaleFeed;
-window.checkWalletStatus=checkWalletStatus;
+window.checkStatus=checkStatus;
+window.checkWalletStatus=checkStatus;
 window.submitRegister=submitRegister;
 window.checkWalletExisting=checkWalletExisting;
 window.switchPlatform=switchPlatform;
