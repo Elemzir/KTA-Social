@@ -11,11 +11,11 @@ This policy covers the `kta` Cloudflare Worker (KTA Social) and all code in this
 Do not open a public GitHub issue for security vulnerabilities.
 
 Contact privately:
-- **X:** [@elemzir](https://x.com/elemzir) — mention "KTA-Social Security"
+- **X:** [@elemzir](https://x.com/elemzir) - mention "KTA-Social Security"
 - **Response time:** within 48 hours
 - **Fix target:** critical within 7 days, high severity within 14 days
 
-Include a clear description, reproduction steps, potential impact, and your preferred follow-up contact. Responsible disclosure is appreciated — allow time to fix before any public disclosure.
+Include a clear description, reproduction steps, potential impact, and your preferred follow-up contact. Responsible disclosure is appreciated - allow time to fix before any public disclosure.
 
 ---
 

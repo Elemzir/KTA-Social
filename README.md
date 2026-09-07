@@ -1,4 +1,4 @@
-# KTA Social — Alert Broadcaster & User Portal
+# KTA Social - Alert Broadcaster & User Portal
 
 > **Discord · Telegram · Slack · X/Twitter · AI insights on every alert · Lifetime alerts from 50 KTA**
 
@@ -15,13 +15,13 @@ The subscriber-facing layer of KTA Oracle. Receives live price and whale events 
 | | |
 |---|---|
 | Alert platforms | Discord · Telegram · Slack · X/Twitter |
-| AI insights | On every alert — payment-network focused, never generic |
-| Lifetime alerts | 50 KTA total — alerts never expire even if Oracle lapses |
+| AI insights | On every alert - payment-network focused, never generic |
+| Lifetime alerts | 50 KTA total - alerts never expire even if Oracle lapses |
 | Tools proxied | All 19 Keeta SDK tools via Cloudflare service binding |
-| Edge latency | **<5ms** reads — no public HTTP hop to Oracle |
-| Activation | On-chain scan in ~1–2s — wallet address is identity |
-| Tiers | 5 — stacking from 0.1 KTA to 600 KTA |
-| Source | 100% open source — MIT licensed |
+| Edge latency | **<5ms** reads - no public HTTP hop to Oracle |
+| Activation | On-chain scan in ~1–2s - wallet address is identity |
+| Tiers | 5 - stacking from 0.1 KTA to 600 KTA |
+| Source | 100% open source - MIT licensed |
 
 ---
 
@@ -34,7 +34,7 @@ The subscriber-facing layer of KTA Oracle. Receives live price and whale events 
 | `/donate` | Support page with tier breakdown |
 | `/oracle` | Oracle landing page proxy (served from KTA Oracle worker) |
 | `/tools` | All 19 SDK tools with tier requirements and AI connector |
-| `/guide` | Full integration guide — individuals, businesses, AI agents |
+| `/guide` | Full integration guide - individuals, businesses, AI agents |
 | `/legal` | Legal declaration and terms |
 | `/privacy` | Privacy policy |
 
@@ -46,12 +46,12 @@ The subscriber-facing layer of KTA Oracle. Receives live price and whale events 
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/price` | Live KTA/USD price — proxied from Oracle |
+| `GET` | `/price` | Live KTA/USD price - proxied from Oracle |
 | `GET` | `/rate?currency=` | KTA rate in 160+ fiat currencies with real-time FX conversion |
 | `GET` | `/whale/alerts?wallet=` | Recent whale movements & live pool trades (public preview, full feed with Starter+) |
 | `GET` | `/llms.txt` | Machine-readable full spec for AI agents |
 | `GET` | `/status?wallet=` | Subscription tier, expiry, social lifetime |
-| `GET` | `/stream?wallet=` | SSE stream — live price push every 15s |
+| `GET` | `/stream?wallet=` | SSE stream - live price push every 15s |
 | `POST` | `/register` | Register wallet for social alerts |
 | `POST` | `/activate-oracle` | Proxy activation request to Oracle |
 | `POST` | `/support` | Support message (rate-limited 5/day) |
@@ -71,11 +71,11 @@ The subscriber-facing layer of KTA Oracle. Receives live price and whale events 
 
 ## Alert Platforms
 
-One platform per wallet. To switch platform or update credentials, re-register at `/onboard` with the same wallet — all tier data, alert count, and paid status are preserved.
+One platform per wallet. To switch platform or update credentials, re-register at `/onboard` with the same wallet - all tier data, alert count, and paid status are preserved.
 
 | Platform | Format |
 |----------|--------|
-| Discord | Rich embed — AI insight, price direction, whale alert, live dot |
+| Discord | Rich embed - AI insight, price direction, whale alert, live dot |
 | Telegram | Formatted text with inline links |
 | Slack | Block message with icon |
 | X / Twitter | Tweet with cashtag, AI quote, price direction |
@@ -98,28 +98,28 @@ Payments accumulate on-chain from the same wallet. Send KTA to the oracle wallet
 
 Each tier has a natural ceiling. Users typically upgrade when they hit one of these:
 
-- **Free → Starter**: Free tier lasts only 5 days. Whale feed on `/onboard` is blurred and only 1 whale alert ever fires. 10 KTA total extends access to 30 days, unlocks the live whale feed, adds 3 whale alerts/month, and triples the API quota. Sends accumulate — already sent 0.1? Only 9.9 more needed.
-- **Starter → Social**: Starter alerts expire after 30 days and still drain the 100-alert trial cap. Social (50 KTA total) makes social platform alerts permanent — Discord, Telegram, Slack, and X keep firing forever, even after Oracle access expires. One send, lifetime delivery.
+- **Free → Starter**: Free tier lasts only 5 days. Whale feed on `/onboard` is blurred and only 1 whale alert ever fires. 10 KTA total extends access to 30 days, unlocks the live whale feed, adds 3 whale alerts/month, and triples the API quota. Sends accumulate - already sent 0.1? Only 9.9 more needed.
+- **Starter → Social**: Starter alerts expire after 30 days and still drain the 100-alert trial cap. Social (50 KTA total) makes social platform alerts permanent - Discord, Telegram, Slack, and X keep firing forever, even after Oracle access expires. One send, lifetime delivery.
 - **Social → Pro**: Compliance tools, wallet scoring, transaction history, and on-chain analytics are Pro-only. Built for operators, builders, and teams who need more than price alerts.
 - **Pro → Business**: All 19 SDK tools, unlimited API calls, priority processing. Designed for institutions and automated systems integrating KTA at scale.
 
-**Accumulation is the key mechanic**: every KTA send from the same wallet stacks toward the highest tier. A user already on Free is already on the ladder — each subsequent send upgrades them without starting over.
+**Accumulation is the key mechanic**: every KTA send from the same wallet stacks toward the highest tier. A user already on Free is already on the ladder - each subsequent send upgrades them without starting over.
 
 ---
 
 ## Currency Support
 
-160+ fiat currencies supported on the `/rate` endpoint — all major ISO 4217 codes covering Keeta Network's 200+ country reach. FX rates fetched from a live exchange rate feed and cached at the edge for 1 hour.
+160+ fiat currencies supported on the `/rate` endpoint - all major ISO 4217 codes covering Keeta Network's 200+ country reach. FX rates fetched from a live exchange rate feed and cached at the edge for 1 hour.
 
 The registration form currency selector includes 95 currencies across all regions:
 
-- **Americas** — USD, CAD, BRL, MXN, ARS, CLP, COP, PEN, and more
-- **Europe** — EUR, GBP, CHF, SEK, NOK, DKK, PLN, CZK, HUF, TRY, and more
-- **Middle East / Gulf** — AED, SAR, QAR, KWD, BHD, OMR, JOD, ILS
-- **Africa** — ZAR, NGN, KES, GHS, EGP, MAD, TZS, XOF, XAF, and more
-- **Asia Pacific** — JPY, CNY, HKD, SGD, KRW, INR, MYR, THB, IDR, VND, and more
-- **CIS / Central Asia** — UAH, GEL, KZT, AZN, AMD, UZS
-- **Oceania** — AUD, NZD, FJD, PGK
+- **Americas** - USD, CAD, BRL, MXN, ARS, CLP, COP, PEN, and more
+- **Europe** - EUR, GBP, CHF, SEK, NOK, DKK, PLN, CZK, HUF, TRY, and more
+- **Middle East / Gulf** - AED, SAR, QAR, KWD, BHD, OMR, JOD, ILS
+- **Africa** - ZAR, NGN, KES, GHS, EGP, MAD, TZS, XOF, XAF, and more
+- **Asia Pacific** - JPY, CNY, HKD, SGD, KRW, INR, MYR, THB, IDR, VND, and more
+- **CIS / Central Asia** - UAH, GEL, KZT, AZN, AMD, UZS
+- **Oceania** - AUD, NZD, FJD, PGK
 
 Any ISO 4217 code can be passed directly to `/rate?currency=` even if not in the UI dropdown.
 
@@ -131,7 +131,7 @@ To buy KTA before activating a tier:
 
 | Exchange | Method |
 |----------|--------|
-| **Keeta Wallet** | Visa Direct — 0.4s native settlement |
+| **Keeta Wallet** | Visa Direct - 0.4s native settlement |
 | **Coinbase** | Card · Apple Pay · Google Pay |
 | **Kraken** | Card · Bank from $10 |
 | **Phantom** | In-wallet swap · No KYC |
@@ -182,7 +182,7 @@ COINBASE_COMMERCE_LINK = "https://commerce.coinbase.com/checkout/..."
 
 ## Native SDK
 
-KTA Social communicates with KTA Oracle via a **Cloudflare service binding** — a direct in-process call with zero network overhead. No DNS, no TLS, no TCP.
+KTA Social communicates with KTA Oracle via a **Cloudflare service binding** - a direct in-process call with zero network overhead. No DNS, no TLS, no TCP.
 
 All subscription and activation logic runs through the Keeta SDK:
 
@@ -190,9 +190,9 @@ All subscription and activation logic runs through the Keeta SDK:
 |-----------|---------------|
 | Tier activation | Proxies to Oracle → `scanChainTotal()` reads Keeta chain history directly |
 | Social lifetime sync | Oracle calls `/oracle-activate` after on-chain verification |
-| Wallet identity | Keeta wallet address is the account — no email, no password, no KYC |
-| Price data | Served from Oracle KV — sourced from Keeta Anchor FX + DEX |
-| Whale alerts | Read from Oracle KV — detected natively from Keeta on-chain history |
+| Wallet identity | Keeta wallet address is the account - no email, no password, no KYC |
+| Price data | Served from Oracle KV - sourced from Keeta Anchor FX + DEX |
+| Whale alerts | Read from Oracle KV - detected natively from Keeta on-chain history |
 
 ---
 
@@ -200,13 +200,13 @@ All subscription and activation logic runs through the Keeta SDK:
 
 | Operation | Latency | Notes |
 |-----------|---------|-------|
-| API reads (`/price`, `/rate`, `/status`) | <5ms | Proxied via Cloudflare service binding — no public HTTP hop to Oracle |
+| API reads (`/price`, `/rate`, `/status`) | <5ms | Proxied via Cloudflare service binding - no public HTTP hop to Oracle |
 | SSE stream (`/stream?wallet=`) | 15s push interval | Client auto-reconnects; consistent with CF Workers' stateless model |
 | Tier activation (`/activate-oracle`) | ~1–2s | Service binding → Oracle chain scan → KV write → Social sync |
 | KTA settlement | **0.4s** | Keeta Network native finality |
-| Social alert delivery | next cron cycle | Alerts fire within 5 min of price move — parallel broadcast to all platforms |
+| Social alert delivery | next cron cycle | Alerts fire within 5 min of price move - parallel broadcast to all platforms |
 
-Social calls Oracle via a **Cloudflare service binding** — a direct in-process call with zero network overhead. No DNS, no TLS, no TCP — faster than any inter-service HTTP call.
+Social calls Oracle via a **Cloudflare service binding** - a direct in-process call with zero network overhead. No DNS, no TLS, no TCP - faster than any inter-service HTTP call.
 
 ---
 
@@ -228,10 +228,10 @@ Breakpoints: 860px (tablet), 600px (mobile), 480px (small mobile).
 
 ## Stack
 
-- Cloudflare Workers — TypeScript
-- Cloudflare KV — subscriber state and price history
-- Cloudflare Workers Assets — `public/` static files
-- Cloudflare service binding — direct Oracle calls without HTTP
+- Cloudflare Workers - TypeScript
+- Cloudflare KV - subscriber state and price history
+- Cloudflare Workers Assets - `public/` static files
+- Cloudflare service binding - direct Oracle calls without HTTP
 
 ---
 
@@ -250,7 +250,7 @@ Breakpoints: 860px (tablet), 600px (mobile), 480px (small mobile).
 
 ## Payment cost comparison
 
-| | SWIFT wire — $50,000 | Keeta Network — $50,000 |
+| | SWIFT wire - $50,000 | Keeta Network - $50,000 |
 |-|----------------------|------------------------|
 | Fee | ~$1,050 | **$75** |
 | Speed | 3–5 business days | **0.4 seconds** |
@@ -289,7 +289,7 @@ Every `/status` response now includes a `tools` object:
 }
 ```
 
-Agents can call `/status` at any time to discover their current tool count and exactly what KTA is needed to unlock the next tier. This makes the upgrade path fully autonomous — no human needed to read the docs.
+Agents can call `/status` at any time to discover their current tool count and exactly what KTA is needed to unlock the next tier. This makes the upgrade path fully autonomous - no human needed to read the docs.
 
 ### Model Context Protocol (MCP) & AI Agent Integration
 
@@ -308,7 +308,7 @@ The Oracle classifies every price move and sends a `changeLevel` to Social. Larg
 
 | Price move | Level | Max alert cooldown |
 |---|---|---|
-| < 5% | — | No alert |
+| < 5% | - | No alert |
 | 5–9% | `minor` | Subscriber's chosen frequency |
 | 10–14% | `normal` | 4 hours |
 | 15–19% | `notable` | 1 hour |
@@ -321,13 +321,13 @@ Subscribers on a daily digest still receive alerts within 30 minutes on a 20%+ m
 
 ## Troubleshoot
 
-**Minimum requirement:** Every feature — alerts, API calls, status checks, and tools — requires at least **0.1 KTA sent to the oracle wallet and an activated wallet**. Registration without activation does nothing.
+**Minimum requirement:** Every feature - alerts, API calls, status checks, and tools - requires at least **0.1 KTA sent to the oracle wallet and an activated wallet**. Registration without activation does nothing.
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
 | Not receiving alerts after registering | Wallet not activated | Go to `/onboard → Activate`, enter wallet, click Activate. Must have sent ≥0.1 KTA first |
 | Trial alerts exhausted (100 limit) | Free/Starter cap reached | Send 50+ KTA and activate for lifetime social alerts |
-| Alerts stopped after working | Oracle 30-day window expired | Check `GET /status?wallet=` — `socialLifetime: true` means alerts continue. Renew Oracle by sending more KTA |
+| Alerts stopped after working | Oracle 30-day window expired | Check `GET /status?wallet=` - `socialLifetime: true` means alerts continue. Renew Oracle by sending more KTA |
 | Discord webhook not delivering | Webhook deleted in Discord | Recreate: right-click channel → Integrations → Webhooks → New Webhook. Re-register at `/onboard` |
 | Telegram bot silent | Bot not started or wrong chat ID | Send `/start` to the bot. Get chat ID via `api.telegram.org/bot{TOKEN}/getUpdates` |
 | Slack stopped | App removed from workspace | Recreate incoming webhook at `api.slack.com/apps`. Re-register at `/onboard` |
@@ -349,7 +349,7 @@ Returns: `tier`, `paid`, `socialLifetime`, `alertCount`, `expiresAt`.
 
 ## License
 
-[MIT](./LICENSE) — the code is open source. Service access requires a KTA subscription.
+[MIT](./LICENSE) - the code is open source. Service access requires a KTA subscription.
 
 ## Security
 

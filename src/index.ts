@@ -1,4 +1,4 @@
-import type { Env, SocialSubscriber, AlertFrequency, SocialPlatform } from "./types.js";
+﻿import type { Env, SocialSubscriber, AlertFrequency, SocialPlatform } from "./types.js";
 import { requireInternalAuth, requireDevAuth, sanitiseWallet }        from "./auth.js";
 import { getSubscribers, saveSubscribers, getSubscriber, saveSubscriber, subKey, trialLimit, lifetimeKta }   from "./store.js";
 import {
@@ -76,12 +76,12 @@ const TIER_ORDER = ["free", "starter", "social", "pro", "business"];
 let memPriceCache: { data: Record<string, unknown>; ts: number } | null = null;
 let lastPriceKvWrite = 0;
 
-const LLMS_TXT = `# KTA Oracle — Machine-Readable Spec
+const LLMS_TXT = `# KTA Oracle - Machine-Readable Spec
 # https://kta-oracle.top · Built on Keeta Network
 
 ## Service
 Real-time KTA/USD price intelligence, on-chain analytics, whale detection, and social alert broadcasting.
-19 SDK tools across 5 tiers. Payments fully on-chain. No API key — wallet address is identity.
+19 SDK tools across 5 tiers. Payments fully on-chain. No API key - wallet address is identity.
 
 ## Base URL
 https://kta-oracle.top
@@ -99,30 +99,30 @@ tier:pro       300 KTA → 13 tools  30 days, lifetime alerts + 5 analytics tool
 tier:business  600 KTA → 19 tools  30 days, lifetime alerts, all tools, unlimited API calls
 
 Sends accumulate. Already sent 10 KTA? You only need 290 more for Pro.
-Check your total: GET /status?wallet=keeta_xxx — response includes tools._unlock
+Check your total: GET /status?wallet=keeta_xxx - response includes tools._unlock
 
-## Free Tier (0.1 KTA) — 5 tools
+## Free Tier (0.1 KTA) - 5 tools
 GET  /price                  → { price, change_pct, change_24h, change_7d, ts }
 GET  /rate?currency=EUR       → { currency, price, ts }
 POST /register                → body:{ wallet, platform, frequency, currency, ...creds }
 GET  /status?wallet=          → { tier, paid, tools:{ available, locked, _unlock }, ... }
-GET  /stream?wallet=          → SSE event:price every 15s — EventSource compatible
+GET  /stream?wallet=          → SSE event:price every 15s - EventSource compatible
 
-## Starter Tier (10 KTA total) — 8 tools (+3)
+## Starter Tier (10 KTA total) - 8 tools (+3)
 GET  /whale/alerts?wallet=    → { alerts:[{ amountKta, classification, ts }] }
 AI market insights embedded in every price alert
 
-## Social Tier (50 KTA total) — 8 tools (same endpoints, lifetime alerts)
-Upgrade is lifetime social delivery — no new tool endpoints.
+## Social Tier (50 KTA total) - 8 tools (same endpoints, lifetime alerts)
+Upgrade is lifetime social delivery - no new tool endpoints.
 
-## Pro Tier (300 KTA total) — 13 tools (+5)
+## Pro Tier (300 KTA total) - 13 tools (+5)
 GET  /wallet/history?wallet=       → { txs:[{ from, to, amount, token, ts }], count, ts }
 GET  /wallet/score?wallet=         → { score:0-100, grade:A-F, breakdown:{...}, ts }
 POST /compliance/screen            → body:{ wallet, caller? } → { risk_level, flags, summary, ts }
 GET  /analytics/network?wallet=    → { head_block, oracle_kta_balance, network, ts }
 GET  /network/health?wallet=       → { status, latency_ms, head_block, network, ts }
 
-## Business Tier (600 KTA total) — all 19 tools (+6)
+## Business Tier (600 KTA total) - all 19 tools (+6)
 GET  /identity/resolve?q=&caller=  → { result, query, ts }
 POST /kyc/verify                   → body:{ wallet } → { supported_countries, wallet, ts }
 POST /certificate/manage           → body:{ wallet, caller? } → { certificates, ts }
@@ -140,13 +140,13 @@ GET  /checkout         → pricing + payment methods (HTML)
 1. POST /register { wallet, platform, frequency }
 2. Send KTA to oracle wallet (address shown on /onboard or in /status not-found response)
 3. POST /activate-oracle { wallet }
-4. GET /status?wallet= — confirm tier and tools._unlock
+4. GET /status?wallet= - confirm tier and tools._unlock
 
 ## Upgrade Discovery
 Every GET /status?wallet= response includes:
-  tools.available  — how many tools your current tier can access
-  tools.locked     — how many tools are still locked
-  tools._unlock    — { name, kta_total, kta_more, tools_unlocked[], checkout }
+  tools.available  - how many tools your current tier can access
+  tools.locked     - how many tools are still locked
+  tools._unlock    - { name, kta_total, kta_more, tools_unlocked[], checkout }
 Use tools._unlock to autonomously discover your next upgrade step.
 
 ## Limitations per tier
@@ -156,7 +156,7 @@ tier:social    social_alerts:unlimited(lifetime) whale_alerts:unlimited  oracle_
 tier:pro       social_alerts:unlimited(lifetime) whale_alerts:unlimited  oracle_access:30days  api_calls:300/month
 tier:business  social_alerts:unlimited(lifetime) whale_alerts:unlimited  oracle_access:30days  api_calls:unlimited
 
-Price moves under 5% produce no alerts — by design, prevents noise.
+Price moves under 5% produce no alerts - by design, prevents noise.
 After Oracle access expires (5 days for Free, 30 days for paid), social alerts continue if socialLifetime=true (50+ KTA sent).
 To renew Oracle access: send more KTA from same wallet → POST /activate-oracle again.
 
@@ -174,7 +174,7 @@ Response shape:
   alertsRemaining: 100,
   expiresAt: "2026-04-20T00:00:00.000Z" | null,
   oracleExpired: false,
-  status: "Trial active — 0 used · 100 remaining",
+  status: "Trial active - 0 used · 100 remaining",
   tools: {
     available: 5,
     locked: 14,
@@ -190,11 +190,11 @@ Response shape:
 }
 
 Key fields to check:
-  tier            — current Oracle tier
-  oracleExpired   — true = Oracle API access lapsed (social alerts may still fire if socialLifetime=true)
-  socialLifetime  — true = social alerts never expire regardless of Oracle status
-  alertsRemaining — "unlimited" for paid, number for trial (cap is 100)
-  tools._unlock   — null means Business tier (no further unlocks)
+  tier            - current Oracle tier
+  oracleExpired   - true = Oracle API access lapsed (social alerts may still fire if socialLifetime=true)
+  socialLifetime  - true = social alerts never expire regardless of Oracle status
+  alertsRemaining - "unlimited" for paid, number for trial (cap is 100)
+  tools._unlock   - null means Business tier (no further unlocks)
 
 ## Usage examples
 
@@ -321,7 +321,7 @@ export default {
 
       const sub = await getSubscriber(env, wallet);
       if (!sub)
-        return new Response(`data: {"error":"not registered — visit /onboard"}\n\n`, { status: 403, headers: { "Content-Type": "text/event-stream", ...corsHeaders } });
+        return new Response(`data: {"error":"not registered - visit /onboard"}\n\n`, { status: 403, headers: { "Content-Type": "text/event-stream", ...corsHeaders } });
 
       const price = await env.KV.get<Record<string,unknown>>("social:price_cache", "json")
         ?? await oracleFetch(env, "/price").then(r => r.ok ? r.json() as Promise<Record<string,unknown>> : null).catch(() => null);
@@ -499,9 +499,9 @@ async function handleAgent(request: Request, env: Env, cors: Record<string,strin
 
   const now = Date.now();
   if (now - state.last < 5_000)
-    return Response.json({ reply: "Slow down — wait a moment before sending another message." }, { headers: cors });
+    return Response.json({ reply: "Slow down - wait a moment before sending another message." }, { headers: cors });
   if (state.count >= 10)
-    return Response.json({ reply: "You're asking great questions — slow down a little though. Come back in an hour and let's continue." }, { headers: cors });
+    return Response.json({ reply: "You're asking great questions - slow down a little though. Come back in an hour and let's continue." }, { headers: cors });
 
   await env.KV.put(rKey, JSON.stringify({ count: state.count + 1, last: now }), { expirationTtl: 3600 });
 
@@ -522,7 +522,7 @@ async function handleActivateOracle(request: Request, env: Env, cors: Record<str
   const aKey = `activ:rate:${await hashFp(ip + wallet)}`;
   const aCount = parseInt((await env.KV.get(aKey)) ?? "0");
   if (aCount >= 10)
-    return Response.json({ error: "Too many activation attempts — try again in an hour." }, { status: 429, headers: cors });
+    return Response.json({ error: "Too many activation attempts - try again in an hour." }, { status: 429, headers: cors });
   await env.KV.put(aKey, String(aCount + 1), { expirationTtl: 3600 });
 
   const payload = JSON.stringify({ wallet });
@@ -538,7 +538,7 @@ async function handleActivateOracle(request: Request, env: Env, cors: Record<str
     res = await fetch(`${base}/activate`, { method: "POST", headers, body: payload, signal: AbortSignal.timeout(20000) }).catch((e: unknown) => { fetchErr = String(e); return null; });
   }
 
-  if (!res) return Response.json({ error: "Activation failed — Oracle unreachable.", detail: fetchErr || "no response" }, { status: 502, headers: cors });
+  if (!res) return Response.json({ error: "Activation failed - Oracle unreachable.", detail: fetchErr || "no response" }, { status: 502, headers: cors });
   return new Response(res.body, { status: res.status, headers: { "Content-Type": "application/json", ...cors } });
 }
 
@@ -891,7 +891,7 @@ async function sendTrialWarning(env: Env, sub: SocialSubscriber): Promise<void> 
     if (sub.platform === "slack" && sub.slackWebhook)
       await sendSlack(sub.slackWebhook, buildTrialWarningText(appUrl, lifetime, tLimit), iconUrl);
     if (sub.platform === "twitter" && sub.twitterCreds) {
-      const msg = `⚠️ 1 free $KTA alert remaining.\n\nYou've used ${tLimit - 1}/${tLimit} free oracle alerts.\n\nLifetime access: ${lifetime} KTA — one payment, no renewals.\nCheck your status or top up:\n👉 ${appUrl}/checkout`;
+      const msg = `⚠️ 1 free $KTA alert remaining.\n\nYou've used ${tLimit - 1}/${tLimit} free oracle alerts.\n\nLifetime access: ${lifetime} KTA - one payment, no renewals.\nCheck your status or top up:\n👉 ${appUrl}/checkout`;
       if (msg.length <= 280) await postTweet(sub, msg);
     }
   } catch {}
@@ -910,7 +910,7 @@ async function sendTrialExhausted(env: Env, sub: SocialSubscriber): Promise<void
     if (sub.platform === "slack" && sub.slackWebhook)
       await sendSlack(sub.slackWebhook, buildTrialExhaustedText(appUrl, TRIAL, LIFETIME), iconUrl);
     if (sub.platform === "twitter" && sub.twitterCreds) {
-      const msg = `⏳ ${TRIAL} free $KTA alerts used up.\n\nYou've seen the oracle — price moves, AI insights, whale alerts.\n\nLifetime social alerts: ${LIFETIME} KTA once.\n\n👉 ${appUrl}/donate`;
+      const msg = `⏳ ${TRIAL} free $KTA alerts used up.\n\nYou've seen the oracle - price moves, AI insights, whale alerts.\n\nLifetime social alerts: ${LIFETIME} KTA once.\n\n👉 ${appUrl}/donate`;
       if (msg.length <= 280) await postTweet(sub, msg);
     }
   } catch {}
@@ -924,7 +924,7 @@ async function handleRegister(request: Request, env: Env, ctx?: ExecutionContext
 
   const wallet = sanitiseWallet(body.wallet);
   if (!wallet)
-    return Response.json({ error: "wallet required — must start with keeta_", help: "Get a free wallet at wallet.keeta.com" }, { status: 400 });
+    return Response.json({ error: "wallet required - must start with keeta_", help: "Get a free wallet at wallet.keeta.com" }, { status: 400 });
 
   const platform = body.platform as SocialPlatform | undefined;
   if (!platform || !VALID_PLATFORMS.includes(platform))
@@ -982,7 +982,7 @@ async function handleRegister(request: Request, env: Env, ctx?: ExecutionContext
   if (existingIdx === -1 && !isDev) {
     const activateRes = await oraclePost(env, "/activate", JSON.stringify({ wallet })).catch(() => null);
     if (!activateRes) {
-      return Response.json({ error: "Oracle unreachable — try again shortly." }, { status: 503 });
+      return Response.json({ error: "Oracle unreachable - try again shortly." }, { status: 503 });
     }
     activateData = await activateRes.json().catch(() => ({})) as Record<string, unknown>;
     if (!activateData.success) {
@@ -1053,7 +1053,7 @@ async function handleRegister(request: Request, env: Env, ctx?: ExecutionContext
   const status    = sub.paid
     ? "Lifetime access active"
     : remaining === 0
-    ? `Trial exhausted — send ${LIFETIME} KTA to upgrade`
+    ? `Trial exhausted - send ${LIFETIME} KTA to upgrade`
     : `Trial: ${sub.alertCount} used · ${remaining} remaining`;
 
   return Response.json({
@@ -1102,7 +1102,7 @@ async function handleUpgrade(request: Request, env: Env): Promise<Response> {
   }
 
   if (!res || !res.ok)
-    return Response.json({ error: "Payment verification unavailable — try again in a moment." }, { status: 503 });
+    return Response.json({ error: "Payment verification unavailable - try again in a moment." }, { status: 503 });
 
   const result = await res.json() as { verified: boolean; amount: number; error?: string };
 
@@ -1143,7 +1143,7 @@ async function handleUpgrade(request: Request, env: Env): Promise<Response> {
     message: `Lifetime access activated. Payment of ${result.amount.toFixed(1)} KTA verified on Keeta Network.`,
     wallet,
     paid:    true,
-    alerts:  "Unlimited — alerts resume on the next cycle.",
+    alerts:  "Unlimited - alerts resume on the next cycle.",
   });
 }
 
@@ -1168,7 +1168,7 @@ async function handleOracleActivate(request: Request, env: Env): Promise<Respons
   const idx         = subscribers.findIndex(s => s.wallet === wallet);
 
   if (idx === -1)
-    return Response.json({ ok: false, message: "Wallet not yet registered in Social — register first to receive alerts." });
+    return Response.json({ ok: false, message: "Wallet not yet registered in Social - register first to receive alerts." });
 
   const currentRank  = TIER_RANK[subscribers[idx].tier ?? "free"] ?? 0;
   const incomingRank = TIER_RANK[tier ?? "free"] ?? 0;
@@ -1249,10 +1249,10 @@ async function handleStatus(searchParams: URLSearchParams, env: Env): Promise<Re
   const remaining = sub.paid ? "unlimited" : Math.max(0, TRIAL - sub.alertCount);
   const isExpired = sub.expiresAt ? sub.expiresAt < Date.now() : false;
   const status    = sub.paid
-    ? `Lifetime social alerts${isExpired ? " (Oracle expired — renew for API access)" : " — active"}`
+    ? `Lifetime social alerts${isExpired ? " (Oracle expired - renew for API access)" : " - active"}`
     : remaining === 0
-    ? "Trial exhausted — send 50 KTA to upgrade"
-    : `Trial active — ${sub.alertCount} used · ${remaining} remaining`;
+    ? "Trial exhausted - send 50 KTA to upgrade"
+    : `Trial active - ${sub.alertCount} used · ${remaining} remaining`;
 
   const effectiveTier = oracleTier ?? (sub.tier ?? (sub.paid ? "social" : "free"));
   const tierIdx        = TIER_ORDER.indexOf(effectiveTier);
@@ -1460,7 +1460,7 @@ async function handleSupport(request: Request, env: Env, cors: Record<string,str
   const rKey  = `support:rate:${fp}`;
   const count = parseInt((await env.KV.get(rKey)) ?? "0");
   if (count >= 5)
-    return Response.json({ error: "Too many requests — try again tomorrow." }, { status: 429, headers: cors });
+    return Response.json({ error: "Too many requests - try again tomorrow." }, { status: 429, headers: cors });
 
   await env.KV.put(rKey, String(count + 1), { expirationTtl: 86400 });
   const ticketKey = `support:${Date.now()}:${fp}`;
@@ -1509,7 +1509,7 @@ async function handleSupportStatus(searchParams: URLSearchParams, env: Env): Pro
   ]);
 
   if (!raw) {
-    const page = h + `<h1>Support Status</h1><p class="sub">Ticket not found — check the ID and try again</p><form method="get" action="/support/status"><input name="ticket" value="${escHtml(ticketId)}" required autocomplete="off"><button type="submit">Try Again</button></form><p class="footer">KTA Oracle Agent · Powered by Keeta Network</p></div></body></html>`;
+    const page = h + `<h1>Support Status</h1><p class="sub">Ticket not found - check the ID and try again</p><form method="get" action="/support/status"><input name="ticket" value="${escHtml(ticketId)}" required autocomplete="off"><button type="submit">Try Again</button></form><p class="footer">KTA Oracle Agent · Powered by Keeta Network</p></div></body></html>`;
     return new Response(page, { headers: { "Content-Type": "text/html;charset=utf-8" } });
   }
 
@@ -1519,17 +1519,17 @@ async function handleSupportStatus(searchParams: URLSearchParams, env: Env): Pro
   let replyData: Record<string, unknown> | null = null;
   if (replyRaw) { try { replyData = JSON.parse(replyRaw); } catch { /* ignore */ } }
 
-  const submittedAt = ticket.ts ? new Date(ticket.ts as number).toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" }) : "—";
+  const submittedAt = ticket.ts ? new Date(ticket.ts as number).toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" }) : "-";
   const repliedAt   = replyData?.ts ? new Date(replyData.ts as number).toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" }) : null;
 
   const replySection = replyData
     ? `<div class="field"><div class="label">Dev Reply</div><div class="value accent">${escHtml(String(replyData.reply ?? ""))}</div></div><div class="field"><div class="label">Replied at</div><div class="value">${repliedAt}</div></div>`
-    : `<div class="field"><div class="label">Status</div><div class="value pending">Pending — no reply yet. Check back soon.</div></div>`;
+    : `<div class="field"><div class="label">Status</div><div class="value pending">Pending - no reply yet. Check back soon.</div></div>`;
 
   const page = h
     + `<h1>Support Status</h1><p class="sub">Ticket · <code style="font-size:0.72rem;color:#555">${escHtml(ticketId)}</code></p>`
-    + `<div class="field"><div class="label">Name</div><div class="value">${escHtml(String(ticket.name ?? "—"))}</div></div>`
-    + `<div class="field"><div class="label">Your message</div><div class="value">${escHtml(String(ticket.message ?? "—"))}</div></div>`
+    + `<div class="field"><div class="label">Name</div><div class="value">${escHtml(String(ticket.name ?? "-"))}</div></div>`
+    + `<div class="field"><div class="label">Your message</div><div class="value">${escHtml(String(ticket.message ?? "-"))}</div></div>`
     + `<div class="field"><div class="label">Submitted</div><div class="value">${submittedAt}</div></div>`
     + replySection
     + `<p class="footer" style="margin-top:28px">KTA Oracle Agent · Powered by Keeta Network</p></div></body></html>`;
@@ -1616,11 +1616,11 @@ async function handleDiscordInteractions(request: Request, env: Env): Promise<Re
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             embeds: [{
-              title:  "Support Reply — Dev",
+              title:  "Support Reply - Dev",
               color:  0x00D4AA,
               fields: [
                 { name: "From",             value: `${ticket.name ?? "?"} <${ticket.email ?? "?"}>`, inline: false },
-                { name: "Original message", value: String(ticket.message ?? "—"),                    inline: false },
+                { name: "Original message", value: String(ticket.message ?? "-"),                    inline: false },
                 { name: "Dev reply",        value: reply,                                             inline: false },
                 { name: "Ticket",           value: ticketId,                                          inline: false },
               ],
@@ -1674,12 +1674,12 @@ async function handleDevSupportReply(request: Request, env: Env): Promise<Respon
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       embeds: [{
-        title: "Support Reply — Dev",
+        title: "Support Reply - Dev",
         color: 0x00D4AA,
         fields: [
           { name: "Ticket",           value: ticketId,                                        inline: false },
           { name: "From",             value: `${ticket.name ?? "?"} <${ticket.email ?? "?"}>`, inline: false },
-          { name: "Original message", value: String(ticket.message ?? "—"),                    inline: false },
+          { name: "Original message", value: String(ticket.message ?? "-"),                    inline: false },
           { name: "Dev reply",        value: reply,                                             inline: false },
         ],
         timestamp: new Date().toISOString(),

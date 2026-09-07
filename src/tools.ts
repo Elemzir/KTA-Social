@@ -1,4 +1,4 @@
-import { BASE_CSS, header, footer, agentWidget } from "./onboard.js";
+﻿import { BASE_CSS, header, footer, agentWidget } from "./onboard.js";
 
 const TOOLS_CSS = `
 .tier-filter{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
@@ -115,7 +115,7 @@ const TOOLS: ToolDef[] = [
   },
   {
     name: "Multi-currency FX Rate",
-    desc: "Convert KTA to any fiat currency — 160+ currencies supported including all major ISO 4217 codes. Uses the live oracle price with real-time FX conversion. Ideal for payment cost calculations across Keeta's 200+ country reach.",
+    desc: "Convert KTA to any fiat currency - 160+ currencies supported including all major ISO 4217 codes. Uses the live oracle price with real-time FX conversion. Ideal for payment cost calculations across Keeta's 200+ country reach.",
     endpoint: "/rate?currency=",
     method: "GET",
     tier: "free",
@@ -123,7 +123,7 @@ const TOOLS: ToolDef[] = [
   },
   {
     name: "Social Alert Delivery",
-    desc: "Price alerts pushed to Discord (rich embeds), Telegram, Slack, or X/Twitter. Configure frequency from 5 minutes to daily digest, or trigger on price moves from ±5% to ±25%. Free trial gives 100 alerts — lifetime social from 50 KTA.",
+    desc: "Price alerts pushed to Discord (rich embeds), Telegram, Slack, or X/Twitter. Configure frequency from 5 minutes to daily digest, or trigger on price moves from ±5% to ±25%. Free trial gives 100 alerts - lifetime social from 50 KTA.",
     endpoint: "/register",
     method: "POST",
     tier: "free",
@@ -148,7 +148,7 @@ const TOOLS: ToolDef[] = [
   },
   {
     name: "AI Market Insights",
-    desc: "Every alert carries an AI-generated insight on trend phase, volume conviction, and payment timing. Powered by fast LLM inference on Keeta price data. Preview available on Starter — full access from Social.",
+    desc: "Every alert carries an AI-generated insight on trend phase, volume conviction, and payment timing. Powered by fast LLM inference on Keeta price data. Preview available on Starter - full access from Social.",
     endpoint: "embedded in alerts",
     method: "GET",
     tier: "starter",
@@ -330,9 +330,9 @@ export function renderTools(appUrl: string): string {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Tools — KTA Oracle</title>
-<meta name="description" content="All ${totalTools} KTA Oracle tools. From live price feeds to certificate management — each tool mapped to the tier that unlocks it.">
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/tools"><meta property="og:title" content="Tools — KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<title>Tools - KTA Oracle</title>
+<meta name="description" content="All ${totalTools} KTA Oracle tools. From live price feeds to certificate management - each tool mapped to the tier that unlocks it.">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/tools"><meta property="og:title" content="Tools - KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}${TOOLS_CSS}</style>
 </head>
@@ -343,7 +343,7 @@ ${header("tools")}
 <section class="hero">
   <div class="hero-eyebrow">${si('<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>', 14)} ${totalTools} tools · Keeta Network SDK</div>
   <h1>Every tool,<br><em>mapped to your tier.</em></h1>
-  <p class="hero-sub">From live price data to on-chain certificate operations — each tool is production-ready and built on the Keeta Network SDK. Unlock more as you go deeper.</p>
+  <p class="hero-sub">From live price data to on-chain certificate operations - each tool is production-ready and built on the Keeta Network SDK. Unlock more as you go deeper.</p>
 </section>
 
 <div class="wrap">
@@ -372,7 +372,7 @@ ${header("tools")}
     <div class="ai-section-head">
       <div style="width:40px;height:40px;border-radius:10px;background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.25);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0;margin-top:2px">${si('<path d="M9 3H7a2 2 0 0 0-2 2v2"/><path d="M15 3h2a2 2 0 0 1 2 2v2"/><path d="M9 21H7a2 2 0 0 1-2-2v-2"/><path d="M15 21h2a2 2 0 0 0 2-2v-2"/><rect x="9" y="9" width="6" height="6" rx="1"/><line x1="12" y1="3" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="21"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/>')}</div>
       <div style="flex:1;min-width:200px">
-        <div style="font-size:1rem;font-weight:800;letter-spacing:-0.02em">Connect any AI — Claude, ChatGPT, Gemini &amp; more</div>
+        <div style="font-size:1rem;font-weight:800;letter-spacing:-0.02em">Connect any AI - Claude, ChatGPT, Gemini &amp; more</div>
         <div style="font-size:0.8rem;color:var(--muted2);margin-top:4px">Live KTA data via SSE stream or REST. Works with Claude, ChatGPT, Gemini, DeepSeek, Grok, Mistral, and any AI that can call an HTTP endpoint. Registration required.</div>
       </div>
       <button onclick="toggleAiPanel()" class="ai-connect-btn">Connect AI →</button>
@@ -381,17 +381,17 @@ ${header("tools")}
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px" class="ai-intg-grid">
         <div style="background:var(--surface2);border:1px solid #1a1a1a;border-radius:10px;padding:16px">
           <div style="font-size:0.78rem;font-weight:700;margin-bottom:8px;color:#C4A35A">Claude · Gemini · Grok</div>
-          <div style="font-size:0.73rem;color:var(--muted2);line-height:1.65;margin-bottom:10px">Use tool-use / function-calling API. Pass the Oracle REST endpoints as tools. The SSE stream gives live price pushes — connect via EventSource in your system prompt or tool config.</div>
+          <div style="font-size:0.73rem;color:var(--muted2);line-height:1.65;margin-bottom:10px">Use tool-use / function-calling API. Pass the Oracle REST endpoints as tools. The SSE stream gives live price pushes - connect via EventSource in your system prompt or tool config.</div>
           <code style="font-family:monospace;font-size:0.67rem;color:var(--accent);background:#050505;border:1px solid #1a1a1a;border-radius:6px;padding:5px 9px;display:block;word-break:break-all">GET /stream?wallet=your_wallet</code>
         </div>
         <div style="background:var(--surface2);border:1px solid #1a1a1a;border-radius:10px;padding:16px">
           <div style="font-size:0.78rem;font-weight:700;margin-bottom:8px;color:#C4A35A">ChatGPT · DeepSeek · Mistral</div>
-          <div style="font-size:0.73rem;color:var(--muted2);line-height:1.65;margin-bottom:10px">Set up Custom GPT Actions or OpenAPI tool definitions. Declare the /price and /rate endpoints as actions — no API key needed for public data endpoints.</div>
+          <div style="font-size:0.73rem;color:var(--muted2);line-height:1.65;margin-bottom:10px">Set up Custom GPT Actions or OpenAPI tool definitions. Declare the /price and /rate endpoints as actions - no API key needed for public data endpoints.</div>
           <code style="font-family:monospace;font-size:0.67rem;color:var(--gold);background:#050505;border:1px solid #1a1a1a;border-radius:6px;padding:5px 9px;display:block;word-break:break-all">GET /price · GET /rate?currency=USD</code>
         </div>
         <div style="background:var(--surface2);border:1px solid #1a1a1a;border-radius:10px;padding:16px">
           <div style="font-size:0.78rem;font-weight:700;margin-bottom:8px;color:#C4A35A">MCP / Agent frameworks</div>
-          <div style="font-size:0.73rem;color:var(--muted2);line-height:1.65;margin-bottom:10px">Integrate with LangChain, AutoGPT, CrewAI, or any MCP-compatible host. All endpoints return clean JSON. The /stream endpoint follows SSE spec — auto-reconnects every 15s.</div>
+          <div style="font-size:0.73rem;color:var(--muted2);line-height:1.65;margin-bottom:10px">Integrate with LangChain, AutoGPT, CrewAI, or any MCP-compatible host. All endpoints return clean JSON. The /stream endpoint follows SSE spec - auto-reconnects every 15s.</div>
           <code style="font-family:monospace;font-size:0.67rem;color:var(--muted2);background:#050505;border:1px solid #1a1a1a;border-radius:6px;padding:5px 9px;display:block;word-break:break-all">Content-Type: text/event-stream</code>
         </div>
       </div>

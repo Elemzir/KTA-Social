@@ -20,7 +20,7 @@ Use of this service is at your own risk. The operator makes no guarantees regard
 
 ## Subscription Plans
 
-All payments are made in KTA to the oracle wallet. Amounts accumulate on-chain — multiple payments from the same wallet add up toward higher tiers automatically.
+All payments are made in KTA to the oracle wallet. Amounts accumulate on-chain - multiple payments from the same wallet add up toward higher tiers automatically.
 
 | Amount | Tier | Oracle access | Social alerts | Duration |
 |--------|------|--------------|---------------|----------|

@@ -1,4 +1,4 @@
-function icon(path: string, size = 20): string {
+﻿function icon(path: string, size = 20): string {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
 }
 const ICONS = {
@@ -678,16 +678,16 @@ export function priceBar(appUrl: string): string {
 <div class="pbar" id="pbar">
   <div class="pb-item pb-live" id="pb-live-ind"><span class="live-dot" id="live-dot"></span><span id="live-label">LIVE</span></div>
   <div class="pb-item" id="pb-ago-item" style="display:none"><span class="pb-label" id="pb-ago" style="font-size:0.7rem"></span></div>
-  <div class="pb-item"><span class="pb-label">KTA/USD</span>&nbsp;<span class="pb-val" id="pb-price">—</span></div>
-  <div class="pb-item"><span class="pb-label">1h</span>&nbsp;<span class="pb-val" id="pb-1h">—</span></div>
-  <div class="pb-item"><span class="pb-label">24h</span>&nbsp;<span class="pb-val" id="pb-24h">—</span></div>
-  <div class="pb-item"><span class="pb-label">7d</span>&nbsp;<span class="pb-val" id="pb-7d">—</span></div>
+  <div class="pb-item"><span class="pb-label">KTA/USD</span>&nbsp;<span class="pb-val" id="pb-price">-</span></div>
+  <div class="pb-item"><span class="pb-label">1h</span>&nbsp;<span class="pb-val" id="pb-1h">-</span></div>
+  <div class="pb-item"><span class="pb-label">24h</span>&nbsp;<span class="pb-val" id="pb-24h">-</span></div>
+  <div class="pb-item"><span class="pb-label">7d</span>&nbsp;<span class="pb-val" id="pb-7d">-</span></div>
   <div class="pb-item"><span class="pb-label">Network</span>&nbsp;<span class="pb-val" style="color:var(--accent)">Keeta Mainnet</span></div>
 </div>
 <script>
 (function(){
   var fails=0,offline=false,fetchingLive=false,fetchingFull=false,lastPrice=0,lastFetch=0,hasLive=false;
-  function fmt(n){if(n==null||n===undefined)return'—';return(n>=0?'+':'')+n.toFixed(2)+'%';}
+  function fmt(n){if(n==null||n===undefined)return'-';return(n>=0?'+':'')+n.toFixed(2)+'%';}
   function cls(n){return(n==null||n===undefined)?'':(n>=0?' pb-up':' pb-dn');}
   function updateAgo(){
     var ago=document.getElementById('pb-ago');
@@ -741,7 +741,7 @@ export function priceBar(appUrl: string): string {
     if(lbl)lbl.style.color='var(--danger)';
     if(ind)ind.classList.add('offline');
     ['pb-price','pb-1h','pb-24h','pb-7d'].forEach(function(id){
-      var el=document.getElementById(id);if(el){el.textContent='—';el.className='pb-val pb-off';}
+      var el=document.getElementById(id);if(el){el.textContent='-';el.className='pb-val pb-off';}
     });
   }
   function updateChanges(d){
@@ -1025,8 +1025,8 @@ async function submitContact(){
       document.getElementById('ct-name').value='';
       document.getElementById('ct-email').value='';
       document.getElementById('ct-msg').value='';
-    }else{res.className='ct-result err';res.textContent=d.error||'Failed to send — try again.';}
-  }catch(e){res.className='ct-result err';res.textContent='Network error — try again.';}
+    }else{res.className='ct-result err';res.textContent=d.error||'Failed to send - try again.';}
+  }catch(e){res.className='ct-result err';res.textContent='Network error - try again.';}
   btn.disabled=false;
 }
 </script>`;
@@ -1155,9 +1155,9 @@ export function renderOnboard(appUrl: string, oracleWallet: string, trialLimit: 
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>KTA Oracle — Live KTA Intelligence</title>
-<meta name="description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter.">
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/"><meta property="og:title" content="KTA Oracle — Live KTA Intelligence"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<title>KTA Oracle - Live KTA Intelligence</title>
+<meta name="description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter.">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/"><meta property="og:title" content="KTA Oracle - Live KTA Intelligence"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}</style>
 </head>
@@ -1170,7 +1170,7 @@ ${priceChart(appUrl)}
 <section class="hero">
   <div class="hero-eyebrow">100% Open Source</div>
   <h1>KTA intelligence,<br><em>everywhere you work.</em></h1>
-  <p class="hero-sub">Price alerts, whale tracking, and AI insights — pushed to Discord, Telegram, Slack, and X. Priced natively from Keeta's FX anchor. Free trial included. Lifetime alerts from ${lifetimeKta} KTA.</p>
+  <p class="hero-sub">Price alerts, whale tracking, and AI insights - pushed to Discord, Telegram, Slack, and X. Priced natively from Keeta's FX anchor. Free trial included. Lifetime alerts from ${lifetimeKta} KTA.</p>
 
   <div class="two-product">
     <div class="prod-pill">
@@ -1183,7 +1183,7 @@ ${priceChart(appUrl)}
     </div>
   </div>
   <div class="btn-row">
-    <a href="#register" class="btn-primary">${ICONS.bolt} Start — 0.1 KTA · ${trialLimit} alerts</a>
+    <a href="#register" class="btn-primary">${ICONS.bolt} Start - 0.1 KTA · ${trialLimit} alerts</a>
     <a href="/checkout" class="btn-ghost">${ICONS.tier} View plans</a>
     <a href="/tools" class="btn-accent">${ICONS.tools} Browse tools</a>
   </div>
@@ -1192,13 +1192,13 @@ ${priceChart(appUrl)}
 <div class="wrap" style="margin-bottom:0;padding-bottom:0">
   <div style="display:grid;grid-template-columns:1fr auto 1fr;background:var(--surface);border:1px solid #111;border-radius:14px;overflow:hidden;margin-bottom:20px">
     <div class="scell" style="border-right:1px solid #0d0d0d">
-      <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted2);margin-bottom:10px">SWIFT wire — $50,000</div>
+      <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted2);margin-bottom:10px">SWIFT wire - $50,000</div>
       <div class="sval" style="color:#ff5555">~$1,050</div>
       <div style="font-size:0.77rem;color:var(--muted2);margin-top:6px">3–5 business days</div>
     </div>
     <div class="svs">vs</div>
     <div class="scell" style="border-left:1px solid #0d0d0d">
-      <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted2);margin-bottom:10px">Keeta Network — $50,000</div>
+      <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted2);margin-bottom:10px">Keeta Network - $50,000</div>
       <div class="sval" style="color:var(--accent)">$75</div>
       <div style="font-size:0.77rem;color:var(--accent);margin-top:6px">0.4 seconds</div>
     </div>
@@ -1212,7 +1212,7 @@ ${priceChart(appUrl)}
     <div class="feat-card">
       <div class="feat-icon">${ICONS.oracle}</div>
       <h3>100% native pricing</h3>
-      <p>Price sourced directly from Keeta Network's FX anchor — the same engine that settles real payments.</p>
+      <p>Price sourced directly from Keeta Network's FX anchor - the same engine that settles real payments.</p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">${ICONS.whale}</div>
@@ -1222,12 +1222,12 @@ ${priceChart(appUrl)}
     <div class="feat-card">
       <div class="feat-icon">${ICONS.ai}</div>
       <h3>AI market insights</h3>
-      <p>Every alert includes a concise AI note on trend, volume signal, and payment timing — generated fresh each cycle.</p>
+      <p>Every alert includes a concise AI note on trend, volume signal, and payment timing - generated fresh each cycle.</p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">${ICONS.broadcast}</div>
       <h3>Four platforms</h3>
-      <p>Discord rich embed, Telegram, Slack, and X/Twitter. One platform per wallet — re-register at any time to switch platform or update credentials.</p>
+      <p>Discord rich embed, Telegram, Slack, and X/Twitter. One platform per wallet - re-register at any time to switch platform or update credentials.</p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">${ICONS.key}</div>
@@ -1242,7 +1242,7 @@ ${priceChart(appUrl)}
   </div>
 
   <div style="background:var(--surface);border:1px solid rgba(196,163,90,0.2);border-radius:16px;padding:28px 32px;margin-bottom:60px">
-    <div style="font-size:0.72rem;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:14px">Send KTA — unlock privileges</div>
+    <div style="font-size:0.72rem;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:14px">Send KTA - unlock privileges</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px" class="donate-reward-grid">
       <div style="background:var(--surface2);border:1px solid #151515;border-radius:10px;padding:16px">
         <div style="font-size:1.3rem;font-weight:800;color:var(--gold);margin-bottom:2px">50 KTA</div>
@@ -1261,7 +1261,7 @@ ${priceChart(appUrl)}
       </div>
     </div>
     <div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-      <div style="font-size:0.73rem;color:var(--muted2)">Amounts accumulate — multiple sends add up. One Keeta wallet unlocks both Oracle API and social alerts.</div>
+      <div style="font-size:0.73rem;color:var(--muted2)">Amounts accumulate - multiple sends add up. One Keeta wallet unlocks both Oracle API and social alerts.</div>
       <a href="/checkout" style="background:var(--gold);color:#000;font-weight:700;font-size:0.8rem;padding:8px 20px;border-radius:8px;text-decoration:none;white-space:nowrap">Send KTA →</a>
     </div>
   </div>
@@ -1357,7 +1357,7 @@ ${INTG_STRIP}
       <div class="field">
         <label>Alert trigger</label>
         <select id="reg-frequency">
-          <optgroup label="⏱ Time-based — fires on schedule">
+          <optgroup label="⏱ Time-based - fires on schedule">
             <option value="5min">Every 5 minutes</option>
             <option value="15min" selected>Every 15 minutes</option>
             <option value="1h">Every hour</option>
@@ -1365,12 +1365,12 @@ ${INTG_STRIP}
             <option value="12h">12-hour digest</option>
             <option value="1d">Daily digest</option>
           </optgroup>
-          <optgroup label="📈 Price change — fires on move">
-            <option value="5%">On ±5% price move — minor move</option>
-            <option value="10%">On ±10% price move — normal move</option>
-            <option value="15%">On ±15% price move — notable move</option>
-            <option value="20%">On ±20% price move — major move</option>
-            <option value="25%">On ±25% price move — extreme move</option>
+          <optgroup label="📈 Price change - fires on move">
+            <option value="5%">On ±5% price move - minor move</option>
+            <option value="10%">On ±10% price move - normal move</option>
+            <option value="15%">On ±15% price move - notable move</option>
+            <option value="20%">On ±20% price move - major move</option>
+            <option value="25%">On ±25% price move - extreme move</option>
           </optgroup>
         </select>
       </div>
@@ -1394,7 +1394,7 @@ ${INTG_STRIP}
         <code style="font-size:.72rem;word-break:break-all;color:var(--muted)">${oracleWallet}</code><br>
         <strong style="color:var(--gold)">Step 2:</strong> Enter your wallet below and register.
       </div>
-      <button class="btn-full" id="reg-submit-btn" onclick="submitRegister()">${ICONS.check} Register — requires 0.1 KTA</button>
+      <button class="btn-full" id="reg-submit-btn" onclick="submitRegister()">${ICONS.check} Register - requires 0.1 KTA</button>
       <div class="form-result" id="reg-result"></div>
     </div>
   </div>
@@ -1406,7 +1406,7 @@ ${INTG_STRIP}
   <div class="wrap-md">
     <div class="section-head">
       <div class="section-title"><em>Tier</em> overview</div>
-      <div class="section-sub">Start free. Upgrade by sending KTA — amounts accumulate, tiers activate instantly.</div>
+      <div class="section-sub">Start free. Upgrade by sending KTA - amounts accumulate, tiers activate instantly.</div>
     </div>
     <div class="tbl-wrap">
       <table>
@@ -1436,14 +1436,14 @@ ${INTG_STRIP}
             <td><span class="chk">Unlimited</span></td>
           </tr>
           <tr><td>AI insights</td>
-            <td><span class="dash">—</span></td>
+            <td><span class="dash">-</span></td>
             <td><span style="color:var(--gold)">Preview</span></td>
             <td><span style="color:#7EC8A0">Standard</span></td>
             <td><span class="chk">Full</span></td>
             <td><span class="chk">Full</span></td>
           </tr>
-          <tr><td>Compliance tools</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td><span class="chk">✓</span></td><td><span class="chk">✓</span></td></tr>
-          <tr><td>All 19 SDK tools</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td><span class="chk">✓</span></td></tr>
+          <tr><td>Compliance tools</td><td class="dash">-</td><td class="dash">-</td><td class="dash">-</td><td><span class="chk">✓</span></td><td><span class="chk">✓</span></td></tr>
+          <tr><td>All 19 SDK tools</td><td class="dash">-</td><td class="dash">-</td><td class="dash">-</td><td class="dash">-</td><td><span class="chk">✓</span></td></tr>
           <tr><td>Manual renewal</td><td>Never</td><td>Every 30 days</td><td>Every 30 days</td><td>Every 30 days</td><td>Every 30 days</td></tr>
           <tr><td style="color:var(--muted2);font-size:0.75rem">No auto-billing</td><td colspan="5" style="color:var(--muted2);font-size:0.75rem">Pay only when you need access. No subscription, no automatic charges.</td></tr>
         </tbody>
@@ -1470,7 +1470,7 @@ ${INTG_STRIP}
       <div class="api-card"><span class="api-method">GET</span><div class="api-path">/whale/alerts</div><div class="api-desc">Recent large on-chain KTA movements</div></div>
       <div class="api-card"><span class="api-method">GET</span><div class="api-path">/status?wallet=</div><div class="api-desc">Tier, alert count, expiry, social lifetime flag</div></div>
       <div class="api-card"><span class="api-method post">POST</span><div class="api-path">/register</div><div class="api-desc">Subscribe wallet to alerts with platform credentials</div></div>
-      <div class="api-card"><span class="api-method post">POST</span><div class="api-path">/agent</div><div class="api-desc">Ask the Support Agent — returns JSON { reply }</div></div>
+      <div class="api-card"><span class="api-method post">POST</span><div class="api-path">/agent</div><div class="api-desc">Ask the Support Agent - returns JSON { reply }</div></div>
     </div>
     <div style="margin-top:16px;text-align:center">
       <a href="${appUrl}/tools" class="btn-ghost" style="font-family:monospace;font-size:0.8rem">${ICONS.tools} View all 19 tools →</a>
@@ -1487,11 +1487,11 @@ ${INTG_STRIP}
     <div style="display:flex;flex-direction:column;gap:8px">
       <details style="background:var(--surface);border:1px solid #111;border-radius:10px;padding:0;overflow:hidden">
         <summary style="padding:14px 18px;cursor:pointer;font-size:0.86rem;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px">Not receiving alerts after registering<span style="color:var(--gold);font-size:0.75rem;white-space:nowrap">→ KTA not sent yet</span></summary>
-        <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">Send ≥0.1 KTA from your registered wallet to the oracle wallet. Your tier is detected automatically — enter your wallet in the status checker above to see it instantly. No KTA sent = no alerts.</div>
+        <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">Send ≥0.1 KTA from your registered wallet to the oracle wallet. Your tier is detected automatically - enter your wallet in the status checker above to see it instantly. No KTA sent = no alerts.</div>
       </details>
       <details style="background:var(--surface);border:1px solid #111;border-radius:10px;overflow:hidden">
         <summary style="padding:14px 18px;cursor:pointer;font-size:0.86rem;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px">Alerts stopped after working for a while<span style="color:var(--gold);font-size:0.75rem;white-space:nowrap">→ Check social lifetime</span></summary>
-        <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">Oracle access has a 30-day window per payment. Social alerts last forever if you sent ≥50 KTA (<code style="color:var(--accent);font-size:0.78rem">socialLifetime: true</code>). Check your status below. If oracle expired but social lifetime is active, alerts continue — just not price data via API.</div>
+        <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">Oracle access has a 30-day window per payment. Social alerts last forever if you sent ≥50 KTA (<code style="color:var(--accent);font-size:0.78rem">socialLifetime: true</code>). Check your status below. If oracle expired but social lifetime is active, alerts continue - just not price data via API.</div>
       </details>
       <details style="background:var(--surface);border:1px solid #111;border-radius:10px;overflow:hidden">
         <summary style="padding:14px 18px;cursor:pointer;font-size:0.86rem;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px">Discord webhook not delivering<span style="color:var(--gold);font-size:0.75rem;white-space:nowrap">→ Recreate & re-register</span></summary>
@@ -1503,11 +1503,11 @@ ${INTG_STRIP}
       </details>
       <details style="background:var(--surface);border:1px solid #111;border-radius:10px;overflow:hidden">
         <summary style="padding:14px 18px;cursor:pointer;font-size:0.86rem;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px">Wrong tier shown after sending more KTA<span style="color:var(--gold);font-size:0.75rem;white-space:nowrap">→ Check status again</span></summary>
-        <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">Tiers are based on total KTA sent from your wallet. Enter your wallet in the status checker — it rescans the chain automatically and updates your tier. If it still shows old tier, use the Activate button on the /checkout page to force an immediate rescan.</div>
+        <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">Tiers are based on total KTA sent from your wallet. Enter your wallet in the status checker - it rescans the chain automatically and updates your tier. If it still shows old tier, use the Activate button on the /checkout page to force an immediate rescan.</div>
       </details>
       <details style="background:var(--surface);border:1px solid #111;border-radius:10px;overflow:hidden">
         <summary style="padding:14px 18px;cursor:pointer;font-size:0.86rem;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px">No alerts for small price moves<span style="color:var(--gold);font-size:0.75rem;white-space:nowrap">→ By design</span></summary>
-        <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">Moves under 5% produce no alerts regardless of frequency setting — this prevents spam during sideways markets. Moves of 5–9% follow your chosen frequency. 10–14%: max 4h gap. 15–19%: max 1h. 20–24%: max 30 min. 25%+: always fires within 5 minutes.</div>
+        <div style="padding:0 18px 16px;font-size:0.82rem;color:var(--muted2);line-height:1.7">Moves under 5% produce no alerts regardless of frequency setting - this prevents spam during sideways markets. Moves of 5–9% follow your chosen frequency. 10–14%: max 4h gap. 15–19%: max 1h. 20–24%: max 30 min. 25%+: always fires within 5 minutes.</div>
       </details>
     </div>
     <div style="margin-top:20px;text-align:center;font-size:0.8rem;color:var(--muted2)">
@@ -1549,14 +1549,14 @@ async function checkWalletExisting(){
   var wallet=document.getElementById('reg-wallet').value.trim();
   var banner=document.getElementById('reg-existing-banner');
   var btn=document.getElementById('reg-submit-btn');
-  if(!wallet.startsWith('keeta_')||wallet.length<20){banner.style.display='none';_regIsUpdate=false;btn.innerHTML='${ICONS.check} Register — ${trialLimit} free alerts';return;}
+  if(!wallet.startsWith('keeta_')||wallet.length<20){banner.style.display='none';_regIsUpdate=false;btn.innerHTML='${ICONS.check} Register - ${trialLimit} free alerts';return;}
   try{
     var r=await fetch('${appUrl}/status?wallet='+encodeURIComponent(wallet));
     var d=await r.json();
     if(d.found){
       _regIsUpdate=true;
       var tierLabel=d.socialLifetime?'⭐ Supporter':(d.paid?'Lifetime':'Trial');
-      banner.innerHTML='<strong style="color:var(--gold)">✓ Subscription found</strong> — '+tierLabel+' · '+d.tier+' · '+(d.frequency||'15min')+' · '+(d.currency||'USD')+'<br><span style="opacity:.7">Update frequency, currency or webhook below — re-enter webhook URL to confirm.</span>';
+      banner.innerHTML='<strong style="color:var(--gold)">✓ Subscription found</strong> - '+tierLabel+' · '+d.tier+' · '+(d.frequency||'15min')+' · '+(d.currency||'USD')+'<br><span style="opacity:.7">Update frequency, currency or webhook below - re-enter webhook URL to confirm.</span>';
       banner.style.display='block';
       btn.innerHTML='${ICONS.check} Update my alerts';
       if(d.platform){var ps=document.getElementById('reg-platform');if(ps){ps.value=d.platform;switchPlatform(d.platform);_restoreWebhooks(wallet);}}
@@ -1565,7 +1565,7 @@ async function checkWalletExisting(){
     }else{
       _regIsUpdate=false;
       banner.style.display='none';
-      btn.innerHTML='${ICONS.check} Register — ${trialLimit} free alerts';
+      btn.innerHTML='${ICONS.check} Register - ${trialLimit} free alerts';
     }
   }catch(e){}
 }
@@ -1588,9 +1588,9 @@ async function submitRegister(){
     var r=await fetch('${appUrl}/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     var txt=await r.text();
     var d;try{d=JSON.parse(txt);}catch(pe){res.className='form-result err';res.textContent='Server error ('+r.status+'). Reload and try again.';return;}
-    if(d.ok){_saveWebhooks(wallet,platform,body);res.className='form-result ok';res.innerHTML='✓ '+(_regIsUpdate?'Settings saved':'Registered')+' — '+d.status+'. Alerts start on next cycle. <div style="margin-top:8px"><button onclick="sendTestAlert(\''+wallet+'\')" class="btn-sm" style="padding:4px 10px;font-size:0.75rem">Send test alert</button><span id="test-alert-res" style="margin-left:8px;font-size:0.75rem"></span></div>';}
+    if(d.ok){_saveWebhooks(wallet,platform,body);res.className='form-result ok';res.innerHTML='✓ '+(_regIsUpdate?'Settings saved':'Registered')+' - '+d.status+'. Alerts start on next cycle. <div style="margin-top:8px"><button onclick="sendTestAlert(\''+wallet+'\')" class="btn-sm" style="padding:4px 10px;font-size:0.75rem">Send test alert</button><span id="test-alert-res" style="margin-left:8px;font-size:0.75rem"></span></div>';}
     else if(r.status===402){res.className='form-result err';res.innerHTML='<strong>Payment required</strong><br>'+(d.message||'Send at least 0.1 KTA to the oracle wallet first.')+(d.oracle_wallet?'<br><br><span style="font-size:.78rem">Oracle wallet:</span><br><code style="font-size:.72rem;word-break:break-all">'+d.oracle_wallet+'</code>':'');}
-    else{res.className='form-result err';res.textContent=d.error||'Failed — try again.';}
+    else{res.className='form-result err';res.textContent=d.error||'Failed - try again.';}
   }catch(e){res.className='form-result err';res.textContent='Request failed: '+(e&&e.message?e.message:'check connection and try again.');}
 }
 
@@ -1624,10 +1624,10 @@ async function checkStatus(){
     var isPaid=d.paid;
     var isLife=d.socialLifetime;
     var tierLabel=isLife?'<span class="tier-badge accent">⭐ Supporter</span>':(isPaid?'<span class="tier-badge accent">Lifetime</span>':'<span class="tier-badge">Trial</span>');
-    var tierName=d.tier?d.tier.charAt(0).toUpperCase()+d.tier.slice(1):'—';
+    var tierName=d.tier?d.tier.charAt(0).toUpperCase()+d.tier.slice(1):'-';
     var exp=d.expiresAt?new Date(d.expiresAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'Never';
     var rows=[
-      ['Status',isPaid?'<span class="rv ok">Active</span>':'<span class="rv gold">Trial — '+d.alertsRemaining+' alerts left</span>'],
+      ['Status',isPaid?'<span class="rv ok">Active</span>':'<span class="rv gold">Trial - '+d.alertsRemaining+' alerts left</span>'],
       ['Tier','<span class="rv">'+tierName+'</span>'],
       ['Social alerts',isLife?'<span class="rv ok">Lifetime</span>':'<span class="rv">Trial</span>'],
       ['Platform','<span class="rv">'+d.platform+'</span>'],
@@ -1706,9 +1706,9 @@ export function renderCheckout(appUrl: string, oracleWallet: string, stripeLink 
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Pricing — KTA Oracle</title>
+<title>Pricing - KTA Oracle</title>
 <meta name="description" content="Choose your KTA Oracle tier. One payment activates Oracle API access and Social lifetime alerts.">
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/checkout"><meta property="og:title" content="Pricing — KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/checkout"><meta property="og:title" content="Pricing - KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}</style>
 </head>
@@ -1721,7 +1721,7 @@ ${priceBar(appUrl)}
   <div style="text-align:center;padding:72px 0 52px;max-width:620px;margin:0 auto">
     <div class="hero-eyebrow">${ICONS.tier} One wallet · Both products</div>
     <h1 style="font-size:clamp(2rem,5vw,3.2rem);font-weight:800;letter-spacing:-0.04em;margin-bottom:14px">Choose your <em style="font-style:normal;color:var(--gold)">tier</em></h1>
-    <p style="color:var(--muted2);font-size:0.95rem;max-width:480px;margin:0 auto">Send KTA to the oracle wallet. The amount you send determines your tier — for both Oracle API and Social alerts. Payments accumulate across multiple sends.</p>
+    <p style="color:var(--muted2);font-size:0.95rem;max-width:480px;margin:0 auto">Send KTA to the oracle wallet. The amount you send determines your tier - for both Oracle API and Social alerts. Payments accumulate across multiple sends.</p>
   </div>
 
   <div class="status-widget" style="margin-bottom:36px">
@@ -1755,7 +1755,7 @@ ${priceBar(appUrl)}
         <li>3 whale alerts/month</li>
         <li>AI insights preview</li>
         <li class="dim">Trial social alerts</li>
-        <li class="dim">Manual renewal — 30 days</li>
+        <li class="dim">Manual renewal - 30 days</li>
       </ul>
       <div class="tier-select-btn">Select</div>
     </div>
@@ -1801,7 +1801,7 @@ ${priceBar(appUrl)}
   <div class="pay-panel" id="pay-panel">
     <div class="pay-head">
       <h3>${ICONS.bolt} Complete your payment</h3>
-      <div class="pay-amount" id="pay-amount-tag">— KTA</div>
+      <div class="pay-amount" id="pay-amount-tag">- KTA</div>
     </div>
 
     <div class="method-tabs">
@@ -1812,9 +1812,9 @@ ${priceBar(appUrl)}
     </div>
 
     <div class="mpanel show" id="mp-kta">
-      <div class="info-strip">Send <strong id="kta-amount-inline">—</strong> KTA from your registered wallet to the address below. Amounts accumulate — multiple payments add up. <strong>No auto-billing</strong> — you pay manually when you need access.</div>
+      <div class="info-strip">Send <strong id="kta-amount-inline">-</strong> KTA from your registered wallet to the address below. Amounts accumulate - multiple payments add up. <strong>No auto-billing</strong> - you pay manually when you need access.</div>
       <div class="wallet-block">
-        <div class="wbl-label">Oracle wallet — all tiers <span>Keeta Network</span></div>
+        <div class="wbl-label">Oracle wallet - all tiers <span>Keeta Network</span></div>
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
           <div style="flex:1;min-width:220px">
             <div class="wbl-addr" onclick="copyAddr(this,'cc-kta')">${oracleWallet}</div>
@@ -1827,7 +1827,7 @@ ${priceBar(appUrl)}
       </div>
       <div class="workflow">
         <div class="wf-step"><div class="wf-num">1</div><div class="wf-body"><h4>Send KTA to the oracle wallet</h4><p>From your registered Keeta wallet. Total sent from your address determines your tier.</p></div></div>
-        <div class="wf-step"><div class="wf-num">2</div><div class="wf-body"><h4>Check your status</h4><p>Enter your wallet in the status checker on /onboard — tier is detected automatically. Or click Activate below for immediate confirmation.</p></div></div>
+        <div class="wf-step"><div class="wf-num">2</div><div class="wf-body"><h4>Check your status</h4><p>Enter your wallet in the status checker on /onboard - tier is detected automatically. Or click Activate below for immediate confirmation.</p></div></div>
         <div class="wf-step"><div class="wf-num">3</div><div class="wf-body"><h4>Oracle + Social activate together</h4><p>From 50 KTA, Social lifetime alerts activate alongside the Oracle API tier.</p></div></div>
       </div>
       <div style="border-top:1px solid #111;margin:16px 0 14px"></div>
@@ -1878,7 +1878,7 @@ ${priceBar(appUrl)}
     ${hasStripe ? `
     <div class="mpanel" id="mp-card">
       <div class="info-strip">Pay by card via <strong>Stripe</strong>. After checkout completes, enter your Keeta wallet below to verify and activate. <strong>No Stripe account needed.</strong></div>
-      <a href="${stripeLink}" target="_blank" rel="noopener" class="pay-btn">${ICONS.card} &nbsp;Pay by card — <span id="stripe-tier-label">select a tier above</span></a>
+      <a href="${stripeLink}" target="_blank" rel="noopener" class="pay-btn">${ICONS.card} &nbsp;Pay by card - <span id="stripe-tier-label">select a tier above</span></a>
       <div style="font-size:.76rem;color:var(--muted2);text-align:center;margin-bottom:20px">Visa · Mastercard · Amex · Apple Pay · Google Pay</div>
       <div class="activate-section">
         <h4>${ICONS.check} Already paid? Enter your Keeta wallet to activate</h4>
@@ -1892,8 +1892,8 @@ ${priceBar(appUrl)}
 
     ${hasCoinbase ? `
     <div class="mpanel" id="mp-crypto">
-      <div class="info-strip">Pay with <strong>USDC, ETH, or BTC</strong> via Coinbase Commerce. No Coinbase account needed — any compatible wallet works.</div>
-      <a href="${coinbaseLink}" target="_blank" rel="noopener" class="pay-btn">${ICONS.crypto} &nbsp;Pay with crypto — <span id="coinbase-tier-label">select a tier above</span></a>
+      <div class="info-strip">Pay with <strong>USDC, ETH, or BTC</strong> via Coinbase Commerce. No Coinbase account needed - any compatible wallet works.</div>
+      <a href="${coinbaseLink}" target="_blank" rel="noopener" class="pay-btn">${ICONS.crypto} &nbsp;Pay with crypto - <span id="coinbase-tier-label">select a tier above</span></a>
       <div style="font-size:.76rem;color:var(--muted2);text-align:center;margin-bottom:20px">MetaMask · Coinbase Wallet · Trust Wallet · and more</div>
       <div class="activate-section">
         <h4>${ICONS.check} Already paid? Enter your Keeta wallet to activate</h4>
@@ -1915,7 +1915,7 @@ ${priceBar(appUrl)}
         <a href="https://keeta.com" target="_blank" rel="noopener" style="background:var(--gold);color:#000;font-weight:700;font-size:0.8rem;padding:8px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0">Get KTA →</a>
       </div>
       <div class="wallet-block">
-        <div class="wbl-label">Destination wallet — Visa Direct <span>Keeta Network</span></div>
+        <div class="wbl-label">Destination wallet - Visa Direct <span>Keeta Network</span></div>
         <div class="wbl-addr" onclick="copyAddr(this,'cc-visa')">${oracleWallet}</div>
         <div class="copy-hint">${icon('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>', 12)} Click to copy &nbsp;·&nbsp; Send the KTA equivalent via Visa Direct<span class="copy-confirm" id="cc-visa">Copied!</span></div>
       </div>
@@ -1971,15 +1971,15 @@ ${priceBar(appUrl)}
           <td><span class="chk">Unlimited</span></td>
         </tr>
         <tr><td>AI insights</td>
-          <td class="dash">—</td>
+          <td class="dash">-</td>
           <td><span style="color:var(--gold)">Preview</span></td>
           <td><span style="color:#7EC8A0">Standard</span></td>
           <td><span class="chk">Full</span></td>
           <td><span class="chk">Full</span></td>
         </tr>
-        <tr><td>Compliance tools</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td><span class="chk">✓</span></td><td><span class="chk">✓</span></td></tr>
-        <tr><td>All 19 SDK tools</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td><span class="chk">✓</span></td></tr>
-        <tr><td>Priority queue</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td><span class="chk">✓</span></td></tr>
+        <tr><td>Compliance tools</td><td class="dash">-</td><td class="dash">-</td><td class="dash">-</td><td><span class="chk">✓</span></td><td><span class="chk">✓</span></td></tr>
+        <tr><td>All 19 SDK tools</td><td class="dash">-</td><td class="dash">-</td><td class="dash">-</td><td class="dash">-</td><td><span class="chk">✓</span></td></tr>
+        <tr><td>Priority queue</td><td class="dash">-</td><td class="dash">-</td><td class="dash">-</td><td class="dash">-</td><td><span class="chk">✓</span></td></tr>
         <tr><td>Manual renewal</td><td>Never</td><td>Every 30 days</td><td>Every 30 days</td><td>Every 30 days</td><td>Every 30 days</td></tr>
         <tr><td style="color:var(--muted2);font-size:0.75rem">No auto-billing</td><td colspan="5" style="color:var(--muted2);font-size:0.75rem">Pay only when you need access. No subscription, no automatic charges.</td></tr>
       </tbody>
@@ -1995,7 +1995,7 @@ function selectTier(el){
   el.classList.add('active');
   var kta=el.dataset.kta;
   var tier=el.dataset.tier;
-  var label=kta+' KTA — '+tier.charAt(0).toUpperCase()+tier.slice(1);
+  var label=kta+' KTA - '+tier.charAt(0).toUpperCase()+tier.slice(1);
   _selectedTier={kta:kta,label:label};
   var amt=document.getElementById('pay-amount-tag');if(amt)amt.textContent=kta+' KTA';
   var inl=document.getElementById('kta-amount-inline');if(inl)inl.textContent=kta;
@@ -2028,9 +2028,9 @@ async function activateOracle(inputId,resultId){
     var res=await fetch('/activate-oracle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet:wallet}),signal:AbortSignal.timeout(30000)});
     var txt=await res.text();
     var data;try{data=JSON.parse(txt);}catch(pe){result.className='form-result err';result.textContent='Server error (HTTP '+res.status+'). Try again or contact support.';return;}
-    if(data.success){result.className='form-result ok';result.textContent='✓ '+data.message+(data.socialLifetime?' — Social Agent lifetime included.':'');}
+    if(data.success){result.className='form-result ok';result.textContent='✓ '+data.message+(data.socialLifetime?' - Social Agent lifetime included.':'');}
     else{result.className='form-result err';result.textContent=(data.message||data.error||'Activation failed.')+(data.detail?' ('+data.detail+')':'');}
-  }catch(e){result.className='form-result err';result.textContent=(e&&e.name==='AbortError'?'Request timed out — the chain scan took too long. Try again.':'Network error — check your connection and try again.');}
+  }catch(e){result.className='form-result err';result.textContent=(e&&e.name==='AbortError'?'Request timed out - the chain scan took too long. Try again.':'Network error - check your connection and try again.');}
 }
 
 async function verifyAndActivate(inputId,resultId){
@@ -2043,7 +2043,7 @@ async function verifyAndActivate(inputId,resultId){
     var data=await res.json();
     if(data.ok){result.className='form-result ok';result.textContent='✓ '+(data.message||'Access activated!');}
     else{result.className='form-result err';result.textContent=data.error||'Verification failed. Check that payment has confirmed.';}
-  }catch(e){result.className='form-result err';result.textContent='Network error — try again.';}
+  }catch(e){result.className='form-result err';result.textContent='Network error - try again.';}
 }
 async function checkCoStatus(){
   var wallet=document.getElementById('co-status-wallet').value.trim();
@@ -2067,7 +2067,7 @@ async function checkCoStatus(){
     if(nextTier)rows+='<div class="rrow"><span class="rk">Next unlock</span><span style="color:var(--gold)">'+nextTier.k+' KTA → '+nextTier.n+(nextTier.social?' + lifetime alerts':'')+'</span></div>';
     rows+='<div style="padding-top:12px"><a href="#tier-grid" class="btn-full" style="text-decoration:none;display:flex;font-size:.83rem">Select tier below →</a></div>';
     out.innerHTML=rows;
-  }catch(e){out.innerHTML='<div style="color:var(--danger);font-size:.82rem">Network error — try again.</div>';}
+  }catch(e){out.innerHTML='<div style="color:var(--danger);font-size:.82rem">Network error - try again.</div>';}
 }
 
 window.selectTier=selectTier;
@@ -2090,9 +2090,9 @@ export function renderDonate(appUrl: string, oracleWallet: string, lifetimeKta: 
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Support KTA Oracle — Keep it alive</title>
+<title>Support KTA Oracle - Keep it alive</title>
 <meta name="description" content="KTA Oracle is an independent project. Your support keeps the live data, AI insights, and whale tracking running for the whole community.">
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/donate"><meta property="og:title" content="Support KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights — delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/donate"><meta property="og:title" content="Support KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}</style>
 </head>
@@ -2104,7 +2104,7 @@ ${priceBar(appUrl)}
 <div class="donate-hero">
   <div class="hero-eyebrow">${icon('<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',13)} Community support</div>
   <h1>Help keep the<br><em>Oracle running.</em></h1>
-  <p>KTA Oracle is built and maintained by a single independent developer. There are no investors, no company behind it — just code, on-chain data, and a community that relies on it every day.<br><br>Your support directly funds server costs, development time, and keeps live KTA price data, AI insights, and whale alerts flowing for everyone.</p>
+  <p>KTA Oracle is built and maintained by a single independent developer. There are no investors, no company behind it - just code, on-chain data, and a community that relies on it every day.<br><br>Your support directly funds server costs, development time, and keeps live KTA price data, AI insights, and whale alerts flowing for everyone.</p>
 </div>
 
 <div class="wrap" style="max-width:680px">
@@ -2115,17 +2115,17 @@ ${priceBar(appUrl)}
         <div class="reward-badge">${icon('<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>',11)} Supporter reward</div>
         <div class="reward-kta">${lifetimeKta} KTA</div>
         <div style="font-size:1rem;font-weight:700;color:#fff;margin:6px 0 4px">Unlocks lifetime social alerts</div>
-        <div style="font-size:0.8rem;color:var(--muted2)">Send ${lifetimeKta} KTA or more and you receive real benefits — not just a thank-you.</div>
+        <div style="font-size:0.8rem;color:var(--muted2)">Send ${lifetimeKta} KTA or more and you receive real benefits - not just a thank-you.</div>
         <div class="reward-perks">
-          <div class="reward-perk">${icon('<polyline points="20 6 9 17 4 12"/>',14)}<span>Lifetime social alerts</span> — Discord, Telegram, Slack &amp; X</div>
+          <div class="reward-perk">${icon('<polyline points="20 6 9 17 4 12"/>',14)}<span>Lifetime social alerts</span> - Discord, Telegram, Slack &amp; X</div>
           <div class="reward-perk">${icon('<polyline points="20 6 9 17 4 12"/>',14)}<span>30-day Social tier</span> on Oracle API</div>
           <div class="reward-perk">${icon('<polyline points="20 6 9 17 4 12"/>',14)}<span>Unlimited whale alerts</span> every month</div>
-          <div class="reward-perk">${icon('<polyline points="20 6 9 17 4 12"/>',14)}<span>Amounts accumulate</span> — multiple smaller sends add up</div>
+          <div class="reward-perk">${icon('<polyline points="20 6 9 17 4 12"/>',14)}<span>Amounts accumulate</span> - multiple smaller sends add up</div>
         </div>
       </div>
       <div style="background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.2);border-radius:12px;padding:18px;min-width:180px;text-align:center;flex-shrink:0">
         <div style="font-size:0.68rem;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px">Current KTA price</div>
-        <div style="font-size:1.6rem;font-weight:800;color:var(--accent)" id="don-price">—</div>
+        <div style="font-size:1.6rem;font-weight:800;color:var(--accent)" id="don-price">-</div>
         <div style="font-size:0.68rem;color:var(--muted2);margin-top:4px">${lifetimeKta} KTA ≈ <span id="don-usd">…</span> USD</div>
         <div style="font-size:0.65rem;color:var(--muted);margin-top:10px">Any amount is appreciated</div>
       </div>
@@ -2134,7 +2134,7 @@ ${priceBar(appUrl)}
 
   <div class="donate-form">
     <div style="font-size:0.9rem;font-weight:700;margin-bottom:4px">Choose a donation amount</div>
-    <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:16px">Or type a custom amount. Smaller donations are always welcome — they all add up.</div>
+    <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:16px">Or type a custom amount. Smaller donations are always welcome - they all add up.</div>
     <div class="amt-grid">
       <div class="amt-btn" onclick="selectAmt(this,'10')">
         <div class="amt-kta">10</div>
@@ -2174,7 +2174,7 @@ ${priceBar(appUrl)}
     <div class="donate-steps">
       <div class="ds-step"><div class="ds-num">1</div><div class="ds-body"><h4>Copy the wallet above</h4><p>Send your chosen KTA amount from your registered Keeta wallet to this address.</p></div></div>
       <div class="ds-step"><div class="ds-num">2</div><div class="ds-body"><h4>Confirm on Keeta Network</h4><p>Settlement takes 0.4 seconds. You'll see the transaction confirmed instantly on-chain.</p></div></div>
-      <div class="ds-step"><div class="ds-num">3</div><div class="ds-body"><h4>Check your status</h4><p>Enter your wallet in the status checker on the <a href="/onboard" style="color:var(--gold)">onboard page</a> — your tier is detected automatically. Or click Activate below to confirm immediately.</p></div></div>
+      <div class="ds-step"><div class="ds-num">3</div><div class="ds-body"><h4>Check your status</h4><p>Enter your wallet in the status checker on the <a href="/onboard" style="color:var(--gold)">onboard page</a> - your tier is detected automatically. Or click Activate below to confirm immediately.</p></div></div>
     </div>
 
     <div class="activate-section">
@@ -2266,7 +2266,7 @@ function updateCustomAmt(v){
   var n=parseFloat(v)||0;
   _selectedAmt=n;
   var disp=document.getElementById('amt-display');
-  if(disp)disp.textContent=(n||'—')+' KTA';
+  if(disp)disp.textContent=(n||'-')+' KTA';
   updateInlineUsd();
 }
 
@@ -2295,7 +2295,7 @@ async function donateActivate(){
     } else {
       result.className='form-result err';result.textContent=(data.message||data.error||'No qualifying payment found yet.')+(data.detail?' ('+data.detail+')':'');
     }
-  }catch(e){result.className='form-result err';result.textContent=(e&&e.name==='AbortError'?'Request timed out — the chain scan took too long. Try again.':'Network error — check your connection and try again.');}
+  }catch(e){result.className='form-result err';result.textContent=(e&&e.name==='AbortError'?'Request timed out - the chain scan took too long. Try again.':'Network error - check your connection and try again.');}
 }
 
 window.selectAmt=selectAmt;
@@ -2316,8 +2316,8 @@ export function renderLegal(appUrl: string): string {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Legal — KTA Oracle</title>
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/legal"><meta property="og:title" content="Legal — KTA Oracle"><meta property="og:image" content="${appUrl}/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<title>Legal - KTA Oracle</title>
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/legal"><meta property="og:title" content="Legal - KTA Oracle"><meta property="og:image" content="${appUrl}/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}</style>
 </head>
@@ -2332,7 +2332,7 @@ ${header("")}
   <h2>No Financial Advice</h2>
   <p>All data, alerts, and AI-generated insights provided by this service are for <strong>informational purposes only</strong>. Nothing constitutes financial, investment, trading, or any other advice. Use at your own risk.</p>
   <h2>Payments &amp; Access</h2>
-  <p>Payments are processed via Coinbase Commerce (crypto) or directly on Keeta Network (KTA). Social lifetime alerts are granted upon confirmed payment verification. Oracle API access is active for the defined tier period. There is no automatic renewal or subscription — access must be renewed manually by sending KTA. No refunds are issued for digital service activations.</p>
+  <p>Payments are processed via Coinbase Commerce (crypto) or directly on Keeta Network (KTA). Social lifetime alerts are granted upon confirmed payment verification. Oracle API access is active for the defined tier period. There is no automatic renewal or subscription - access must be renewed manually by sending KTA. No refunds are issued for digital service activations.</p>
   <h2>Limitation of Liability</h2>
   <p>The service is provided "as is." We are not liable for any loss, financial or otherwise, resulting from use of alerts, price data, or AI insights. Market data may be delayed or inaccurate.</p>
   <h2>Jurisdiction</h2>
@@ -2353,8 +2353,8 @@ export function renderPrivacy(appUrl: string): string {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Privacy Policy — KTA Oracle</title>
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/privacy"><meta property="og:title" content="Privacy Policy — KTA Oracle"><meta property="og:image" content="${appUrl}/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<title>Privacy Policy - KTA Oracle</title>
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/privacy"><meta property="og:title" content="Privacy Policy - KTA Oracle"><meta property="og:image" content="${appUrl}/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}</style>
 </head>
@@ -2366,17 +2366,17 @@ ${header("")}
   <p style="color:var(--muted2);font-size:.84rem">Last updated: 2025</p>
   <h2>Data we store</h2>
   <ul>
-    <li><strong>Keeta wallet address</strong> — required to identify your subscription and scan payment history.</li>
-    <li><strong>Platform credentials</strong> (webhook URLs, bot tokens) — stored in Cloudflare KV, used only to deliver your alerts.</li>
-    <li><strong>Alert count and timestamps</strong> — used to track tier limits and delivery history.</li>
-    <li><strong>Anonymous registration fingerprints</strong> — one-way hashed, non-reversible, retained for 30 days for fraud prevention under legitimate interest (GDPR Art. 6(1)(f)).</li>
+    <li><strong>Keeta wallet address</strong> - required to identify your subscription and scan payment history.</li>
+    <li><strong>Platform credentials</strong> (webhook URLs, bot tokens) - stored in Cloudflare KV, used only to deliver your alerts.</li>
+    <li><strong>Alert count and timestamps</strong> - used to track tier limits and delivery history.</li>
+    <li><strong>Anonymous registration fingerprints</strong> - one-way hashed, non-reversible, retained for 30 days for fraud prevention under legitimate interest (GDPR Art. 6(1)(f)).</li>
   </ul>
   <h2>Data we do not store</h2>
   <ul>
     <li>Email addresses</li>
     <li>Raw IP addresses</li>
     <li>Browsing or session data</li>
-    <li><strong>Payment card details</strong> (handled by Coinbase Commerce — we never receive card data)</li>
+    <li><strong>Payment card details</strong> (handled by Coinbase Commerce - we never receive card data)</li>
   </ul>
   <h2>Third-party services</h2>
   <p>Payments are processed by <strong>Coinbase Commerce</strong> under their privacy policy, or directly via <strong>Keeta Network</strong> on-chain. Alert delivery uses <strong>Discord</strong>, <strong>Telegram</strong>, <strong>Slack</strong>, or <strong>X/Twitter</strong> APIs. AI responses are generated by a third-party LLM provider (no personal data is transmitted).</p>

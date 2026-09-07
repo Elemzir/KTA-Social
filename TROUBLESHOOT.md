@@ -1,6 +1,6 @@
-# KTA Social — Troubleshoot
+# KTA Social - Troubleshoot
 
-**Minimum requirement:** Every feature — alerts, API calls, status checks, and tools — requires at least **0.1 KTA sent to the oracle wallet and an activated wallet**. Registration without activation does nothing.
+**Minimum requirement:** Every feature - alerts, API calls, status checks, and tools - requires at least **0.1 KTA sent to the oracle wallet and an activated wallet**. Registration without activation does nothing.
 
 ---
 
@@ -30,7 +30,7 @@ If `paid: false` and `alertCount >= 100` → trial exhausted, upgrade at `/check
 | Symptom | Cause | Fix |
 |---------|-------|-----|
 | Not receiving alerts after registering | Wallet not activated | Go to `/onboard → Activate`. Must have sent ≥0.1 KTA first |
-| Trial alerts exhausted (100 limit) | Free/Starter cap reached | Send 50 KTA total and re-activate — upgrades to Social with lifetime alerts |
+| Trial alerts exhausted (100 limit) | Free/Starter cap reached | Send 50 KTA total and re-activate - upgrades to Social with lifetime alerts |
 | Free trial or Oracle window expired | 5-day Free / 30-day paid window elapsed | `socialLifetime: true` means social alerts continue forever. Renew Oracle by sending more KTA and re-activating |
 | Discord webhook not delivering | Webhook deleted in Discord | Recreate: right-click channel → Integrations → Webhooks → New Webhook. Re-register at `/onboard` |
 | Telegram bot silent | Bot not started or wrong chat ID | Send `/start` to the bot. Get chat ID via `api.telegram.org/bot{TOKEN}/getUpdates` |
@@ -61,7 +61,7 @@ The Oracle classifies every price move. Large moves bypass your chosen frequency
 
 | Price move | Level | Max cooldown override |
 |---|---|---|
-| < 5% | — | No alert emitted |
+| < 5% | - | No alert emitted |
 | 5–9% | minor | Your chosen frequency |
 | 10–14% | normal | 4 hours |
 | 15–19% | notable | 1 hour |
@@ -99,7 +99,7 @@ The Oracle classifies every price move. Large moves bypass your chosen frequency
 
 ## Payment cost comparison
 
-| | SWIFT wire — $50,000 | Keeta Network — $50,000 |
+| | SWIFT wire - $50,000 | Keeta Network - $50,000 |
 |-|----------------------|------------------------|
 | Fee | ~$1,050 | **$75** |
 | Speed | 3–5 business days | **0.4 seconds** |
@@ -121,7 +121,7 @@ Body: {
 }
 ```
 
-Ticket IDs appear in the Discord embed footer when a support message is received. Reply is posted to `DISCORD_WEBHOOK_URL` only — not visible to any user tier.
+Ticket IDs appear in the Discord embed footer when a support message is received. Reply is posted to `DISCORD_WEBHOOK_URL` only - not visible to any user tier.
 
 ---
 

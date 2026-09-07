@@ -1,5 +1,4 @@
-
-export function formatMarketCap(mc: number): string {
+﻿export function formatMarketCap(mc: number): string {
   if (mc >= 1_000_000_000) return `$${(mc / 1_000_000_000).toFixed(2)}B`;
   if (mc >= 1_000_000)     return `$${(mc / 1_000_000).toFixed(1)}M`;
   return `$${mc.toFixed(0)}`;
@@ -17,29 +16,29 @@ export function buildMarketNote(
   const mc    = marketCap > 0 ? ` Cap: ${formatMarketCap(marketCap)}.` : "";
 
   const weekNote = change7d !== null
-    ? change7d >  3 ? ` 7-day trend bullish at +${change7d.toFixed(1)}% — this move aligns with the medium-term.`
-    : change7d >  0 ? ` 7-day trend is slightly positive (+${change7d.toFixed(1)}%) — steady accumulation pattern.`
-    : change7d > -3 ? ` 7-day trend flat (${change7d.toFixed(1)}%) — range-bound overall.`
-    :                 ` 7-day trend negative (${change7d.toFixed(1)}%) — part of a wider correction.`
+    ? change7d >  3 ? ` 7-day trend bullish at +${change7d.toFixed(1)}% - this move aligns with the medium-term.`
+    : change7d >  0 ? ` 7-day trend is slightly positive (+${change7d.toFixed(1)}%) - steady accumulation pattern.`
+    : change7d > -3 ? ` 7-day trend flat (${change7d.toFixed(1)}%) - range-bound overall.`
+    :                 ` 7-day trend negative (${change7d.toFixed(1)}%) - part of a wider correction.`
     : "";
 
   const volNote = (volume24h !== null && marketCap > 0)
     ? (() => {
         const ratio = volume24h / marketCap;
-        return ratio > 0.15 ? " High volume — institutional activity likely."
-             : ratio > 0.05 ? " Volume elevated — conviction behind this move."
-             :                " Volume is low — move may not sustain without follow-through.";
+        return ratio > 0.15 ? " High volume - institutional activity likely."
+             : ratio > 0.05 ? " Volume elevated - conviction behind this move."
+             :                " Volume is low - move may not sustain without follow-through.";
       })()
     : "";
 
   if (crash)
-    return `$KTA dropped ${pct}% — significant move. 24h: ${d24}.${weekNote}${volNote}${mc} Favorable entry window for buyers. Payment conversions currently below average cost.`;
+    return `$KTA dropped ${pct}% - significant move. 24h: ${d24}.${weekNote}${volNote}${mc} Favorable entry window for buyers. Payment conversions currently below average cost.`;
   if (!up && big)
-    return `$KTA pulled back ${pct}%. 24h: ${d24}.${weekNote}${volNote}${mc} Conversion costs are below average — solid window for payment execution.`;
+    return `$KTA pulled back ${pct}%. 24h: ${d24}.${weekNote}${volNote}${mc} Conversion costs are below average - solid window for payment execution.`;
   if (up && big)
-    return `$KTA surged ${pct}% — strong momentum. 24h: ${d24}.${weekNote}${volNote}${mc} Conversion costs elevated. Good time to receive KTA; delay non-urgent outbound payments if timing allows.`;
+    return `$KTA surged ${pct}% - strong momentum. 24h: ${d24}.${weekNote}${volNote}${mc} Conversion costs elevated. Good time to receive KTA; delay non-urgent outbound payments if timing allows.`;
   if (up)
-    return `$KTA up ${pct}%. 24h: ${d24}.${weekNote}${volNote}${mc} Rate within normal range — predictable for treasury and scheduled payments.`;
+    return `$KTA up ${pct}%. 24h: ${d24}.${weekNote}${volNote}${mc} Rate within normal range - predictable for treasury and scheduled payments.`;
   return `$KTA down ${pct}%. 24h: ${d24}.${weekNote}${volNote}${mc} Market stable. Payments and conversions can proceed as normal.`;
 }
 
@@ -60,7 +59,7 @@ export function buildPriceAlert(
   const c7dLine = change7d !== null ? `\n7d       ${change7d >= 0 ? "+" : ""}${change7d.toFixed(1)}%` : "";
   const link   = `${appUrl}/onboard`;
   const footer = paid ? `KTA Oracle Agent` : `KTA Oracle Agent · Trial ${alertCount + 1}/${trialLimit}`;
-  const insight = aiQuote ? `\n💡 ${aiQuote}` : "";
+  const insight = aiQuote ? `\n💡 ${aiQuote.replace(/-/g, "-")}` : "";
   const sep     = `────────────────────`;
 
   return [
@@ -92,7 +91,7 @@ export function buildWhaleAlert(
   const sep     = `────────────────────`;
 
   return [
-    `${emoji} Whale Alert — Keeta Network`, ``,
+    `${emoji} Whale Alert - Keeta Network`, ``,
     `Amount   ${amountKta.toLocaleString()} KTA`,
     `Value    ${valStr}`,
     `Type     ${label}`,
@@ -125,12 +124,12 @@ export function buildDiscordPriceEmbed(
   const titleIcon = up ? "📈" : "📉";
   const momentum  = Math.abs(priceChange);
   const accent    = up
-    ? momentum >= 0.15 ? "▲  Strong breakout — Keeta Network · 0.4s settlement"
-    : momentum >= 0.07 ? "▲  Bullish momentum — Keeta Network · 0.4s settlement"
-    :                    "▲  Rising — Keeta Network · 0.4s settlement"
-    : momentum >= 0.15 ? "▼  Sharp correction — Keeta Network · 0.4s settlement"
-    : momentum >= 0.07 ? "▼  Pullback — Keeta Network · 0.4s settlement"
-    :                    "▼  Softening — Keeta Network · 0.4s settlement";
+    ? momentum >= 0.15 ? "▲  Strong breakout - Keeta Network · 0.4s settlement"
+    : momentum >= 0.07 ? "▲  Bullish momentum - Keeta Network · 0.4s settlement"
+    :                    "▲  Rising - Keeta Network · 0.4s settlement"
+    : momentum >= 0.15 ? "▼  Sharp correction - Keeta Network · 0.4s settlement"
+    : momentum >= 0.07 ? "▼  Pullback - Keeta Network · 0.4s settlement"
+    :                    "▼  Softening - Keeta Network · 0.4s settlement";
   const note = buildMarketNote(priceChange, change24h, marketCap, change7d, volume24h);
 
   let footer: string;
@@ -146,9 +145,11 @@ export function buildDiscordPriceEmbed(
     regLink = `[📋 Register for free alerts](${appUrl}/onboard)  ·  [⚡ Lifetime access](${appUrl}/checkout)`;
   }
 
+  const cleanAiQuote = aiQuote ? aiQuote.replace(/-/g, "-") : null;
+
   return {
     embeds: [{
-      title:       `${titleIcon}  KTA Price Alert — ${sign}${pct}%`,
+      title:       `${titleIcon}  KTA Price Alert - ${sign}${pct}%`,
       color:       up ? 0x00D4AA : 0xe74c3c,
       url,
       description: `*${accent}*\n\n${note}`,
@@ -159,7 +160,7 @@ export function buildDiscordPriceEmbed(
         { name: "24h",     value: `\`${c24}\``,              inline: true },
         ...(c7d    ? [{ name: "7d Trend",  value: `\`${c7d}\``,    inline: true }] : []),
         ...(volStr ? [{ name: "Vol/Cap",   value: `\`${volStr}\``, inline: true }] : []),
-        ...(aiQuote ? [{ name: "⚡ Oracle Signal", value: `> ${aiQuote}`, inline: false }] : []),
+        ...(cleanAiQuote ? [{ name: "⚡ Oracle Signal", value: `> ${cleanAiQuote}`, inline: false }] : []),
         { name: "\u200b", value: regLink, inline: false },
       ],
       footer:    { text: footer, icon_url: iconUrl },
@@ -189,10 +190,10 @@ export function buildTwitterPrice(
   const shortTrim = short.length > 80 ? short.substring(0, 77) + "..." : short;
 
   const qPool     = up ? QUOTES_UP : QUOTES_DOWN;
-  const rawFull   = aiQuote ?? qPool[alertCount % qPool.length];
+  const rawFull   = (aiQuote ?? qPool[(alertCount + Math.floor(Date.now() / 60000)) % qPool.length]).replace(/-/g, "-");
   const extracted = rawFull.match(/[\u201c""](.+?)[\u201d""]|^"(.+?)"/)?.[1] ?? rawFull;
   const capped    = extracted.length > 65 ? extracted.substring(0, 62) + "..." : extracted;
-  const quoteLine = `"${capped.replace(/\$[A-Za-z]+/g, m => m.slice(1))}" — KTA Oracle Agent`;
+  const quoteLine = `"${capped.replace(/\$[A-Za-z]+/g, m => m.slice(1))}" - KTA Oracle Agent`;
 
   const attempts = [
     `${up ? "📈" : "📉"} $KTA ${sign}${pct}%\n\n${shortTrim}.\n\n${quoteLine}\n\nNow: ${disp} ${currency} · 24h: ${c24}${mc}\n\n🔗 ${link}\n${footer}`,
@@ -241,9 +242,9 @@ export function buildDiscordWhaleEmbed(
   const url     = `${appUrl}/onboard`;
 
   const c7dNote = change7d !== null
-    ? change7d > 3  ? `7d trend bullish (+${change7d.toFixed(1)}%) — this whale move aligns with medium-term momentum.`
-    : change7d < -3 ? `7d trend negative (${change7d.toFixed(1)}%) — large move against the broader correction.`
-    :                 `7d trend flat (${change7d.toFixed(1)}%) — move signals fresh directional pressure.`
+    ? change7d > 3  ? `7d trend bullish (+${change7d.toFixed(1)}%) - this whale move aligns with medium-term momentum.`
+    : change7d < -3 ? `7d trend negative (${change7d.toFixed(1)}%) - large move against the broader correction.`
+    :                 `7d trend flat (${change7d.toFixed(1)}%) - move signals fresh directional pressure.`
     : `Large on-chain movement detected on Keeta Network.`;
 
   let footer: string;
@@ -261,7 +262,7 @@ export function buildDiscordWhaleEmbed(
 
   return {
     embeds: [{
-      title:       `${emoji}  ${label} — ${amountKta.toLocaleString()} KTA`,
+      title:       `${emoji}  ${label} - ${amountKta.toLocaleString()} KTA`,
       color,
       url,
       description: `*⚡ Settled in 0.4 seconds on Keeta Network*\n\n${c7dNote}`,
@@ -286,12 +287,12 @@ export function buildTrialWarningDiscord(appUrl: string, lifetimeKta: number, tr
       description: [
         `You've used **${trialLimit - 1} of ${trialLimit}** free KTA Oracle alerts. Your next alert will be your last.`,
         ``,
-        `**Keep alerts going forever — ${lifetimeKta} KTA total, one payment.**`,
+        `**Keep alerts going forever - ${lifetimeKta} KTA total, one payment.**`,
         ``,
-        `Already sent some KTA? Check your wallet — everything you've sent already counts toward the total. You may be closer than you think.`,
+        `Already sent some KTA? Check your wallet - everything you've sent already counts toward the total. You may be closer than you think.`,
         ``,
-        `👉 **[Check how much KTA you've sent](${appUrl}/onboard)** — enter your wallet in the Status Checker`,
-        `👉 **[Get lifetime access](${appUrl}/checkout)** — see exactly how much more you need`,
+        `👉 **[Check how much KTA you've sent](${appUrl}/onboard)** - enter your wallet in the Status Checker`,
+        `👉 **[Get lifetime access](${appUrl}/checkout)** - see exactly how much more you need`,
         ``,
         `Alerts resume automatically after payment confirms on-chain. No action needed beyond sending KTA and activating.`,
       ].join("\n"),
@@ -306,15 +307,15 @@ export function buildTrialWarningText(appUrl: string, lifetimeKta: number, trial
     ``,
     `You've used ${trialLimit - 1}/${trialLimit} free KTA Oracle alerts. Your next alert will be your last.`,
     ``,
-    `Keep alerts going: ${lifetimeKta} KTA total — one payment, no renewals, ever.`,
+    `Keep alerts going: ${lifetimeKta} KTA total - one payment, no renewals, ever.`,
     ``,
-    `Already sent some KTA? Check your status — it all counts:`,
+    `Already sent some KTA? Check your status - it all counts:`,
     `👉 ${appUrl}/onboard`,
     ``,
     `Ready to top up? See exactly how much more you need:`,
     `👉 ${appUrl}/checkout`,
     ``,
-    `— KTA Oracle Agent · This is your only warning`,
+    `- KTA Oracle Agent · This is your only warning`,
   ].join("\n");
 }
 
@@ -326,21 +327,21 @@ export function buildTrialExhaustedDiscord(appUrl: string, trialLimit = 100, lif
       description: [
         `You've received all **${trialLimit} free KTA Oracle alerts**.`,
         ``,
-        `Over those alerts you've seen the oracle in action — live price moves, 7-day trend analysis, volume signals, and AI-powered insights delivered directly here.`,
+        `Over those alerts you've seen the oracle in action - live price moves, 7-day trend analysis, volume signals, and AI-powered insights delivered directly here.`,
         ``,
-        `**Lifetime access: ${lifetimeKta} KTA total — one payment, no renewals, ever.**`,
+        `**Lifetime access: ${lifetimeKta} KTA total - one payment, no renewals, ever.**`,
         ``,
-        `Already sent some KTA? Everything you've sent from your wallet already counts — check your total first:`,
-        `👉 **[Check how much you've sent](${appUrl}/onboard)** — enter your wallet in the Status Checker`,
+        `Already sent some KTA? Everything you've sent from your wallet already counts - check your total first:`,
+        `👉 **[Check how much you've sent](${appUrl}/onboard)** - enter your wallet in the Status Checker`,
         ``,
         `What you keep forever:`,
         `• Real-time price alerts (as fast as every 5 minutes)`,
-        `• Oracle reasoning — 7d trend, volume context, payment timing`,
+        `• Oracle reasoning - 7d trend, volume context, payment timing`,
         `• AI-powered insights on every alert`,
         `• Whale movement alerts`,
         `• Multi-currency support`,
         ``,
-        `👉 **[Get lifetime access](${appUrl}/checkout)** — see exactly how much more you need`,
+        `👉 **[Get lifetime access](${appUrl}/checkout)** - see exactly how much more you need`,
         ``,
         `Alerts resume automatically within one cycle after payment confirms on-chain.`,
       ].join("\n"),
@@ -353,10 +354,10 @@ export function buildTrialExhaustedText(appUrl: string, trialLimit = 100, lifeti
   return [
     `⏳ Your ${trialLimit} free KTA Oracle alerts are used up.`,
     ``,
-    `Lifetime access: ${lifetimeKta} KTA total — one payment, no renewals, ever.`,
+    `Lifetime access: ${lifetimeKta} KTA total - one payment, no renewals, ever.`,
     ``,
-    `Already sent some KTA? Check your total first — it all counts:`,
-    `👉 ${appUrl}/onboard  (Status Checker — enter your wallet)`,
+    `Already sent some KTA? Check your total first - it all counts:`,
+    `👉 ${appUrl}/onboard  (Status Checker - enter your wallet)`,
     ``,
     `Ready to top up? See how much more you need:`,
     `👉 ${appUrl}/checkout`,
@@ -375,7 +376,7 @@ export function buildExpiryReminderDiscord(appUrl: string, tier: string, hoursLe
         `Your **${tier}** tier access expires in approximately **${h} hour${h !== 1 ? "s" : ""}**.`,
         ``,
         `**What continues after expiry:**`,
-        `• Social alerts — lifetime, no action needed`,
+        `• Social alerts - lifetime, no action needed`,
         ``,
         `**What stops after expiry:**`,
         `• Oracle API access`,
@@ -400,7 +401,7 @@ export function buildExpiryReminderText(appUrl: string, tier: string, hoursLeft:
     ``,
     `Renew: ${appUrl}/checkout`,
     ``,
-    `— KTA Oracle Agent · This is your only reminder`,
+    `- KTA Oracle Agent · This is your only reminder`,
   ].join("\n");
 }
 
@@ -410,7 +411,7 @@ export function buildLifetimeActivatedDiscord(appUrl: string): object {
       title:       "✅ Lifetime access activated",
       color:       0x00D4AA,
       description: [
-        `Your payment has been verified on Keeta Network. You now have **unlimited KTA Oracle alerts** — no counter, no renewals, ever.`,
+        `Your payment has been verified on Keeta Network. You now have **unlimited KTA Oracle alerts** - no counter, no renewals, ever.`,
         ``,
         `**You now have:**`,
         `• Unlimited real-time price alerts`,
@@ -431,13 +432,13 @@ export function buildLifetimeActivatedText(appUrl: string): string {
   return [
     `✅ Lifetime access activated.`,
     ``,
-    `Payment verified on Keeta Network. You now have unlimited KTA Oracle alerts — no counter, no renewals, ever.`,
+    `Payment verified on Keeta Network. You now have unlimited KTA Oracle alerts - no counter, no renewals, ever.`,
     ``,
     `Includes: real-time price alerts · whale detection · AI insights · all frequencies · multi-currency.`,
     ``,
     `Alerts continue on the next cron cycle.`,
     ``,
-    `— KTA Oracle Agent`,
+    `- KTA Oracle Agent`,
   ].join("\n");
 }
 
@@ -458,7 +459,7 @@ export function buildCelebEmbed(
     return { embeds: [{ title: "Welcome to KTA Oracle", color: 0xC4A35A, description: [
       `Your **${label}** trial is active. You have **${remaining ?? 100}** alerts remaining.`,
       ``, `**Included in your trial:**`, ...features, ``,
-      `Sends accumulate on-chain — top up anytime to upgrade to lifetime access.`,
+      `Sends accumulate on-chain - top up anytime to upgrade to lifetime access.`,
       `👉 **[See plans](${appUrl}/checkout)**`,
     ].join("\n"), footer: { text: "KTA Oracle Agent" } }] };
   }
@@ -470,8 +471,8 @@ export function buildCelebEmbed(
       ? ["• Compliance tools, wallet scoring, on-chain analytics"]
       : [];
     const insight = (tier === "pro" || tier === "business") ? "• Full institutional AI insights on every alert" : "• Standard AI insights on every alert";
-    return { embeds: [{ title: `Welcome to KTA Oracle — ${label} Lifetime`, color: 0x00D4AA, description: [
-      `Thank you for your support. Your **${label}** lifetime access is active — alerts never expire, no renewals ever.`,
+    return { embeds: [{ title: `Welcome to KTA Oracle - ${label} Lifetime`, color: 0x00D4AA, description: [
+      `Thank you for your support. Your **${label}** lifetime access is active - alerts never expire, no renewals ever.`,
       ``, `**You now have:**`,
       "• Unlimited real-time price alerts",
       "• Unlimited whale movement detection",
@@ -488,7 +489,7 @@ export function buildCelebEmbed(
     return { embeds: [{ title: "Congratulations on upgrading", color: 0xF1C40F, description: [
       `Thank you for upgrading your KTA Oracle access to **${label}**.`,
       ``,
-      `Your alerts are now permanent — no counter, no renewals, ever. They will keep firing on all registered platforms regardless of Oracle access status.`,
+      `Your alerts are now permanent - no counter, no renewals, ever. They will keep firing on all registered platforms regardless of Oracle access status.`,
       bonus,
       ``, `👉 **[Explore your tools](${appUrl}/tools)**`,
     ].join("\n"), footer: { text: "KTA Oracle Agent" } }] };
@@ -510,12 +511,12 @@ export function buildCelebText(
 ): string {
   const label = tier.charAt(0).toUpperCase() + tier.slice(1);
   if (type === "trial_welcome")
-    return `🎉 Welcome to KTA Oracle — ${label} trial active. ${remaining ?? 100} alerts remaining. Upgrade anytime: ${appUrl}/checkout\n\n`;
+    return `🎉 Welcome to KTA Oracle - ${label} trial active. ${remaining ?? 100} alerts remaining. Upgrade anytime: ${appUrl}/checkout\n\n`;
   if (type === "lifetime_welcome")
-    return `🌟 Welcome to KTA Oracle — ${label} lifetime access active. Thank you for your support. Alerts never expire. ${appUrl}/tools\n\n`;
+    return `🌟 Welcome to KTA Oracle - ${label} lifetime access active. Thank you for your support. Alerts never expire. ${appUrl}/tools\n\n`;
   if (type === "upgrade")
-    return `🎉 Congratulations on upgrading to ${label}. Thank you for your support. Lifetime alerts are now permanent — no counter, no renewals. ${appUrl}/tools\n\n`;
-  return `👋 Welcome back — ${label} access renewed. Oracle API and all features are active again. ${appUrl}/onboard\n\n`;
+    return `🎉 Congratulations on upgrading to ${label}. Thank you for your support. Lifetime alerts are now permanent - no counter, no renewals. ${appUrl}/tools\n\n`;
+  return `👋 Welcome back - ${label} access renewed. Oracle API and all features are active again. ${appUrl}/onboard\n\n`;
 }
 
 export function prependCelebEmbed(pricePayload: object, celebPayload: object): object {
@@ -525,28 +526,51 @@ export function prependCelebEmbed(pricePayload: object, celebPayload: object): o
 }
 
 export const QUOTES_UP = [
-  `"Momentum building — conversion costs above average" — KTA Oracle Agent`,
-  `"Rising rates — receive KTA now, defer outbound if possible" — KTA Oracle Agent`,
-  `"Upward pressure — settlement costs above cycle norm" — KTA Oracle Agent`,
-  `"Strong move — defer non-urgent outbound payments now" — KTA Oracle Agent`,
-  `"Demand absorbing supply — Keeta payment rates rising" — KTA Oracle Agent`,
-  `"Rate expansion — incoming KTA payments maximize here" — KTA Oracle Agent`,
-  `"Rally holds — conversion costs elevated across Keeta" — KTA Oracle Agent`,
-  `"Buyers in control — payment cost basis rising fast" — KTA Oracle Agent`,
-  `"Accumulation visible — treasury outbound costs peak" — KTA Oracle Agent`,
-  `"Above-average settlement rates — receive, don't send" — KTA Oracle Agent`,
-  `"Breakout confirmed — watch for follow-through volume" — KTA Oracle Agent`,
-  `"Price leads settlement — Keeta treasuries adjust now" — KTA Oracle Agent`,
+  `"Order book depth absorbing supply with strong liquidity velocity" - KTA Oracle Agent`,
+  `"Accelerating settlement velocity confirms buy-side momentum" - KTA Oracle Agent`,
+  `"High-conviction transaction flow expanding across decentralized pools" - KTA Oracle Agent`,
+  `"Decentralized liquidity absorbing sell pressure into key support" - KTA Oracle Agent`,
+  `"Treasury inflow volume accelerating above the 30-day baseline" - KTA Oracle Agent`,
+  `"Bullish divergence on-chain with healthy secondary pool depth" - KTA Oracle Agent`,
+  `"Network velocity spikes as volume rotates into native settlement" - KTA Oracle Agent`,
+  `"Aggressive accumulation detected across primary liquidity pools" - KTA Oracle Agent`,
+  `"Sustained transfer frequency indicates expanding market participation" - KTA Oracle Agent`,
+  `"Spot liquidity expansion supports elevated pricing bands" - KTA Oracle Agent`,
+  `"Strong network finality handling heavy swap frequency flawlessly" - KTA Oracle Agent`,
+  `"Steady accumulation wave locking in higher ground" - KTA Oracle Agent`,
+  `"Liquidity depth providing stable foundation for continued expansion" - KTA Oracle Agent`,
+  `"Capital efficiency optimizing execution costs across the network" - KTA Oracle Agent`,
+  `"On-chain transfer volume reflects institutional interest" - KTA Oracle Agent`,
+  `"Healthy rotation pattern maintaining clean structure" - KTA Oracle Agent`,
+  `"Network throughput remaining rock solid as activity rises" - KTA Oracle Agent`,
+  `"Consistent net buy pressure driving order book progression" - KTA Oracle Agent`,
+  `"Dynamic balance between liquidity providers and retail flow" - KTA Oracle Agent`,
+  `"Volume-weighted momentum signals firm buyer conviction" - KTA Oracle Agent`,
+  `"Sub-second execution keeping slippage minimal during upward expansion" - KTA Oracle Agent`,
+  `"Increased circulation velocity confirms growing network adoption" - KTA Oracle Agent`,
+  `"Strong bid support establishes solid foothold for upside continuation" - KTA Oracle Agent`,
+  `"Cross-asset payment volume driving consistent native token demand" - KTA Oracle Agent`,
 ];
 
 export const QUOTES_DOWN = [
-  `"Pullback opens a payment execution opportunity" — KTA Oracle Agent`,
-  `"Compressed rates — strong window for outbound KTA" — KTA Oracle Agent`,
-  `"Below-average conversion costs — execute outbound now" — KTA Oracle Agent`,
-  `"Rate compression — outbound KTA payments cost less" — KTA Oracle Agent`,
-  `"Correction in progress — treasury buys at better rate" — KTA Oracle Agent`,
-  `"Downside move — conversion efficiency peaks here" — KTA Oracle Agent`,
-  `"Lower rates — favorable window for payment execution" — KTA Oracle Agent`,
-  `"Sellers active — payment settlement costs at cycle low" — KTA Oracle Agent`,
-  `"Retracement window — Keeta outbound timing improves" — KTA Oracle Agent`,
+  `"Consolidation creates prime entry conditions for patient capital" - KTA Oracle Agent`,
+  `"Pullback offering efficient liquidity pricing for outbound transactions" - KTA Oracle Agent`,
+  `"Order flow retesting local demand zones with healthy absorption" - KTA Oracle Agent`,
+  `"Discounted conversion rates benefit active payment settlement" - KTA Oracle Agent`,
+  `"Controlled retracement clearing out short-term leverage" - KTA Oracle Agent`,
+  `"Support clusters holding firm as dip-buyers accumulate volume" - KTA Oracle Agent`,
+  `"Lower transaction cost basis creates strategic treasury acquisition window" - KTA Oracle Agent`,
+  `"Sellers exhausting volume into deep liquidity bands" - KTA Oracle Agent`,
+  `"Order book depth cushions downward pressure as bids absorb supply" - KTA Oracle Agent`,
+  `"Healthy cool-off resets technical indicators for the next cycle" - KTA Oracle Agent`,
+  `"Stabilizing volume flow indicates selling momentum is waning" - KTA Oracle Agent`,
+  `"Sub-cent conversion efficiency offers optimal batching window" - KTA Oracle Agent`,
+  `"Temporary consolidation preserving strong macro structure" - KTA Oracle Agent`,
+  `"Bid depth rising steadily to absorb floating market supply" - KTA Oracle Agent`,
+  `"Execution pricing favored for treasuries replenishing liquidity" - KTA Oracle Agent`,
+  `"Order book replenishment signals quiet institutional accumulation" - KTA Oracle Agent`,
+  `"Healthy shakeout transfers tokens to longer-term high-conviction holders" - KTA Oracle Agent`,
+  `"Network activity remains elevated despite short-term price compression" - KTA Oracle Agent`,
+  `"Settlement engine operates with zero friction regardless of market volatility" - KTA Oracle Agent`,
+  `"Base liquidity layer proves resilient against directional sell volume" - KTA Oracle Agent`,
 ];
