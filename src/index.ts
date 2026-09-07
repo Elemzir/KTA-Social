@@ -298,30 +298,14 @@ export default {
     if (method === "GET" && pathname === "/llms.txt")
       return new Response(LLMS_TXT, { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600, s-maxage=3600" } });
 
-    if (method === "GET" && pathname === "/price") {
-      if (memPriceCache && Date.now() - memPriceCache.ts < 360_000)
-        return Response.json(memPriceCache.data, { headers: { "Cache-Control": CC_PRICE, ...corsHeaders } });
-      const cached = await env.KV.get<Record<string, unknown>>("social:price_cache", "json");
-      if (cached) {
-        memPriceCache = { data: cached, ts: Date.now() };
-        return Response.json(cached, { headers: { "Cache-Control": CC_PRICE, ...corsHeaders } });
-      }
+    if (method === "GET" && (pathname === "/price" || pathname === "/price/live")) {
       const r = await oracleFetch(env, "/price").catch(() => null);
-      if (!r?.ok) return Response.json({ error: "unavailable" }, { status: 503, headers: corsHeaders });
-      return new Response(r.body, { headers: { "Content-Type": "application/json", "Cache-Control": CC_PRICE, ...corsHeaders } });
-    }
-
-    if (method === "GET" && pathname === "/price/live") {
-      if (memPriceCache && Date.now() - memPriceCache.ts < 360_000)
-        return Response.json(memPriceCache.data, { headers: { "Cache-Control": CC_PRICE, ...corsHeaders } });
-      const cached = await env.KV.get<Record<string, unknown>>("social:price_cache", "json");
-      if (cached) {
-        memPriceCache = { data: cached, ts: Date.now() };
-        return Response.json(cached, { headers: { "Cache-Control": CC_PRICE, ...corsHeaders } });
+      if (r?.ok) {
+        return new Response(r.body, { headers: { "Content-Type": "application/json", "Cache-Control": CC_PRICE, ...corsHeaders } });
       }
-      const r = await oracleFetch(env, "/price/live").catch(() => null);
-      if (!r?.ok) return Response.json({ error: "unavailable" }, { status: 503, headers: corsHeaders });
-      return new Response(r.body, { headers: { "Content-Type": "application/json", "Cache-Control": CC_PRICE, ...corsHeaders } });
+      const cached = await env.KV.get<Record<string, unknown>>("social:price_cache", "json");
+      if (cached) return Response.json(cached, { headers: { "Cache-Control": CC_PRICE, ...corsHeaders } });
+      return Response.json({ error: "unavailable" }, { status: 503, headers: corsHeaders });
     }
 
     if (method === "GET" && pathname === "/price/history") {
