@@ -1,4 +1,4 @@
-﻿import { BASE_CSS, header, footer, agentWidget } from "./onboard.js";
+import { BASE_CSS, header, footer, agentWidget } from "./onboard.js";
 
 const TOOLS_CSS = `
 .tier-filter{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
@@ -332,7 +332,7 @@ export function renderTools(appUrl: string): string {
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Tools - KTA Oracle</title>
 <meta name="description" content="All ${totalTools} KTA Oracle tools. From live price feeds to certificate management - each tool mapped to the tier that unlocks it.">
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/tools"><meta property="og:title" content="Tools - KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/tools"><meta property="og:title" content="Tools - KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:secure_url" content="${appUrl}/og.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Tools - KTA Oracle"><meta name="twitter:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta name="twitter:image" content="${appUrl}/og.png"><meta name="twitter:image:alt" content="Tools - KTA Oracle">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}${TOOLS_CSS}</style>
 </head>

@@ -1,4 +1,4 @@
-﻿function icon(path: string, size = 20): string {
+function icon(path: string, size = 20): string {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
 }
 const ICONS = {
@@ -1157,7 +1157,7 @@ export function renderOnboard(appUrl: string, oracleWallet: string, trialLimit: 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>KTA Oracle - Live KTA Intelligence</title>
 <meta name="description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter.">
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/"><meta property="og:title" content="KTA Oracle - Live KTA Intelligence"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/"><meta property="og:title" content="KTA Oracle - Live KTA Intelligence"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:secure_url" content="${appUrl}/og.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="KTA Oracle - Live KTA Intelligence"><meta name="twitter:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta name="twitter:image" content="${appUrl}/og.png"><meta name="twitter:image:alt" content="KTA Oracle - Live KTA Intelligence">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}</style>
 </head>
@@ -1708,7 +1708,7 @@ export function renderCheckout(appUrl: string, oracleWallet: string, stripeLink 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Pricing - KTA Oracle</title>
 <meta name="description" content="Choose your KTA Oracle tier. One payment activates Oracle API access and Social lifetime alerts.">
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/checkout"><meta property="og:title" content="Pricing - KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/checkout"><meta property="og:title" content="Pricing - KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:secure_url" content="${appUrl}/og.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Pricing - KTA Oracle"><meta name="twitter:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta name="twitter:image" content="${appUrl}/og.png"><meta name="twitter:image:alt" content="Pricing - KTA Oracle">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}</style>
 </head>
@@ -2092,7 +2092,7 @@ export function renderDonate(appUrl: string, oracleWallet: string, lifetimeKta: 
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Support KTA Oracle - Keep it alive</title>
 <meta name="description" content="KTA Oracle is an independent project. Your support keeps the live data, AI insights, and whale tracking running for the whole community.">
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/donate"><meta property="og:title" content="Support KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/donate"><meta property="og:title" content="Support KTA Oracle"><meta property="og:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:secure_url" content="${appUrl}/og.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Support KTA Oracle"><meta name="twitter:description" content="Real-time KTA price alerts, whale tracking, and AI insights - delivered to Discord, Telegram, Slack, and X/Twitter."><meta name="twitter:image" content="${appUrl}/og.png"><meta name="twitter:image:alt" content="Support KTA Oracle">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}</style>
 </head>
@@ -2317,7 +2317,7 @@ export function renderLegal(appUrl: string): string {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Legal - KTA Oracle</title>
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/legal"><meta property="og:title" content="Legal - KTA Oracle"><meta property="og:image" content="${appUrl}/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/legal"><meta property="og:title" content="Legal - KTA Oracle"><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:secure_url" content="${appUrl}/og.png"><meta property="og:image:type" content="image/png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Legal - KTA Oracle"><meta name="twitter:image" content="${appUrl}/og.png"><meta name="twitter:image:alt" content="Legal - KTA Oracle">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}</style>
 </head>
@@ -2354,7 +2354,7 @@ export function renderPrivacy(appUrl: string): string {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Privacy Policy - KTA Oracle</title>
-<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/privacy"><meta property="og:title" content="Privacy Policy - KTA Oracle"><meta property="og:image" content="${appUrl}/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${appUrl}/og.png">
+<meta property="og:type" content="website"><meta property="og:url" content="${appUrl}/privacy"><meta property="og:title" content="Privacy Policy - KTA Oracle"><meta property="og:image" content="${appUrl}/og.png"><meta property="og:image:secure_url" content="${appUrl}/og.png"><meta property="og:image:type" content="image/png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Privacy Policy - KTA Oracle"><meta name="twitter:image" content="${appUrl}/og.png"><meta name="twitter:image:alt" content="Privacy Policy - KTA Oracle">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>${BASE_CSS}</style>
 </head>
