@@ -247,7 +247,7 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     try {
     const { pathname, searchParams } = new URL(request.url);
-    const method = request.method;
+    const method = request.method === "HEAD" ? "GET" : request.method;
     const corsHeaders = { "Access-Control-Allow-Origin": "*" };
 
     if (BLOCKED_METHODS.has(method)) return new Response(null, { status: 405 });
