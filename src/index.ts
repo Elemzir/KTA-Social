@@ -1,6 +1,6 @@
 import type { Env, SocialSubscriber, AlertFrequency, SocialPlatform } from "./types.js";
 import { requireInternalAuth, requireDevAuth, sanitiseWallet }        from "./auth.js";
-import { getSubscribers, saveSubscribers, getSubscriber, saveSubscriber, trialLimit, lifetimeKta }   from "./store.js";
+import { getSubscribers, saveSubscribers, getSubscriber, saveSubscriber, subKey, trialLimit, lifetimeKta }   from "./store.js";
 import {
   buildPriceAlert, buildWhaleAlert,
   buildDiscordPriceEmbed, buildDiscordWhaleEmbed, buildTwitterPrice, buildTwitterWhale,
@@ -319,8 +319,7 @@ export default {
       if (!wallet.startsWith("keeta_"))
         return new Response(`data: {"error":"wallet required"}\n\n`, { status: 400, headers: { "Content-Type": "text/event-stream", ...corsHeaders } });
 
-      const subs = await getSubscribers(env);
-      const sub  = subs.find(s => s.wallet.toLowerCase() === wallet.toLowerCase());
+      const sub = await getSubscriber(env, wallet);
       if (!sub)
         return new Response(`data: {"error":"not registered — visit /onboard"}\n\n`, { status: 403, headers: { "Content-Type": "text/event-stream", ...corsHeaders } });
 
@@ -362,7 +361,12 @@ export default {
     if (method === "GET" && pathname === "/oracle") {
       const r = await oracleFetch(env, "/").catch(() => null);
       if (!r?.ok) return Response.json({ error: "unavailable" }, { status: 503, headers: corsHeaders });
-      const html = (await r.text()).replaceAll("kta.netrate.workers.dev", new URL(request.url).host);
+      const host   = new URL(request.url).host;
+      const origin = new URL(request.url).origin;
+      const html   = (await r.text())
+        .replaceAll("https://kta.netrate.workers.dev", origin)
+        .replaceAll("http://kta.netrate.workers.dev", origin)
+        .replaceAll("kta.netrate.workers.dev", host);
       return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": CC_HTML, ...corsHeaders } });
     }
 
@@ -819,12 +823,10 @@ async function broadcastToSubscribers(
       updated.push(item.sub);
       if (item.dirty) {
         dirty = true;
-        await env.KV.put(`sub:${item.sub.wallet.toLowerCase()}`, JSON.stringify(item.sub));
+        await env.KV.put(subKey(item.sub.wallet), JSON.stringify(item.sub));
       }
     }
   }
-
-  if (dirty) await saveSubscribers(env, updated);
 
   if (alertTriggered || whale) {
     await broadcastDevChannels(env, price, priceChange, change24h, change7d, volume24h, whale, quoteFull);
@@ -976,7 +978,6 @@ async function handleRegister(request: Request, env: Env, ctx?: ExecutionContext
   if (telegramUsed)
     return Response.json({ error: "This Telegram chat is already registered to another wallet. One platform credential per wallet." }, { status: 409 });
 
-  // New registrations must verify on-chain payment of at least 0.1 KTA
   let activateData: Record<string, unknown> | null = null;
   if (existingIdx === -1 && !isDev) {
     const activateRes = await oraclePost(env, "/activate", JSON.stringify({ wallet })).catch(() => null);
@@ -1028,12 +1029,8 @@ async function handleRegister(request: Request, env: Env, ctx?: ExecutionContext
     } : undefined,
   };
 
-  if (existingIdx !== -1) existing[existingIdx] = sub;
-  else existing.push(sub);
-  await saveSubscribers(env, existing);
-  await env.KV.put(`sub:${wallet.toLowerCase()}`, JSON.stringify(sub));
+  await saveSubscriber(env, sub);
 
-  // For existing subscriber updates, refresh subscription tier in background
   if (ctx && existingIdx !== -1 && !isDev) {
     ctx.waitUntil(
       oraclePost(env, "/activate", JSON.stringify({ wallet }))
@@ -1041,13 +1038,12 @@ async function handleRegister(request: Request, env: Env, ctx?: ExecutionContext
           if (!r.ok) return;
           const d = await r.json() as Record<string, unknown>;
           if (!d.success) return;
-          const subs = await getSubscribers(env);
-          const i    = subs.findIndex(s => s.wallet === wallet);
-          if (i === -1) return;
-          if (d.socialLifetime) { subs[i].paid = true; subs[i].socialLifetime = true; }
-          if (d.tier)      subs[i].tier      = d.tier as any;
-          if (d.expiresAt) subs[i].expiresAt = new Date(d.expiresAt as string).getTime();
-          await saveSubscribers(env, subs);
+          const target = await getSubscriber(env, wallet);
+          if (!target) return;
+          if (d.socialLifetime) { target.paid = true; target.socialLifetime = true; }
+          if (d.tier)      target.tier      = d.tier as any;
+          if (d.expiresAt) target.expiresAt = new Date(d.expiresAt as string).getTime();
+          await saveSubscriber(env, target);
         })
         .catch(() => {})
     );
@@ -1128,7 +1124,7 @@ async function handleUpgrade(request: Request, env: Env): Promise<Response> {
 
   subscribers[idx].paid           = true;
   subscribers[idx].socialLifetime = true;
-  await saveSubscribers(env, subscribers);
+  await saveSubscriber(env, subscribers[idx]);
 
   const sub     = subscribers[idx];
   const appUrl  = env.APP_URL;
@@ -1193,7 +1189,7 @@ async function handleOracleActivate(request: Request, env: Env): Promise<Respons
   if (socialLifetime && wasTrialWithAlerts) subscribers[idx].celebPending = "upgrade";
   else if (isRenewal)                       subscribers[idx].celebPending = "renewal";
 
-  await saveSubscribers(env, subscribers);
+  await saveSubscriber(env, subscribers[idx]);
 
   const sub     = subscribers[idx];
   const appUrl  = env.APP_URL;
@@ -1397,16 +1393,14 @@ async function handleStripeWebhook(request: Request, env: Env): Promise<Response
 
   if (!wallet) return Response.json({ ok: true, no_wallet: true });
 
-  const subscribers = await getSubscribers(env);
-  const idx         = subscribers.findIndex(s => s.wallet === wallet);
-  if (idx === -1) return Response.json({ ok: true, not_registered: true });
-  if (subscribers[idx].paid) return Response.json({ ok: true, already_paid: true });
+  const sub = await getSubscriber(env, wallet);
+  if (!sub) return Response.json({ ok: true, not_registered: true });
+  if (sub.paid) return Response.json({ ok: true, already_paid: true });
 
-  subscribers[idx].paid           = true;
-  subscribers[idx].socialLifetime = true;
-  await saveSubscribers(env, subscribers);
+  sub.paid           = true;
+  sub.socialLifetime = true;
+  await saveSubscriber(env, sub);
 
-  const sub     = subscribers[idx];
   const appUrl  = env.APP_URL;
   const iconUrl = `${appUrl}/icon.png`;
   try {

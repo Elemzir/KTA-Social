@@ -819,12 +819,10 @@ function priceChart(appUrl: string): string {
     if(!W||!H)return;
     ctx.clearRect(0,0,W,H);
 
-    // subtle horizontal grid lines
     ctx.strokeStyle='rgba(255,255,255,0.025)';ctx.lineWidth=1;
     for(var i=1;i<4;i++){var gy=H*i/4;ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();}
 
     if(pts.length<1){
-      // no data yet: draw a faint placeholder line at 75%
       var sy=H*0.75;
       ctx.beginPath();ctx.strokeStyle='rgba(196,163,90,0.15)';ctx.lineWidth=1;
       ctx.setLineDash([6,8]);ctx.moveTo(0,sy);ctx.lineTo(W,sy);ctx.stroke();ctx.setLineDash([]);
@@ -838,7 +836,6 @@ function priceChart(appUrl: string): string {
     var minSpread=mn*0.0010;
     var flat=spread<minSpread;
     if(flat){mn=mn-minSpread/2;mx=mx+minSpread/2;spread=minSpread;}
-    // bias padding: more space above than below so line sits at ~75% height when flat
     var padTop=spread*(flat?0.75:0.25);
     var padBot=spread*(flat?3.0:0.25);
     mn-=padBot;mx+=padTop;var rng=mx-mn;
@@ -852,7 +849,6 @@ function priceChart(appUrl: string): string {
     function px(i){return(i/(Math.max(pts.length-1,1)))*W;}
     function py(v){return H-((v-mn)/rng)*H;}
 
-    // fill gradient
     var grad=ctx.createLinearGradient(0,0,0,H);
     grad.addColorStop(0,fillTop);grad.addColorStop(1,'rgba(0,0,0,0)');
     ctx.beginPath();
@@ -860,12 +856,10 @@ function priceChart(appUrl: string): string {
     ctx.lineTo(px(pts.length-1),H);ctx.lineTo(0,H);ctx.closePath();
     ctx.fillStyle=grad;ctx.fill();
 
-    // price line
     ctx.beginPath();
     pts.forEach(function(pt,i){if(i===0)ctx.moveTo(px(i),py(pt.p));else ctx.lineTo(px(i),py(pt.p));});
     ctx.strokeStyle=lineColor;ctx.lineWidth=1.5;ctx.lineJoin='round';ctx.stroke();
 
-    // pulsing end dot
     var ex=px(pts.length-1),ey=py(last);
     var ring=2.5+Math.sin(p)*2.5;
     ctx.beginPath();ctx.arc(ex,ey,ring,0,Math.PI*2);
@@ -1124,9 +1118,7 @@ export function footer(): string {
               } else {
                 (1, eval)(s.textContent);
               }
-            }catch(se){
-              console.error(se);
-            }
+            }catch(se){}
           });
         } else {
           window.location.href=path;

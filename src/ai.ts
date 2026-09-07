@@ -482,7 +482,6 @@ export async function chatWithAgent(
     });
 
     if (!res.ok) {
-      console.error("AI upstream error", res.status);
       return getKnowledgeReply(safeMessage);
     }
 
@@ -492,8 +491,7 @@ export async function chatWithAgent(
     if (!text) return getKnowledgeReply(safeMessage);
 
     return text.slice(0, 600);
-  } catch (err) {
-    console.error("AI chat error", err);
+  } catch {
     return getKnowledgeReply(safeMessage);
   }
 }
